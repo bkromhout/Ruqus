@@ -1,6 +1,7 @@
-package com.bkromhout.rqv.internal;
+package com.bkromhout.ruqus.internal;
 
-import com.bkromhout.rqv.RealmUserQuery;
+import com.bkromhout.ruqus.FieldData;
+import com.bkromhout.ruqus.RealmUserQuery;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 
@@ -9,11 +10,13 @@ import io.realm.RealmQuery;
  */
 @Transformer
 public abstract class RUQTransformer<T extends RealmObject> {
+    // No-args constructor.
+    protected RUQTransformer() {}
 
     /**
      * Called to transform a {@link RealmQuery} in some way.
      * @param realmQuery {@link RealmQuery} to transform.
      * @return Transformed {@link RealmQuery}.
      */
-    abstract RealmQuery<T> transform(RealmQuery<T> realmQuery);
+    public abstract RealmQuery<T> transform(RealmQuery<T> realmQuery, FieldData fieldData);
 }

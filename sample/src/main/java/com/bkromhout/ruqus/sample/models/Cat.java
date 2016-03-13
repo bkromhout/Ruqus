@@ -1,4 +1,4 @@
-package com.bkromhout.rqv.sample.models;
+package com.bkromhout.ruqus.sample.models;
 
 import io.realm.RealmObject;
 

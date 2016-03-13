@@ -1,9 +1,10 @@
-package com.bkromhout.rqv;
+package com.bkromhout.ruqus;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import com.bkromhout.rqv.R;
 
 /**
  * RealmQueryView

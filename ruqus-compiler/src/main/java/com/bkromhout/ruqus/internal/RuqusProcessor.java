@@ -1,5 +1,8 @@
-package com.bkromhout.rqv;
+package com.bkromhout.ruqus.internal;
 
+import com.bkromhout.ruqus.Hide;
+import com.bkromhout.ruqus.Queryable;
+import com.bkromhout.ruqus.VisibleAs;
 import com.google.auto.service.AutoService;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.RealmClass;
@@ -14,11 +17,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 @AutoService(Processor.class)
-public class RQVProcessor extends AbstractProcessor {
+public class RuqusProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         return new HashSet<String>() {{
+            // Our annotations.
+            add(Queryable.class.getCanonicalName());
+            add(Transformer.class.getCanonicalName());
+            add(Hide.class.getCanonicalName());
+            add(VisibleAs.class.getCanonicalName());
+            // Realm annotations.
             add(RealmClass.class.getCanonicalName());
             add(Ignore.class.getCanonicalName());
         }};

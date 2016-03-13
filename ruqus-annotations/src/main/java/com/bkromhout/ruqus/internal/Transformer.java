@@ -1,4 +1,4 @@
-package com.bkromhout.rqv.internal;
+package com.bkromhout.ruqus.internal;
 
 import java.lang.annotation.*;
 
