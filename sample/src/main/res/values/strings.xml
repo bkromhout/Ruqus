@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Sample</string>
+    <string name="curr_query">Current Query:</string>
+    <string name="query_results">Query Results:</string>
+    <string name="edit_query">Edit Query</string>
+</resources>
