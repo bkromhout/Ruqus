@@ -6,32 +6,32 @@ import java.util.ArrayList;
  * Holds information about the fields of a class which extends {@link io.realm.RealmObject}.
  * @see ClassData
  */
-public interface FieldData {
+public abstract class FieldData {
     /**
      * Get a list of real field names.
      * @return Real field names.
      */
-    ArrayList<String> getFieldNames();
+    public abstract ArrayList<String> getFieldNames();
 
     /**
      * Get a list of visible field names.
      * @return Visible field names.
      */
-    ArrayList<String> getVisibleNames();
+    public abstract ArrayList<String> getVisibleNames();
 
     /**
      * Get the human-readable name of a field from its real field name.
      * @param realFieldName Real name of a field.
      * @return Human-readable field name.
      */
-    String visibleNameOf(String realFieldName);
+    public abstract String visibleNameOf(String realFieldName);
 
     /**
      * The class of the type for this field.
      * @param realFieldName Real field name.
      * @return Field type.
      */
-    Class<?> fieldType(String realFieldName);
+    public abstract Class<?> fieldType(String realFieldName);
 
     /**
      * If {@link #isRealmListType(String)} returns true, this will return the class of the type of realm object that the
@@ -39,17 +39,37 @@ public interface FieldData {
      * @param realFieldName Real field name.
      * @return Field type, if this field is a {@link io.realm.RealmList}. Otherwise null.
      */
-    Class<?> realmListType(String realFieldName);
+    public abstract Class<?> realmListType(String realFieldName);
 
     /**
      * @param realFieldName Real field name.
      * @return True if field type extends {@link io.realm.RealmObject}, otherwise false.
      */
-    boolean isRealmObjectType(String realFieldName);
+    public abstract boolean isRealmObjectType(String realFieldName);
 
     /**
      * @param realFieldName Real field name.
      * @return True if field is a {@link io.realm.RealmList} type, otherwise false.
      */
-    boolean isRealmListType(String realFieldName);
+    public abstract boolean isRealmListType(String realFieldName);
+
+    /**
+     * Get the FieldData object which was generated for the class with the given name.
+     * <p/>
+     * This method uses reflection, for a cached version please call {@link ClassData#getFieldData(String)} instead.
+     * @param realClassName Real class name.
+     * @return FieldData object.
+     */
+    static FieldData getForClassName(String realClassName) {
+
+        try {
+            Class<?> fieldDataClass = Class.forName(realClassName + C.FIELD_DATA_SUFFIX);
+            return (FieldData) fieldDataClass.newInstance();
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Could not find generated Ruqus field data for " + realClassName +
+                    ", did the annotation processor run?");
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not get generated Ruqus field data for" + realClassName + ".");
+        }
+    }
 }
