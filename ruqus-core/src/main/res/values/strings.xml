@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="choose_queryable_prompt">Choose the type to search for</string>
+
+    <string name="add_condition">Add Condition</string>
+    <string name="remove_condition">Remove Condition</string>
+
+    <string name="choose_sort_order_prompt">Choose Sort Order (Currently None)</string>
+</resources>

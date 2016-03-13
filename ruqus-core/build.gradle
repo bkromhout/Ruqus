@@ -21,4 +21,6 @@ android {
 
 dependencies {
     compile project(':ruqus-annotations')
+    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:cardview-v7:23.2.1'
 }

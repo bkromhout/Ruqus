@@ -10,7 +10,7 @@ import io.realm.RealmQuery;
  */
 public class EqualTo<T extends RealmObject> extends RUQTransformer<T> {
     @Override
-    public RealmQuery<T> transform(RealmQuery<T> realmQuery, FieldData fieldData) {
+    public RealmQuery<T> transform(RealmQuery<T> realmQuery, FieldData fieldData, Object... params) {
         return null;
     }
 }
