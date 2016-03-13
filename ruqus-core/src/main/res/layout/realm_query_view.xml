@@ -13,6 +13,7 @@
             app:rqv_outline_text="@string/choose_queryable_prompt"/>
 
     <ScrollView
+            android:id="@+id/rqv_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/queryable_type"
@@ -23,14 +24,7 @@
                 android:id="@+id/rqv_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            <com.bkromhout.ruqus.RQVCard
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:rqv_card_mode="Outline"
-                    app:rqv_outline_text="@string/add_condition"/>
-        </LinearLayout>
+                android:orientation="vertical"/>
     </ScrollView>
 
     <com.bkromhout.ruqus.RQVCard
