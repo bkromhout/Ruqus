@@ -32,8 +32,6 @@ public abstract class ClassData {
     protected static HashMap<String, FieldData> fieldDatas = new HashMap<>();
 
     /*
-    [Occurs in second round so that we can use FieldData objects.]
-
     class ClassData$$GeneratedRuqusInfo extends ClassData {
         static {
             // [Real Class Name]
@@ -84,7 +82,7 @@ public abstract class ClassData {
      * @return Human-readable name.
      */
     public static String visibleNameOf(Class<? extends RealmObject> clazz) {
-        return visibleNameOf(clazz.getCanonicalName());
+        return visibleNameOf(clazz.getSimpleName());
     }
 
     /**
@@ -101,7 +99,7 @@ public abstract class ClassData {
      * @return Whether or not the class was annotated with {@link Queryable}.
      */
     public static boolean isQueryable(Class<? extends RealmObject> clazz) {
-        return isQueryable(clazz.getCanonicalName());
+        return isQueryable(clazz.getSimpleName());
     }
 
     /**
@@ -118,7 +116,7 @@ public abstract class ClassData {
      * @return Class's field data.
      */
     public static FieldData getFieldData(Class<? extends RealmObject> clazz) {
-        return getFieldData(clazz.getCanonicalName());
+        return getFieldData(clazz.getSimpleName());
     }
 
     /**

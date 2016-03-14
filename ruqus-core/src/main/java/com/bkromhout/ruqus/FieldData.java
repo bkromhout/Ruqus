@@ -61,10 +61,8 @@ public abstract class FieldData {
      * @return FieldData object.
      */
     static FieldData getForClassName(String realClassName) {
-
         try {
-            Class<?> fieldDataClass = Class.forName(realClassName + C.FIELD_DATA_SUFFIX);
-            return (FieldData) fieldDataClass.newInstance();
+            return (FieldData) Class.forName(realClassName + C.FIELD_DATA_SUFFIX).newInstance();
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("Could not find generated Ruqus field data for " + realClassName +
                     ", did the annotation processor run?");

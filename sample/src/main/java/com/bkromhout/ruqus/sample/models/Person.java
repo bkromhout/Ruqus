@@ -1,9 +1,12 @@
 package com.bkromhout.ruqus.sample.models;
 
+import com.bkromhout.rqv.sample.R;
+import com.bkromhout.ruqus.Queryable;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 
+@Queryable(name = R.string.person_name)
 public class Person extends RealmObject {
     private String name;
     private int age;
