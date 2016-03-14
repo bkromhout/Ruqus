@@ -7,17 +7,26 @@ import com.google.auto.service.AutoService;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.RealmClass;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.Processor;
-import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.util.HashSet;
 import java.util.Set;
 
 @AutoService(Processor.class)
 public class RuqusProcessor extends AbstractProcessor {
+    enum Round {
+        FIRST, SECOND
+    }
+
+    public static Processor instance;
+    public Types typeUtils;
+    public Elements elementUtils;
+    public Filer filer;
+    public Messager messager;
+    private Round currentRound = null;
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -41,6 +50,13 @@ public class RuqusProcessor extends AbstractProcessor {
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
+        instance = this;
+        typeUtils = processingEnv.getTypeUtils();
+        elementUtils = processingEnv.getElementUtils();
+        filer = processingEnv.getFiler();
+        messager = processingEnv.getMessager();
+        if (currentRound == null) currentRound = Round.FIRST;
+        else if (currentRound == Round.FIRST) currentRound = Round.SECOND;
     }
 
     @Override
