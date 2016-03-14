@@ -14,5 +14,5 @@ public @interface Queryable {
     /**
      * Name to use in user-visible areas.
      */
-    int name();
+    String name();
 }

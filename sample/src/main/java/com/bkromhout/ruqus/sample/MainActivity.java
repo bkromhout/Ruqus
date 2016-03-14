@@ -11,4 +11,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+
+    public static String getStr(int strId) {
+        return SampleApplication.getAppCtx().getString(strId);
+    }
 }
