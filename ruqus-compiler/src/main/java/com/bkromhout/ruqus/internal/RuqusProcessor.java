@@ -78,11 +78,12 @@ public class RuqusProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (didRun) return true;
+        // Process classes which extend RealmObject.
         for (Element element : roundEnv.getElementsAnnotatedWith(RealmClass.class)) {
             if (!SuperficialValidation.validateElement(element)) continue;
             if (element.getKind() != ElementKind.CLASS) {
                 // Really this shouldn't be an issue since Realm's annotation processor will do real checks, but still.
-                error(element, "RealmClass annotations can only be applied to classes!");
+                error(element, "@RealmClass annotations can only be applied to classes!");
                 continue;
             }
             TypeElement typeElement = MoreElements.asType(element);
@@ -147,7 +148,18 @@ public class RuqusProcessor extends AbstractProcessor {
             fieldData.put(realName, fdBuilder);
         }
 
-        // TODO Process Transformers and build transformer data file.
+        // Process classes which extend RUQTransformer.
+        for (Element element : roundEnv.getElementsAnnotatedWith(Transformer.class)) {
+            if (!SuperficialValidation.validateElement(element)) continue;
+            if (element.getKind() != ElementKind.CLASS) {
+                error(element, "@Transformer annotations can only be applied to classes!");
+                continue;
+            }
+            TypeElement typeElement = MoreElements.asType(element);
+            if (!isValidTransformerClass(typeElement)) continue;
+
+            // TODO Collect information. (Need to spec out TransformerData class first!)
+        }
 
         // Write out all files.
         try {
@@ -158,8 +170,8 @@ public class RuqusProcessor extends AbstractProcessor {
             }
             // Write out class data file.
             brewClassDataFile().writeTo(filer);
-            // TODO Write out transformers data file.
-
+            // Write out transformers data file.
+            brewTransformerDataFile().writeTo(filer);
         } catch (IOException e) {
             messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         }
@@ -167,6 +179,10 @@ public class RuqusProcessor extends AbstractProcessor {
         return true;
     }
 
+    /**
+     * Build the JavaFile object which will create the "Ruqus$$RuqusClassData.java" file.
+     * @return JavaFile.
+     */
     private JavaFile brewClassDataFile() {
         // Build static init block.
         CodeBlock.Builder staticBlockBuilder = CodeBlock.builder();
@@ -215,15 +231,25 @@ public class RuqusProcessor extends AbstractProcessor {
                        .build();
     }
 
+    /**
+     * Build the JavaFile object which will create the "Ruqus$$RuqusTransformerData.java" file.
+     * @return JavaFile.
+     */
+    private JavaFile brewTransformerDataFile() {
+        // TODO
+        return null;
+    }
+
     private boolean isValidRealmClass(TypeElement classElement) {
         // Must be public, non-abstract, and not a *RealmProxy class.
         return classElement.getModifiers().contains(Modifier.PUBLIC) && !classElement.getModifiers().contains(
                 Modifier.ABSTRACT) && !ClassName.get(classElement).simpleName().contains("RealmProxy");
     }
 
-    private ClassName classNameFromTypeName(TypeName typeName) {
-        if (TypeName.VOID.equals(typeName)) messager.printMessage(Diagnostic.Kind.ERROR, "void TypeName!");
-        return (ClassName) typeName.box();
+    private boolean isValidTransformerClass(TypeElement classElement) {
+        // Must be public and non-abstract.
+        return classElement.getModifiers().contains(Modifier.PUBLIC) && !classElement.getModifiers().contains(
+                Modifier.ABSTRACT);
     }
 
     private boolean isValidFieldType(TypeMirror fieldType) {

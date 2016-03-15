@@ -1,7 +1,12 @@
 package com.bkromhout.ruqus;
 
 /**
- * Passed when transforming.
+ * Generated extended class will contain data about all classes annotated with {@link
+ * com.bkromhout.ruqus.internal.Transformer}.
  */
-public class TransformerData {
+public abstract class TransformerData {
+    // TODO Spec this out.
+    /*
+    I'm thinking that we'll need...stuff
+     */
 }
