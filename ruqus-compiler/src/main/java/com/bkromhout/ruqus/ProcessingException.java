@@ -1,4 +1,4 @@
-package com.bkromhout.ruqus.internal;
+package com.bkromhout.ruqus;
 
 import javax.lang.model.element.Element;
 

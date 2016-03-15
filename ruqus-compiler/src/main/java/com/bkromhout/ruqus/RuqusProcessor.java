@@ -1,9 +1,5 @@
-package com.bkromhout.ruqus.internal;
+package com.bkromhout.ruqus;
 
-import com.bkromhout.ruqus.C;
-import com.bkromhout.ruqus.Hide;
-import com.bkromhout.ruqus.Queryable;
-import com.bkromhout.ruqus.VisibleAs;
 import com.google.auto.common.MoreElements;
 import com.google.auto.common.MoreTypes;
 import com.google.auto.common.SuperficialValidation;
@@ -16,6 +12,7 @@ import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
@@ -45,7 +42,7 @@ public class RuqusProcessor extends AbstractProcessor {
         return new HashSet<String>() {{
             // Our annotations.
             add(Queryable.class.getCanonicalName());
-            add(Transformer.class.getCanonicalName());
+            add(com.bkromhout.ruqus.Transformer.class.getCanonicalName());
             add(Hide.class.getCanonicalName());
             add(VisibleAs.class.getCanonicalName());
             // Realm annotations.
@@ -93,6 +90,12 @@ public class RuqusProcessor extends AbstractProcessor {
             ClassName className = ClassName.get(typeElement);
             // Get real class name.
             String realName = className.simpleName();
+            // Check that the real name of the class isn't already in use.
+            if (realClassNames.contains(realName)) {
+                error(element, "Skipping \"%s\" because there is already a realm object class called \"%s\"; Ruqus " +
+                        "currently cannot handle multiple classes with the same name.", className.toString(), realName);
+                continue;
+            }
             // Check class for queryable and visible name annotations to try and figure out visible name.
             String visibleName;
             boolean isQueryable = false;
@@ -104,7 +107,15 @@ public class RuqusProcessor extends AbstractProcessor {
                 VisibleAs vaAnnot = typeElement.getAnnotation(VisibleAs.class);
                 visibleName = vaAnnot.string();
             } else {
+                // TODO have this generate a name from camel-case
                 visibleName = realName;
+            }
+            // Check that visible name hasn't already been used.
+            if (visibleNames.values().contains(visibleName)) {
+                error(element, "Skipping \"%s\" because there is already a realm object class which has the visible " +
+                        "name \"%s\"; Ruqus currently cannot handle having multiple classes with the same visible " +
+                        "name.", className.toString(), visibleName);
+                continue;
             }
 
             // Get field information for all fields in this class.
@@ -149,7 +160,7 @@ public class RuqusProcessor extends AbstractProcessor {
         }
 
         // Process classes which extend RUQTransformer.
-        for (Element element : roundEnv.getElementsAnnotatedWith(Transformer.class)) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(com.bkromhout.ruqus.Transformer.class)) {
             if (!SuperficialValidation.validateElement(element)) continue;
             if (element.getKind() != ElementKind.CLASS) {
                 error(element, "@Transformer annotations can only be applied to classes!");
@@ -248,8 +259,14 @@ public class RuqusProcessor extends AbstractProcessor {
 
     private boolean isValidTransformerClass(TypeElement classElement) {
         // Must be public and non-abstract.
-        return classElement.getModifiers().contains(Modifier.PUBLIC) && !classElement.getModifiers().contains(
-                Modifier.ABSTRACT);
+        boolean validMods = classElement.getModifiers().contains(Modifier.PUBLIC) &&
+                !classElement.getModifiers().contains(Modifier.ABSTRACT);
+        if (isSubtypeOfType(classElement.asType(), TypeNames.RUQ_TRANS_CLASS.toString())) return validMods;
+        else {
+            error(classElement, "Skipping \"%s\" because transformer classes must extend (either directly or " +
+                    "indirectly) %s.", ClassName.get(classElement).toString(), TypeNames.RUQ_TRANS_CLASS.toString());
+            return false;
+        }
     }
 
     private boolean isValidFieldType(TypeMirror fieldType) {
@@ -304,6 +321,36 @@ public class RuqusProcessor extends AbstractProcessor {
             default:
                 return false;
         }
+    }
+
+    private boolean isSubtypeOfType(TypeMirror typeMirror, String otherType) {
+        if (otherType.equals(typeMirror.toString())) return true;
+        if (typeMirror.getKind() != TypeKind.DECLARED) return false;
+
+        DeclaredType declaredType = (DeclaredType) typeMirror;
+        List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
+        if (typeArguments.size() > 0) {
+            StringBuilder typeString = new StringBuilder(declaredType.asElement().toString());
+            typeString.append('<');
+            for (int i = 0; i < typeArguments.size(); i++) {
+                if (i > 0) typeString.append(',');
+                typeString.append('?');
+            }
+            typeString.append('>');
+            if (typeString.toString().equals(otherType)) return true;
+        }
+
+        Element element = declaredType.asElement();
+        if (!(element instanceof TypeElement)) return false;
+
+        TypeElement typeElement = (TypeElement) element;
+        TypeMirror superType = typeElement.getSuperclass();
+        if (isSubtypeOfType(superType, otherType)) return true;
+        for (TypeMirror interfaceType : typeElement.getInterfaces()) {
+            if (isSubtypeOfType(interfaceType, otherType)) return true;
+        }
+
+        return false;
     }
 
     static boolean isARealmObjClass(TypeName className) {

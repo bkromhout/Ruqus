@@ -1,6 +1,5 @@
-package com.bkromhout.ruqus.internal;
+package com.bkromhout.ruqus;
 
-import com.bkromhout.ruqus.C;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
@@ -77,30 +76,30 @@ public class FieldDataBuilder {
      */
 
     private FieldSpec buildRealNamesField() {
-        return FieldSpec.builder(TypeNames.STRING_HASH_SET, REAL_FIELD_NAMES, Modifier.PRIVATE, Modifier.STATIC,
+        return FieldSpec.builder(TypeNames.S_HASH_SET, REAL_FIELD_NAMES, Modifier.PRIVATE, Modifier.STATIC,
                 Modifier.FINAL)
-                        .initializer("new $T()", TypeNames.STRING_HASH_SET)
+                        .initializer("new $T()", TypeNames.S_HASH_SET)
                         .build();
     }
 
     private FieldSpec buildVisibleNamesField() {
-        return FieldSpec.builder(TypeNames.STRING_STRING_HASH_MAP, VISIBLE_FIELD_NAMES, Modifier.PRIVATE,
+        return FieldSpec.builder(TypeNames.S_STRING_HASH_MAP, VISIBLE_FIELD_NAMES, Modifier.PRIVATE,
                 Modifier.STATIC, Modifier.FINAL)
-                        .initializer("new $T()", TypeNames.STRING_STRING_HASH_MAP)
+                        .initializer("new $T()", TypeNames.S_STRING_HASH_MAP)
                         .build();
     }
 
     private FieldSpec buildTypesField() {
-        return FieldSpec.builder(TypeNames.STRING_ANY_CLASS_HASH_MAP, TYPES, Modifier.PRIVATE, Modifier.STATIC,
+        return FieldSpec.builder(TypeNames.S_ANY_CLASS_HASH_MAP, TYPES, Modifier.PRIVATE, Modifier.STATIC,
                 Modifier.FINAL)
-                        .initializer("new $T()", TypeNames.STRING_ANY_CLASS_HASH_MAP)
+                        .initializer("new $T()", TypeNames.S_ANY_CLASS_HASH_MAP)
                         .build();
     }
 
     private FieldSpec buildRealmListTypesField() {
-        return FieldSpec.builder(TypeNames.STRING_ANY_REALM_OBJ_CLASS_HASH_MAP, REALM_LIST_TYPES, Modifier.PRIVATE,
+        return FieldSpec.builder(TypeNames.S_ANY_REALM_OBJ_CLASS_HASH_MAP, REALM_LIST_TYPES, Modifier.PRIVATE,
                 Modifier.STATIC, Modifier.FINAL)
-                        .initializer("new $T()", TypeNames.STRING_ANY_REALM_OBJ_CLASS_HASH_MAP)
+                        .initializer("new $T()", TypeNames.S_ANY_REALM_OBJ_CLASS_HASH_MAP)
                         .build();
     }
 
@@ -146,8 +145,8 @@ public class FieldDataBuilder {
         return MethodSpec.methodBuilder(GET_FIELD_NAMES)
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                         .returns(TypeNames.STRING_ARRAY_LIST)
-                         .addStatement("return new $T($L)", TypeNames.STRING_ARRAY_LIST, REAL_FIELD_NAMES)
+                         .returns(TypeNames.S_ARRAY_LIST)
+                         .addStatement("return new $T($L)", TypeNames.S_ARRAY_LIST, REAL_FIELD_NAMES)
                          .build();
     }
 
@@ -155,8 +154,8 @@ public class FieldDataBuilder {
         return MethodSpec.methodBuilder(GET_VISIBLE_NAMES)
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                         .returns(TypeNames.STRING_ARRAY_LIST)
-                         .addStatement("return new $T($L.values())", TypeNames.STRING_ARRAY_LIST, VISIBLE_FIELD_NAMES)
+                         .returns(TypeNames.S_ARRAY_LIST)
+                         .addStatement("return new $T($L.values())", TypeNames.S_ARRAY_LIST, VISIBLE_FIELD_NAMES)
                          .build();
     }
 

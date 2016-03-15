@@ -83,10 +83,19 @@ public class RealmUserQuery {
     }
 
     /**
+     * Get the list of conditions in this query.
+     * @return List of conditions.
+     */
+    ArrayList<Condition> getConditions() {
+        return conditions;
+    }
+
+    /**
      * Checks whether the query is currently in a valid state.
      * @return True if this could be executed, otherwise false.
      */
     public boolean isQueryValid() {
+        // TODO
         return false;
     }
 
@@ -95,6 +104,7 @@ public class RealmUserQuery {
      * @return Human-readable query string.
      */
     public String getUserVisibleRuqString() {
+        // TODO
         return null;
     }
 
@@ -107,6 +117,7 @@ public class RealmUserQuery {
      * @return Internal string representation of this query.
      */
     public String getInternalRuqString() {
+        // TODO
         return null;
     }
 
@@ -114,7 +125,8 @@ public class RealmUserQuery {
      * Execute this query and return the results.
      * @return RealmResults, or null if query is invalid.
      */
-    public RealmResults execute() {
-        return null;
+    public <E extends RealmObject> RealmResults<E> execute() {
+        // TODO who knows if this is even legal...
+        return (RealmResults<E>) RUQExecutor.get(queryType, this).executeQuery();
     }
 }
