@@ -1,27 +1,45 @@
 package com.bkromhout.ruqus.internal;
 
-import com.squareup.javapoet.JavaFile;
+import com.bkromhout.ruqus.C;
+import com.squareup.javapoet.*;
 
+import javax.lang.model.element.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Helps generate *$$RuqusFieldData classes.
  */
 public class FieldDataBuilder {
+    private static final String REAL_FIELD_NAMES = "realFieldNames";
+    private static final String VISIBLE_FIELD_NAMES = "visibleFieldNames";
+    private static final String TYPES = "types";
+    private static final String REALM_LIST_TYPES = "realmListTypes";
+
+    private static final String GET_FIELD_NAMES = "getFieldNames";
+    private static final String GET_VISIBLE_NAMES = "getVisibleNames";
+    private static final String VISIBLE_NAME_OF = "visibleNameOf";
+    private static final String FIELD_TYPE = "fieldType";
+    private static final String REALM_LIST_TYPE = "realmListType";
+    private static final String IS_REALM_OBJECT_TYPE = "isRealmObjectType";
+    private static final String IS_REALM_LIST_TYPE = "isRealmListType";
+
+    ClassName className;
     HashSet<String> realNames;
     HashMap<String, String> visibleNames;
-    HashMap<String, Class<?>> types;
-    HashMap<String, Class<?>> realmListTypes;
+    HashMap<String, ClassName> types;
+    HashMap<String, ClassName> realmListTypes;
 
-    FieldDataBuilder() {
+    FieldDataBuilder(String className) {
+        this.className = ClassName.get(C.GEN_PKG_PREFIX, className + C.FIELD_DATA_SUFFIX);
         realNames = new HashSet<>();
         visibleNames = new HashMap<>();
         types = new HashMap<>();
         realmListTypes = new HashMap<>();
     }
 
-    void addField(String realName, String visibleName, Class<?> type, Class<?> realmListType) {
+    void addField(String realName, String visibleName, ClassName type, ClassName realmListType) {
         if (realNames.add(realName)) {
             visibleNames.put(realName, visibleName);
             types.put(realName, type);
@@ -30,7 +48,173 @@ public class FieldDataBuilder {
     }
 
     JavaFile brewJava() {
-        // TODO.
-        return null;
+        // Build class.
+        TypeSpec clazz = TypeSpec.classBuilder(className.simpleName())
+                                 .superclass(TypeNames.FIELD_DATA_CLASS)
+                                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                                 .addField(buildRealNamesField())
+                                 .addField(buildVisibleNamesField())
+                                 .addField(buildTypesField())
+                                 .addField(buildRealmListTypesField())
+                                 .addStaticBlock(buildStaticInitBlock())
+                                 .addMethod(buildGetFieldNames())
+                                 .addMethod(buildGetVisibleNames())
+                                 .addMethod(buildVisibleNameOf())
+                                 .addMethod(buildFieldType())
+                                 .addMethod(buildRealmListType())
+                                 .addMethod(buildIsRealmObjectType())
+                                 .addMethod(buildIsRealmListType())
+                                 .build();
+
+        // Build and return file.
+        return JavaFile.builder(className.packageName(), clazz)
+                       .addFileComment(C.GEN_CODE_FILE_COMMENT)
+                       .build();
+    }
+
+    /*
+     * Field Builders.
+     */
+
+    private FieldSpec buildRealNamesField() {
+        return FieldSpec.builder(TypeNames.STRING_HASH_SET, REAL_FIELD_NAMES, Modifier.PRIVATE, Modifier.STATIC,
+                Modifier.FINAL)
+                        .initializer("new $T()", TypeNames.STRING_HASH_SET)
+                        .build();
+    }
+
+    private FieldSpec buildVisibleNamesField() {
+        return FieldSpec.builder(TypeNames.STRING_STRING_HASH_MAP, VISIBLE_FIELD_NAMES, Modifier.PRIVATE,
+                Modifier.STATIC, Modifier.FINAL)
+                        .initializer("new $T()", TypeNames.STRING_STRING_HASH_MAP)
+                        .build();
+    }
+
+    private FieldSpec buildTypesField() {
+        return FieldSpec.builder(TypeNames.STRING_ANY_CLASS_HASH_MAP, TYPES, Modifier.PRIVATE, Modifier.STATIC,
+                Modifier.FINAL)
+                        .initializer("new $T()", TypeNames.STRING_ANY_CLASS_HASH_MAP)
+                        .build();
+    }
+
+    private FieldSpec buildRealmListTypesField() {
+        return FieldSpec.builder(TypeNames.STRING_ANY_REALM_OBJ_CLASS_HASH_MAP, REALM_LIST_TYPES, Modifier.PRIVATE,
+                Modifier.STATIC, Modifier.FINAL)
+                        .initializer("new $T()", TypeNames.STRING_ANY_REALM_OBJ_CLASS_HASH_MAP)
+                        .build();
+    }
+
+    /*
+     * Static init block builder.
+     */
+
+    private CodeBlock buildStaticInitBlock() {
+        CodeBlock.Builder staticBlockBuilder = CodeBlock.builder();
+
+        // Loop through real names.
+        String addRealNameStmt = "$S.add($S)";
+        staticBlockBuilder.add("// Add real field names.");
+        for (String string : realNames) staticBlockBuilder.addStatement(addRealNameStmt, REAL_FIELD_NAMES, string);
+
+        // Loop through visible names.
+        String addVisibleNameStmt = "$S.put($S, $S)";
+        staticBlockBuilder.add("// Add visible field names.");
+        for (Map.Entry<String, String> entry : visibleNames.entrySet())
+            staticBlockBuilder.addStatement(addVisibleNameStmt, VISIBLE_FIELD_NAMES, entry.getKey(), entry.getValue());
+
+        // Loop through types.
+        String addTypeStmt = "$S.put($S, $T.class)";
+        staticBlockBuilder.add("// Add field types.");
+        for (Map.Entry<String, ClassName> entry : types.entrySet())
+            staticBlockBuilder.addStatement(addTypeStmt, TYPES, entry.getKey(), entry.getValue());
+
+        // Loop through realm list types.
+        String addRealmListTypeStmt = "$S.put($S, $T.class)";
+        staticBlockBuilder.add("// For fields of RealmList type, add the RealmList types.");
+        for (Map.Entry<String, ClassName> entry : realmListTypes.entrySet())
+            staticBlockBuilder.addStatement(addRealmListTypeStmt, REALM_LIST_TYPES, entry.getKey(), entry.getValue());
+
+        return staticBlockBuilder.build();
+    }
+
+    /*
+     * Method Builders.
+     */
+
+    private MethodSpec buildGetFieldNames() {
+        return MethodSpec.methodBuilder(GET_FIELD_NAMES)
+                         .addAnnotation(Override.class)
+                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .returns(TypeNames.STRING_ARRAY_LIST)
+                         .addStatement("return new $T($S)", TypeNames.STRING_ARRAY_LIST, REAL_FIELD_NAMES)
+                         .build();
+    }
+
+    private MethodSpec buildGetVisibleNames() {
+        return MethodSpec.methodBuilder(GET_VISIBLE_NAMES)
+                         .addAnnotation(Override.class)
+                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .returns(TypeNames.STRING_ARRAY_LIST)
+                         .addStatement("return new $T($S.values())", TypeNames.STRING_ARRAY_LIST, VISIBLE_FIELD_NAMES)
+                         .build();
+    }
+
+    private MethodSpec buildVisibleNameOf() {
+        String paramName = "realFieldName";
+        return MethodSpec.methodBuilder(VISIBLE_NAME_OF)
+                         .addAnnotation(Override.class)
+                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .returns(TypeNames.STRING)
+                         .addParameter(TypeNames.STRING, paramName)
+                         .addStatement("return $S.get($S)", VISIBLE_FIELD_NAMES, paramName)
+                         .build();
+    }
+
+    private MethodSpec buildFieldType() {
+        String paramName = "realFieldName";
+        return MethodSpec.methodBuilder(FIELD_TYPE)
+                         .addAnnotation(Override.class)
+                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .returns(TypeNames.ANY_CLASS)
+                         .addParameter(TypeNames.STRING, paramName)
+                         .addStatement("return $S.get($S)", TYPES, paramName)
+                         .build();
+    }
+
+    private MethodSpec buildRealmListType() {
+        String paramName = "realFieldName";
+        return MethodSpec.methodBuilder(REALM_LIST_TYPE)
+                         .addAnnotation(Override.class)
+                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .returns(TypeNames.ANY_CLASS)
+                         .addParameter(TypeNames.STRING, paramName)
+                         .addStatement("return $S.get($S)", REALM_LIST_TYPES, paramName)
+                         .build();
+    }
+
+    private MethodSpec buildIsRealmObjectType() {
+        String paramName = "realFieldName";
+        return MethodSpec.methodBuilder(IS_REALM_OBJECT_TYPE)
+                         .addAnnotation(Override.class)
+                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .returns(TypeName.BOOLEAN)
+                         .addParameter(TypeNames.STRING, paramName)
+                         .addStatement("return $S($S).isInstance($T)", FIELD_TYPE, paramName, TypeNames.REALM_OBJ)
+                         .build();
+    }
+
+    private MethodSpec buildIsRealmListType() {
+        String paramName = "realFieldName";
+        return MethodSpec.methodBuilder(IS_REALM_LIST_TYPE)
+                         .addAnnotation(Override.class)
+                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .returns(TypeName.BOOLEAN)
+                         .addParameter(TypeNames.STRING, paramName)
+                         .addStatement("return $S.containsKey($S)", REALM_LIST_TYPES, paramName)
+                         .build();
+    }
+
+    ClassName getClassName() {
+        return className;
     }
 }

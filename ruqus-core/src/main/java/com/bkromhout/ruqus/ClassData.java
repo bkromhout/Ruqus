@@ -31,20 +31,6 @@ public abstract class ClassData {
      */
     protected static HashMap<String, FieldData> fieldDatas = new HashMap<>();
 
-    /*
-    class ClassData$$GeneratedRuqusInfo extends ClassData {
-        static {
-            // [Real Class Name]
-            realNames.add([Real Class Name]);
-            classMap.put([Real Class Name], ...);
-            queryable.add(...); // if necessary
-            visibleNames.put([Real Class Name], ...);
-            fieldDatas.put([Real Class Name], FieldData.getForClassName([Real Class Name]));
-            ...
-        }
-    }
-     */
-
     /**
      * Get a list of real class names.
      * @return List of real class names.

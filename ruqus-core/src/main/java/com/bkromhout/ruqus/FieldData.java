@@ -1,5 +1,7 @@
 package com.bkromhout.ruqus;
 
+import io.realm.RealmObject;
+
 import java.util.ArrayList;
 
 /**
@@ -39,7 +41,7 @@ public abstract class FieldData {
      * @param realFieldName Real field name.
      * @return Field type, if this field is a {@link io.realm.RealmList}. Otherwise null.
      */
-    public abstract Class<?> realmListType(String realFieldName);
+    public abstract Class<? extends RealmObject> realmListType(String realFieldName);
 
     /**
      * @param realFieldName Real field name.

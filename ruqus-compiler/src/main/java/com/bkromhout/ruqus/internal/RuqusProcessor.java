@@ -1,27 +1,28 @@
 package com.bkromhout.ruqus.internal;
 
+import com.bkromhout.ruqus.C;
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.Queryable;
 import com.bkromhout.ruqus.VisibleAs;
 import com.google.auto.common.MoreElements;
+import com.google.auto.common.MoreTypes;
 import com.google.auto.common.SuperficialValidation;
 import com.google.auto.service.AutoService;
-import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.*;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.RealmClass;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 @AutoService(Processor.class)
 public class RuqusProcessor extends AbstractProcessor {
@@ -33,11 +34,11 @@ public class RuqusProcessor extends AbstractProcessor {
     public Messager messager;
 
     // Help generate the Ruqus$$RuqusClassData file.
-    private HashSet<String> realClassNames;
-    private HashSet<String> queryable;
-    private HashMap<String, ClassName> classMap;
-    private HashMap<String, String> visibleNames;
-    private HashMap<String, FieldDataBuilder> fieldData;
+    private static HashSet<String> realClassNames;
+    private static HashSet<String> queryable;
+    private static HashMap<String, ClassName> classMap;
+    private static HashMap<String, String> visibleNames;
+    private static HashMap<String, FieldDataBuilder> fieldData;
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -104,16 +105,41 @@ public class RuqusProcessor extends AbstractProcessor {
                 visibleName = realName;
             }
 
-            FieldDataBuilder fdBuilder = new FieldDataBuilder();
-            // Get field information for this class.
-            for (Element iElement : typeElement.getEnclosedElements()) {
-                // Ignore if this isn't a field.
-                if (iElement.getKind() != ElementKind.FIELD) continue;
+            // Get field information for all fields in this class.
+            FieldDataBuilder fdBuilder = new FieldDataBuilder(realName);
+            for (VariableElement var : ElementFilter.fieldsIn(typeElement.getEnclosedElements())) {
+                if (!SuperficialValidation.validateElement(var)) continue;
+                // Ignore if this isn't a field (it could be an enum constant).
+                if (var.getKind() != ElementKind.FIELD) continue;
+                // Ignore if it has Realm's @Ignore or our @Hide annotation.
+                if (MoreElements.isAnnotationPresent(var, Ignore.class) ||
+                        MoreElements.isAnnotationPresent(var, Hide.class)) continue;
+                // Ignore if not a valid field.
+                TypeMirror varMirror = var.asType();
+                if (!isValidFieldType(varMirror)) continue;
 
-                // TODO
+                // The field is valid! Start getting data about it; real name first.
+                String realFieldName = var.getSimpleName().toString();
+                // Check for @VisibleAs.
+                String visibleFieldName = realFieldName;
+                if (MoreElements.isAnnotationPresent(var, VisibleAs.class)) {
+                    VisibleAs vaAnnot = var.getAnnotation(VisibleAs.class);
+                    visibleFieldName = vaAnnot.string();
+                }
+                // Field type.
+                ClassName fieldType = ClassName.bestGuess(varMirror.toString());
+                // If field is a RealmList, we need to get the parameter's type too.
+                ClassName realmListType = null;
+                if (isRealmList(fieldType)) {
+                    List<? extends TypeMirror> parameterTypes = MoreTypes.asDeclared(varMirror).getTypeArguments();
+                    realmListType = ClassName.bestGuess(parameterTypes.get(0).toString());
+                }
+
+                // Add this field's data to the field data builder.
+                fdBuilder.addField(realFieldName, visibleFieldName, fieldType, realmListType);
             }
 
-            // Store these locally until we write out the while class data file.
+            // Store these locally until we write out the whole class data file.
             realClassNames.add(realName);
             if (isQueryable) queryable.add(realName);
             classMap.put(realName, className);
@@ -121,19 +147,138 @@ public class RuqusProcessor extends AbstractProcessor {
             fieldData.put(realName, fdBuilder);
         }
 
+        // TODO Process Transformers and build transformer data file.
+
+        // Write out all files.
+        try {
+            // Write out field data files.
+            for (FieldDataBuilder fdb : fieldData.values()) fdb.brewJava().writeTo(filer);
+            // Write out class data file.
+            brewClassDataFile().writeTo(filer);
+            // TODO Write out transformers data file.
+
+        } catch (IOException e) {
+            messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+        }
+
         return true;
+    }
+
+    private JavaFile brewClassDataFile() {
+        // Build static init block.
+        CodeBlock.Builder staticBlockBuilder = CodeBlock.builder();
+
+        // Loop through real names.
+        String addRealNameStmt = "realNames.add($S)";
+        staticBlockBuilder.add("// Add all real names of classes.");
+        for (String realName : realClassNames) staticBlockBuilder.addStatement(addRealNameStmt, realName);
+
+        // Loop through queryable names.
+        String addQueryableNameStmt = "queryable.add($S)";
+        staticBlockBuilder.add("// Add names of classes annotated with @Queryable.");
+        for (String queryableName : queryable) staticBlockBuilder.addStatement(addQueryableNameStmt, queryableName);
+
+        // Loop through class object names.
+        String addClassStmt = "classMap.put($S, $T.class)";
+        staticBlockBuilder.add("// Add class objects.");
+        for (Map.Entry<String, ClassName> entry : classMap.entrySet())
+            staticBlockBuilder.addStatement(addClassStmt, entry.getKey(), entry.getValue());
+
+        // Loop through visible names.
+        String addVisibleNameStmt = "visibleNames.put($S, $S)";
+        staticBlockBuilder.add("// Add visible names.");
+        for (Map.Entry<String, String> entry : visibleNames.entrySet())
+            staticBlockBuilder.addStatement(addVisibleNameStmt, entry.getKey(), entry.getValue());
+
+        // Loop through field data classes.
+        String addFieldDataStmt = "fieldDatas.put($S, new $T())";
+        staticBlockBuilder.add("// Add field data classes.");
+        for (Map.Entry<String, FieldDataBuilder> entry : fieldData.entrySet())
+            staticBlockBuilder.addStatement(addFieldDataStmt, entry.getKey(), entry.getValue().getClassName());
+
+        // Finally, build this code block.
+        CodeBlock staticBlock = staticBlockBuilder.build();
+
+        // Build class.
+        TypeSpec clazz = TypeSpec.classBuilder(C.GEN_CLASS_DATA_CLASS_NAME)
+                                 .superclass(TypeNames.CLASS_DATA_CLASS)
+                                 .addModifiers(Modifier.FINAL)
+                                 .addStaticBlock(staticBlock)
+                                 .build();
+
+        // Build file and return it.
+        return JavaFile.builder(C.GEN_PKG, clazz)
+                       .addFileComment(C.GEN_CODE_FILE_COMMENT)
+                       .build();
     }
 
     private boolean isValidRealmClass(TypeElement classElement) {
-        // Must be public.
-        if (!classElement.getModifiers().contains(Modifier.PUBLIC)) return false;
-
-        // Must not be abstract.
-        if (classElement.getModifiers().contains(Modifier.ABSTRACT)) return false;
-
-        return true;
+        // Must be public and non-abstract.
+        return classElement.getModifiers().contains(Modifier.PUBLIC) && !classElement.getModifiers().contains(
+                Modifier.ABSTRACT);
     }
 
+    private boolean isValidFieldType(TypeMirror fieldType) {
+        switch (fieldType.getKind()) {
+            // These primitive types are valid immediately.
+            case BOOLEAN:
+            case DOUBLE:
+            case FLOAT:
+            case INT:
+            case LONG:
+            case SHORT:
+                return true;
+            // For declared, we need to do a bit of extra work.
+            case DECLARED:
+                try {
+                    // If it's a boxed primitive, other than byte or char, return true.
+                    TypeName typeName = TypeName.get(fieldType).unbox();
+                    if (typeName.equals(TypeName.BYTE) || typeName.equals(TypeName.CHAR)) return false;
+                    if (typeName.isPrimitive()) return true;
+                } catch (UnsupportedOperationException e) {
+                    // Do nothing, we just did this to try and check if this was a boxed primitive.
+                }
+
+                // Strings and java.util.Dates are okay.
+                DeclaredType declaredType = MoreTypes.asDeclared(fieldType);
+                if (MoreTypes.isTypeOf(String.class, declaredType) || MoreTypes.isTypeOf(Date.class, declaredType))
+                    return true;
+
+                // Any of our classes annotated with @RealmClass are okay.
+                ClassName fieldClassName = ClassName.bestGuess(fieldType.toString());
+                if (isARealmObjClass(fieldClassName)) return true;
+
+                // RealmLists are okay as well.
+                if (isRealmList(fieldClassName)) return true;
+
+                // Everything else is bad.
+                return false;
+            // We ignore these types.
+            case ARRAY:
+            case BYTE:
+            case CHAR:
+            case ERROR:
+            case EXECUTABLE:
+            case NONE:
+            case NULL:
+            case OTHER:
+            case PACKAGE:
+            case TYPEVAR:
+            case UNION:
+            case VOID:
+            case WILDCARD:
+            default:
+                return false;
+        }
+    }
+
+    static boolean isARealmObjClass(ClassName className) {
+        return classMap.values().contains(className);
+    }
+
+    boolean isRealmList(ClassName className) {;
+        return TypeNames.REALM_LIST.compareTo(className) == 0;
+    }
 
     private void error(Element e, String msg, Object... args) {
         messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
