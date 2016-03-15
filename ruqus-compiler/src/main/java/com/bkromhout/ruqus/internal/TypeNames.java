@@ -24,7 +24,7 @@ final class TypeNames {
     private static final WildcardTypeName ANY = WildcardTypeName.subtypeOf(TypeName.OBJECT);
     private static final WildcardTypeName ANY_REALM_OBJ = WildcardTypeName.subtypeOf(REALM_OBJ);
     static final TypeName ANY_CLASS = ParameterizedTypeName.get(CLASS, ANY);
-    private static final TypeName ANY_REALM_OBJ_CLASS = ParameterizedTypeName.get(CLASS, ANY_REALM_OBJ);
+    static final TypeName ANY_REALM_OBJ_CLASS = ParameterizedTypeName.get(CLASS, ANY_REALM_OBJ);
     static final TypeName STRING_ARRAY_LIST = ParameterizedTypeName.get(ARRAY_LIST, STRING);
     static final TypeName STRING_HASH_SET = ParameterizedTypeName.get(HASH_SET, STRING);
     static final TypeName STRING_STRING_HASH_MAP = ParameterizedTypeName.get(HASH_MAP, STRING, STRING);

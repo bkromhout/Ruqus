@@ -26,7 +26,7 @@ import java.util.*;
 
 @AutoService(Processor.class)
 public class RuqusProcessor extends AbstractProcessor {
-
+    private static boolean didRun = false;
     public static Processor instance;
     public Types typeUtils;
     public Elements elementUtils;
@@ -77,6 +77,7 @@ public class RuqusProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (didRun) return true;
         for (Element element : roundEnv.getElementsAnnotatedWith(RealmClass.class)) {
             if (!SuperficialValidation.validateElement(element)) continue;
             if (element.getKind() != ElementKind.CLASS) {
@@ -84,7 +85,7 @@ public class RuqusProcessor extends AbstractProcessor {
                 error(element, "RealmClass annotations can only be applied to classes!");
                 continue;
             }
-            TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+            TypeElement typeElement = MoreElements.asType(element);
             if (!isValidRealmClass(typeElement)) continue;
 
             // Get ClassName object, we'll store this so that we can write out a real type later.
@@ -127,14 +128,13 @@ public class RuqusProcessor extends AbstractProcessor {
                     visibleFieldName = vaAnnot.string();
                 }
                 // Field type.
-                ClassName fieldType = ClassName.bestGuess(varMirror.toString());
+                TypeName fieldType = TypeName.get(varMirror);
                 // If field is a RealmList, we need to get the parameter's type too.
                 ClassName realmListType = null;
                 if (isRealmList(fieldType)) {
                     List<? extends TypeMirror> parameterTypes = MoreTypes.asDeclared(varMirror).getTypeArguments();
                     realmListType = ClassName.bestGuess(parameterTypes.get(0).toString());
                 }
-
                 // Add this field's data to the field data builder.
                 fdBuilder.addField(realFieldName, visibleFieldName, fieldType, realmListType);
             }
@@ -152,7 +152,10 @@ public class RuqusProcessor extends AbstractProcessor {
         // Write out all files.
         try {
             // Write out field data files.
-            for (FieldDataBuilder fdb : fieldData.values()) fdb.brewJava().writeTo(filer);
+            for (FieldDataBuilder fdb : fieldData.values()) {
+                messager.printMessage(Diagnostic.Kind.NOTE, "Creating " + fdb.getClassName().simpleName());
+                fdb.brewJava().writeTo(filer);
+            }
             // Write out class data file.
             brewClassDataFile().writeTo(filer);
             // TODO Write out transformers data file.
@@ -160,7 +163,7 @@ public class RuqusProcessor extends AbstractProcessor {
         } catch (IOException e) {
             messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         }
-
+        didRun = true;
         return true;
     }
 
@@ -170,29 +173,29 @@ public class RuqusProcessor extends AbstractProcessor {
 
         // Loop through real names.
         String addRealNameStmt = "realNames.add($S)";
-        staticBlockBuilder.add("// Add all real names of classes.");
+        staticBlockBuilder.add("// Add all real names of classes.\n");
         for (String realName : realClassNames) staticBlockBuilder.addStatement(addRealNameStmt, realName);
 
         // Loop through queryable names.
         String addQueryableNameStmt = "queryable.add($S)";
-        staticBlockBuilder.add("// Add names of classes annotated with @Queryable.");
+        staticBlockBuilder.add("// Add names of classes annotated with @Queryable.\n");
         for (String queryableName : queryable) staticBlockBuilder.addStatement(addQueryableNameStmt, queryableName);
 
         // Loop through class object names.
         String addClassStmt = "classMap.put($S, $T.class)";
-        staticBlockBuilder.add("// Add class objects.");
+        staticBlockBuilder.add("// Add class objects.\n");
         for (Map.Entry<String, ClassName> entry : classMap.entrySet())
             staticBlockBuilder.addStatement(addClassStmt, entry.getKey(), entry.getValue());
 
         // Loop through visible names.
         String addVisibleNameStmt = "visibleNames.put($S, $S)";
-        staticBlockBuilder.add("// Add visible names.");
+        staticBlockBuilder.add("// Add visible names.\n");
         for (Map.Entry<String, String> entry : visibleNames.entrySet())
             staticBlockBuilder.addStatement(addVisibleNameStmt, entry.getKey(), entry.getValue());
 
         // Loop through field data classes.
         String addFieldDataStmt = "fieldDatas.put($S, new $T())";
-        staticBlockBuilder.add("// Add field data classes.");
+        staticBlockBuilder.add("// Add field data classes.\n");
         for (Map.Entry<String, FieldDataBuilder> entry : fieldData.entrySet())
             staticBlockBuilder.addStatement(addFieldDataStmt, entry.getKey(), entry.getValue().getClassName());
 
@@ -213,9 +216,14 @@ public class RuqusProcessor extends AbstractProcessor {
     }
 
     private boolean isValidRealmClass(TypeElement classElement) {
-        // Must be public and non-abstract.
+        // Must be public, non-abstract, and not a *RealmProxy class.
         return classElement.getModifiers().contains(Modifier.PUBLIC) && !classElement.getModifiers().contains(
-                Modifier.ABSTRACT);
+                Modifier.ABSTRACT) && !ClassName.get(classElement).simpleName().contains("RealmProxy");
+    }
+
+    private ClassName classNameFromTypeName(TypeName typeName) {
+        if (TypeName.VOID.equals(typeName)) messager.printMessage(Diagnostic.Kind.ERROR, "void TypeName!");
+        return (ClassName) typeName.box();
     }
 
     private boolean isValidFieldType(TypeMirror fieldType) {
@@ -245,11 +253,11 @@ public class RuqusProcessor extends AbstractProcessor {
                     return true;
 
                 // Any of our classes annotated with @RealmClass are okay.
-                ClassName fieldClassName = ClassName.bestGuess(fieldType.toString());
-                if (isARealmObjClass(fieldClassName)) return true;
+                TypeName fieldTypeName = TypeName.get(fieldType);
+                if (isARealmObjClass(fieldTypeName)) return true;
 
                 // RealmLists are okay as well.
-                if (isRealmList(fieldClassName)) return true;
+                if (isRealmList(fieldTypeName)) return true;
 
                 // Everything else is bad.
                 return false;
@@ -272,12 +280,12 @@ public class RuqusProcessor extends AbstractProcessor {
         }
     }
 
-    static boolean isARealmObjClass(ClassName className) {
+    static boolean isARealmObjClass(TypeName className) {
         return classMap.values().contains(className);
     }
 
-    boolean isRealmList(ClassName className) {;
-        return TypeNames.REALM_LIST.compareTo(className) == 0;
+    boolean isRealmList(TypeName className) {
+        return className != null && className.toString().contains(TypeNames.REALM_LIST.simpleName());
     }
 
     private void error(Element e, String msg, Object... args) {

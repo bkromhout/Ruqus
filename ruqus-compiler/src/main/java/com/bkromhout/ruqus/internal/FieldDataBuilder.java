@@ -28,18 +28,18 @@ public class FieldDataBuilder {
     ClassName className;
     HashSet<String> realNames;
     HashMap<String, String> visibleNames;
-    HashMap<String, ClassName> types;
+    HashMap<String, TypeName> types;
     HashMap<String, ClassName> realmListTypes;
 
     FieldDataBuilder(String className) {
-        this.className = ClassName.get(C.GEN_PKG_PREFIX, className + C.FIELD_DATA_SUFFIX);
+        this.className = ClassName.get(C.GEN_PKG, className + C.FIELD_DATA_SUFFIX);
         realNames = new HashSet<>();
         visibleNames = new HashMap<>();
         types = new HashMap<>();
         realmListTypes = new HashMap<>();
     }
 
-    void addField(String realName, String visibleName, ClassName type, ClassName realmListType) {
+    void addField(String realName, String visibleName, TypeName type, ClassName realmListType) {
         if (realNames.add(realName)) {
             visibleNames.put(realName, visibleName);
             types.put(realName, type);
@@ -112,25 +112,26 @@ public class FieldDataBuilder {
         CodeBlock.Builder staticBlockBuilder = CodeBlock.builder();
 
         // Loop through real names.
-        String addRealNameStmt = "$S.add($S)";
-        staticBlockBuilder.add("// Add real field names.");
+        String addRealNameStmt = "$L.add($S)";
+        staticBlockBuilder.add("// Add real field names.\n");
         for (String string : realNames) staticBlockBuilder.addStatement(addRealNameStmt, REAL_FIELD_NAMES, string);
 
         // Loop through visible names.
-        String addVisibleNameStmt = "$S.put($S, $S)";
-        staticBlockBuilder.add("// Add visible field names.");
+        String addVisibleNameStmt = "$L.put($S, $S)";
+        staticBlockBuilder.add("// Add visible field names.\n");
         for (Map.Entry<String, String> entry : visibleNames.entrySet())
             staticBlockBuilder.addStatement(addVisibleNameStmt, VISIBLE_FIELD_NAMES, entry.getKey(), entry.getValue());
 
         // Loop through types.
-        String addTypeStmt = "$S.put($S, $T.class)";
-        staticBlockBuilder.add("// Add field types.");
-        for (Map.Entry<String, ClassName> entry : types.entrySet())
-            staticBlockBuilder.addStatement(addTypeStmt, TYPES, entry.getKey(), entry.getValue());
+        String addTypeStmt = "$L.put($S, $T.class)";
+        staticBlockBuilder.add("// Add field types.\n");
+        for (Map.Entry<String, TypeName> entry : types.entrySet())
+            staticBlockBuilder.addStatement(addTypeStmt, TYPES, entry.getKey(),
+                    entry.getValue().toString().contains("RealmList") ? TypeNames.REALM_LIST : entry.getValue());
 
         // Loop through realm list types.
-        String addRealmListTypeStmt = "$S.put($S, $T.class)";
-        staticBlockBuilder.add("// For fields of RealmList type, add the RealmList types.");
+        String addRealmListTypeStmt = "$L.put($S, $T.class)";
+        staticBlockBuilder.add("// For fields of RealmList type, add the RealmList types.\n");
         for (Map.Entry<String, ClassName> entry : realmListTypes.entrySet())
             staticBlockBuilder.addStatement(addRealmListTypeStmt, REALM_LIST_TYPES, entry.getKey(), entry.getValue());
 
@@ -146,7 +147,7 @@ public class FieldDataBuilder {
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                          .returns(TypeNames.STRING_ARRAY_LIST)
-                         .addStatement("return new $T($S)", TypeNames.STRING_ARRAY_LIST, REAL_FIELD_NAMES)
+                         .addStatement("return new $T($L)", TypeNames.STRING_ARRAY_LIST, REAL_FIELD_NAMES)
                          .build();
     }
 
@@ -155,7 +156,7 @@ public class FieldDataBuilder {
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                          .returns(TypeNames.STRING_ARRAY_LIST)
-                         .addStatement("return new $T($S.values())", TypeNames.STRING_ARRAY_LIST, VISIBLE_FIELD_NAMES)
+                         .addStatement("return new $T($L.values())", TypeNames.STRING_ARRAY_LIST, VISIBLE_FIELD_NAMES)
                          .build();
     }
 
@@ -166,7 +167,7 @@ public class FieldDataBuilder {
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                          .returns(TypeNames.STRING)
                          .addParameter(TypeNames.STRING, paramName)
-                         .addStatement("return $S.get($S)", VISIBLE_FIELD_NAMES, paramName)
+                         .addStatement("return $L.get($L)", VISIBLE_FIELD_NAMES, paramName)
                          .build();
     }
 
@@ -177,7 +178,7 @@ public class FieldDataBuilder {
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                          .returns(TypeNames.ANY_CLASS)
                          .addParameter(TypeNames.STRING, paramName)
-                         .addStatement("return $S.get($S)", TYPES, paramName)
+                         .addStatement("return $L.get($L)", TYPES, paramName)
                          .build();
     }
 
@@ -186,9 +187,9 @@ public class FieldDataBuilder {
         return MethodSpec.methodBuilder(REALM_LIST_TYPE)
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                         .returns(TypeNames.ANY_CLASS)
+                         .returns(TypeNames.ANY_REALM_OBJ_CLASS)
                          .addParameter(TypeNames.STRING, paramName)
-                         .addStatement("return $S.get($S)", REALM_LIST_TYPES, paramName)
+                         .addStatement("return $L.get($L)", REALM_LIST_TYPES, paramName)
                          .build();
     }
 
@@ -199,7 +200,7 @@ public class FieldDataBuilder {
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                          .returns(TypeName.BOOLEAN)
                          .addParameter(TypeNames.STRING, paramName)
-                         .addStatement("return $S($S).isInstance($T)", FIELD_TYPE, paramName, TypeNames.REALM_OBJ)
+                         .addStatement("return $L($L).isInstance($T.class)", FIELD_TYPE, paramName, TypeNames.REALM_OBJ)
                          .build();
     }
 
@@ -210,7 +211,7 @@ public class FieldDataBuilder {
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                          .returns(TypeName.BOOLEAN)
                          .addParameter(TypeNames.STRING, paramName)
-                         .addStatement("return $S.containsKey($S)", REALM_LIST_TYPES, paramName)
+                         .addStatement("return $L.containsKey($L)", REALM_LIST_TYPES, paramName)
                          .build();
     }
 
