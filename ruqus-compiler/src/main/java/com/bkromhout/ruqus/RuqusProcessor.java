@@ -72,7 +72,6 @@ public class RuqusProcessor extends AbstractProcessor {
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> types = new LinkedHashSet<>();
 
-        messager.printMessage(Diagnostic.Kind.NOTE, Transformer.class.getCanonicalName());
         // Our annotations.
         types.add(Queryable.class.getCanonicalName());
         types.add(Hide.class.getCanonicalName());

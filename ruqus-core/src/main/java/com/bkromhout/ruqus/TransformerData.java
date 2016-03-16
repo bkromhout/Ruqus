@@ -33,6 +33,10 @@ public abstract class TransformerData {
      */
     protected static HashMap<String, Class<? extends RUQTransformer>> classMap = new HashMap<>();
 
+    static {
+        // TODO manually add the built-in transformers' data.
+    }
+
     /**
      * Get a list of all normal transformers' real names.
      * @return List of normal transformer names.
