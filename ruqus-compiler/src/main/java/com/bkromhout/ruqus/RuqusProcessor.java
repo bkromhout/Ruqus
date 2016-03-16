@@ -401,6 +401,15 @@ public class RuqusProcessor extends AbstractProcessor {
      * @return JavaFile.
      */
     private JavaFile brewTransformerDataFile() {
+        String genClassName = nextTDataClassName();
+        TypeName genClassType = ClassName.get(C.GEN_PKG, genClassName);
+
+        // Build static instance var.
+        FieldSpec instanceField = FieldSpec.builder(TypeNames.TRANS_DATA_CLASS, "INSTANCE",
+                Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                                           .initializer("new $T()", genClassType)
+                                           .build();
+
         // Build static init block.
         CodeBlock.Builder staticBlockBuilder = CodeBlock.builder();
 
@@ -442,9 +451,10 @@ public class RuqusProcessor extends AbstractProcessor {
         CodeBlock staticBlock = staticBlockBuilder.build();
 
         // Build class.
-        TypeSpec clazz = TypeSpec.classBuilder(C.GEN_TRANSFORMER_DATA_CLASS_NAME)
+        TypeSpec clazz = TypeSpec.classBuilder(genClassName)
                                  .superclass(TypeNames.TRANS_DATA_CLASS)
                                  .addModifiers(Modifier.FINAL)
+                                 .addField(instanceField)
                                  .addStaticBlock(staticBlock)
                                  .build();
 
@@ -454,6 +464,21 @@ public class RuqusProcessor extends AbstractProcessor {
                        .build();
     }
 
+    private String nextTDataClassName() {
+        // Figure out what number we'll need to append to the end of the class name.
+        String base = C.GEN_PKG_PREFIX + C.GEN_TRANSFORMER_DATA_CLASS_NAME;
+        int num = 1;
+        while (true) {
+            try {
+                Class.forName(base + String.valueOf(num));
+            } catch (ClassNotFoundException e) {
+                // This class isn't already taken, so we can generate it. Break out of this loop.
+                return C.GEN_TRANSFORMER_DATA_CLASS_NAME + String.valueOf(num);
+            }
+            num++;
+        }
+    }
+
     private boolean isValidTransformerClass(TypeElement classElement) {
         // Must be public and non-abstract.
         boolean validMods = classElement.getModifiers().contains(Modifier.PUBLIC) &&
@@ -461,7 +486,8 @@ public class RuqusProcessor extends AbstractProcessor {
         if (isSubtypeOfType(classElement.asType(), TypeNames.RUQ_TRANS_CLASS.toString())) return validMods;
         else {
             error(classElement, "Skipping \"%s\" because transformer classes must extend (either directly or " +
-                    "indirectly) %s.", ClassName.get(classElement).toString(), TypeNames.RUQ_TRANS_CLASS.toString());
+                            "indirectly) %s, but instead it extends %s.", ClassName.get(classElement).toString(),
+                    TypeNames.RUQ_TRANS_CLASS.toString(), classElement.getSuperclass().toString());
             return false;
         }
     }

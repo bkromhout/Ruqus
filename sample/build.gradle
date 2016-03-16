@@ -33,4 +33,5 @@ dependencies {
 
     apt project(':ruqus-compiler')
     compile project(':ruqus-core')
+    compile 'com.jakewharton:butterknife:7.0.1'
 }

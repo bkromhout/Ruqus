@@ -35,7 +35,7 @@ public abstract class ClassData {
      * Get a list of real class names.
      * @return List of real class names.
      */
-    public static ArrayList<String> getClassNames() {
+    public ArrayList<String> getNames() {
         return new ArrayList<>(realNames);
     }
 
@@ -44,7 +44,7 @@ public abstract class ClassData {
      * @param queryableOnly If true, only include names of classes which were annotated with {@link Queryable}.
      * @return List of human-readable class names.
      */
-    public static ArrayList<String> getVisibleNames(boolean queryableOnly) {
+    public ArrayList<String> getVisibleNames(boolean queryableOnly) {
         if (queryableOnly) {
             ArrayList<String> vNames = new ArrayList<>(queryable.size());
             for (String string : queryable) vNames.add(visibleNameOf(string));
@@ -58,7 +58,7 @@ public abstract class ClassData {
      * Get the actual class object for this class.
      * @return Class object.
      */
-    public static Class<? extends RealmObject> getClassObj(String realName) {
+    public Class<? extends RealmObject> getClassObj(String realName) {
         return classMap.get(realName);
     }
 
@@ -67,7 +67,7 @@ public abstract class ClassData {
      * @param clazz Class.
      * @return Human-readable name.
      */
-    public static String visibleNameOf(Class<? extends RealmObject> clazz) {
+    public String visibleNameOf(Class<? extends RealmObject> clazz) {
         return visibleNameOf(clazz.getSimpleName());
     }
 
@@ -76,7 +76,7 @@ public abstract class ClassData {
      * @param realName Real class name.
      * @return Human-readable name.
      */
-    public static String visibleNameOf(String realName) {
+    public String visibleNameOf(String realName) {
         return visibleNames.get(realName);
     }
 
@@ -84,7 +84,7 @@ public abstract class ClassData {
      * @param clazz Class
      * @return Whether or not the class was annotated with {@link Queryable}.
      */
-    public static boolean isQueryable(Class<? extends RealmObject> clazz) {
+    public boolean isQueryable(Class<? extends RealmObject> clazz) {
         return isQueryable(clazz.getSimpleName());
     }
 
@@ -92,7 +92,7 @@ public abstract class ClassData {
      * @param realName Real class name.
      * @return Whether or not a class was annotated with {@link Queryable}.
      */
-    public static boolean isQueryable(String realName) {
+    public boolean isQueryable(String realName) {
         return queryable.contains(realName);
     }
 
@@ -101,7 +101,7 @@ public abstract class ClassData {
      * @param clazz Class to get field data for.
      * @return Class's field data.
      */
-    public static FieldData getFieldData(Class<? extends RealmObject> clazz) {
+    public FieldData getFieldData(Class<? extends RealmObject> clazz) {
         return getFieldData(clazz.getSimpleName());
     }
 
@@ -110,7 +110,7 @@ public abstract class ClassData {
      * @param realName Real class name.
      * @return Class's field data.
      */
-    public static FieldData getFieldData(String realName) {
+    public FieldData getFieldData(String realName) {
         return fieldDatas.get(realName);
     }
 }

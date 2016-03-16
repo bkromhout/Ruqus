@@ -2,6 +2,7 @@ package com.bkromhout.ruqus.sample;
 
 import android.app.Application;
 import android.content.Context;
+import com.bkromhout.ruqus.Ruqus;
 
 /**
  * Custom Application Class.
@@ -13,6 +14,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        Ruqus.init();
     }
 
     public static Context getAppCtx() {

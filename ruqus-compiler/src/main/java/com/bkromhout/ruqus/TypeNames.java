@@ -1,9 +1,6 @@
 package com.bkromhout.ruqus;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.WildcardTypeName;
+import com.squareup.javapoet.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +24,8 @@ final class TypeNames {
     static final ClassName CLASS_DATA_CLASS = ClassName.get(C.GEN_PKG, C.CLASS_DATA);
     static final ClassName FIELD_DATA_CLASS = ClassName.get(C.GEN_PKG, C.FIELD_DATA);
     static final ClassName TRANS_DATA_CLASS = ClassName.get(C.GEN_PKG, C.TRANSFORMER_DATA);
-    static final ClassName RUQ_TRANS_CLASS = ClassName.get(C.GEN_PKG, C.RUQ_TRANSFORMER);
+    static final TypeName RUQ_TRANS_CLASS = ParameterizedTypeName.get(ClassName.get(C.GEN_PKG, C.RUQ_TRANSFORMER),
+            TypeVariableName.get("T"));
 
     // First-level Parameterized types
     static final TypeName ANY_CLASS = ParameterizedTypeName.get(CLASS, WildcardTypeName.subtypeOf(TypeName.OBJECT));

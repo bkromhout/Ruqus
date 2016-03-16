@@ -107,7 +107,7 @@ public class Condition {
      */
     private boolean areArgsValid() {
         if (type != Type.NORMAL) return true;
-        int numArgs = TransformerData.numArgsOf(transformer);
+        int numArgs = Ruqus.getTransformerData().numArgsOf(transformer);
         if (numArgs == C.VAR_ARGS) return fieldType != null && args != null && args.length > 0;
         else if (numArgs == 0) return true;
         else if (numArgs > 0) {
