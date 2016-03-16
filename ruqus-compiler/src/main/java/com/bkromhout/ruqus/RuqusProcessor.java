@@ -46,25 +46,6 @@ public class RuqusProcessor extends AbstractProcessor {
     private static HashMap<String, ClassName> tClassMap;
 
     @Override
-    public Set<String> getSupportedAnnotationTypes() {
-        return new HashSet<String>() {{
-            // Our annotations.
-            add(Queryable.class.getCanonicalName());
-            add(Hide.class.getCanonicalName());
-            add(VisibleAs.class.getCanonicalName());
-            add(Transformer.class.getCanonicalName());
-            // Realm annotations.
-            add(RealmClass.class.getCanonicalName());
-            add(Ignore.class.getCanonicalName());
-        }};
-    }
-
-    @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latestSupported();
-    }
-
-    @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         instance = this;
@@ -85,6 +66,28 @@ public class RuqusProcessor extends AbstractProcessor {
         visibleNATNames = new HashMap<>();
         numArgsMap = new HashMap<>();
         tClassMap = new HashMap<>();
+    }
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        Set<String> types = new LinkedHashSet<>();
+
+        messager.printMessage(Diagnostic.Kind.NOTE, Transformer.class.getCanonicalName());
+        // Our annotations.
+        types.add(Queryable.class.getCanonicalName());
+        types.add(Hide.class.getCanonicalName());
+        types.add(VisibleAs.class.getCanonicalName());
+        types.add(Transformer.class.getCanonicalName());
+        // Realm annotations.
+        types.add(RealmClass.class.getCanonicalName());
+        types.add(Ignore.class.getCanonicalName());
+
+        return types;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.RELEASE_7;
     }
 
     @Override

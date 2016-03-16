@@ -1,8 +1,8 @@
 package com.bkromhout.ruqus.transformers;
 
 import com.bkromhout.ruqus.Condition;
-import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
+import com.bkromhout.ruqus.RUQTransformer;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 
