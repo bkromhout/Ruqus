@@ -89,22 +89,27 @@ public class Condition {
     public boolean isValid() {
         switch (type) {
             case NORMAL:
-                return validStr(realmClass) && Ruqus.knowsOfClass(realmClass) && isFieldDataValid() &&
-                        transformer != null && areArgsValid();
+                return isRealmClassValid() && isFieldDataValid() && isTransformerValid() && areArgsValid();
             case NO_ARG:
             case BEGIN_GROUP:
             case END_GROUP:
             case OR:
-                return transformer != null && areArgsValid();
+                return isRealmClassValid() && isTransformerValid() && areArgsValid();
             default:
                 return false;
         }
     }
 
     /**
-     * Checks that:<ul> <li>{@link #realmClass}, {@link #field}, and {@link #fieldType} are all non-null/non-empty.</li>
-     * <li>{@link #realmClass} has a field called {@link #field}.</li> <li>{@link #field} is of type {@link
-     * #fieldType}.</li> </ul>
+     * Checks that {@code realmClass} is non-null and non-empty, and that Ruqus has data for it.
+     * @return True if conditions are met, otherwise false.
+     */
+    private boolean isRealmClassValid() {
+        return validStr(realmClass) && Ruqus.knowsOfClass(realmClass);
+    }
+
+    /**
+     * Checks that {@code field} is valid given the current state.
      * @return True if conditions are met, otherwise false.
      */
     private boolean isFieldDataValid() {
@@ -114,9 +119,16 @@ public class Condition {
     }
 
     /**
-     * Whether or not the condition arguments are valid given the current condition type, the field type, and the number
-     * of arguments the transformer needs.
-     * @return True if {@link #args} satisfies the checks, otherwise false.
+     * Checks that {@code transformer} is valid given the current state.
+     * @return True if conditions are met, otherwise false.
+     */
+    private boolean isTransformerValid() {
+        return validStr(transformer) && (type != Type.NORMAL || Ruqus.transformerAcceptsType(transformer, fieldType));
+    }
+
+    /**
+     * Checks that {@code args} is valid given the current state.
+     * @return True if conditions are met, otherwise false.
      */
     private boolean areArgsValid() {
         if (type != Type.NORMAL) return true;
@@ -151,7 +163,7 @@ public class Condition {
     public void setRealmClass(String realmClass) {
         this.realmClass = realmClass;
         // Also try to figure out the field type, if field is already set.
-        resolveFieldType();
+        tryResolveFieldType();
     }
 
     public String getField() {
@@ -163,14 +175,14 @@ public class Condition {
             throw new IllegalArgumentException("Condition type must be NORMAL to set the field.");
         this.field = field;
         // Also figure out what the field type is and set that.
-        resolveFieldType();
+        tryResolveFieldType();
     }
 
     public Class<?> getFieldType() {
         return fieldType;
     }
 
-    private void resolveFieldType() {
+    private void tryResolveFieldType() {
         if (type != Type.NORMAL) return;
         // We can only do this if we have both the realmClass and the field name.
         if (realmClass == null || realmClass.isEmpty() || field == null || field.isEmpty()) return;

@@ -119,6 +119,17 @@ public class Ruqus {
     }
 
     /**
+     * Whether or not the transformer whose name is {@code transformerName} accepts the given {@code type}.
+     * @param transformerName Real name of a normal transformer.
+     * @param type            Type to check for.
+     * @return True if the transformer with the given name accepts the given type, otherwise false.
+     */
+    public static boolean transformerAcceptsType(String transformerName, Class type) {
+        ensureInit();
+        return INSTANCE.transformerData.acceptsType(transformerName, type);
+    }
+
+    /**
      * Convenience method for throwing an IllegalArgumentException with a formatted string.
      */
     public static IllegalArgumentException ex(String format, Object... args) {

@@ -122,6 +122,16 @@ public abstract class TransformerData {
     }
 
     /**
+     * Whether or not the transformer whose name is {@code transformerName} accepts the given {@code type}.
+     * @param transformerName Real name of a normal transformer.
+     * @param type            Type to check for.
+     * @return True if the transformer with the given name accepts the given type, otherwise false.
+     */
+    public boolean acceptsType(String transformerName, Class type) {
+        return typesToNames.containsKey(type) && typesToNames.get(type).contains(transformerName);
+    }
+
+    /**
      * Get the class object for the transformer whose real name is {@code transformerName}.
      * @param transformerName Real transformer name (Can be a normal or no arg transformer).
      * @return Transformer class.
