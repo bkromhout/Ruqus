@@ -75,10 +75,14 @@ public abstract class TransformerData {
         return new ArrayList<>(visibleNames.values());
     }
 
-    public ArrayList<String> getVisibleNames(Class acceptedType) {
-        ArrayList<String> vNames = new ArrayList<>();
-        for (String name : getNames(acceptedType)) vNames.add(visibleNameOf(name, false));
-        return vNames;
+    /**
+     * Get a list of all normal transformers' visible names which accept the given {@code type}.
+     * @param typeAccepted Type which transformers whose visible names are returned must accept.
+     * @return List of normal transformer visible names which accept {@code typeAccepted}. Might be empty.
+     */
+    public ArrayList<String> getVisibleNames(Class typeAccepted) {
+        return typesToVisibleNames.containsKey(typeAccepted) ? new ArrayList<>(typesToVisibleNames.get(typeAccepted)) :
+                new ArrayList<String>();
     }
 
     /**

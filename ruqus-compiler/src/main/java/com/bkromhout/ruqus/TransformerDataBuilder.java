@@ -219,13 +219,24 @@ public class TransformerDataBuilder {
         for (Map.Entry<String, ClassName> entry : classMap.entrySet())
             staticBlockBuilder.addStatement(addClassStmt, entry.getKey(), entry.getValue());
 
-        // Loop through valid types map.
-        staticBlockBuilder.add("// Map types to the transformers which accept them.\n");
+        // Loop through valid types to names map.
+        staticBlockBuilder.add("// Map types to the names of transformers which accept them.\n");
         for (Map.Entry<ClassName, HashSet<String>> entry : typesMap.entrySet()) {
             staticBlockBuilder.add("typesToNames.put($T.class, new HashSet<String>() {{\n", entry.getKey())
                               .indent();
             // Add the names of transformers for this type.
             for (String s : entry.getValue()) staticBlockBuilder.addStatement("add($S)", s);
+            staticBlockBuilder.unindent()
+                              .add("}});\n");
+        }
+
+        // Loop through valid types to visible names map.
+        staticBlockBuilder.add("// Map types to the visible names of transformers which accept them.\n");
+        for (Map.Entry<ClassName, HashSet<String>> entry : typesMap.entrySet()) {
+            staticBlockBuilder.add("typesToVisibleNames.put($T.class, new HashSet<String>() {{\n", entry.getKey())
+                              .indent();
+            // Add the names of transformers for this type.
+            for (String s : entry.getValue()) staticBlockBuilder.addStatement("add($S)", visibleNames.get(s));
             staticBlockBuilder.unindent()
                               .add("}});\n");
         }
