@@ -18,4 +18,9 @@ public class C {
     public static final String FIELD_DATA_SUFFIX = "$$RuqusFieldData";
     public static final String GEN_CLASS_DATA_CLASS_NAME = RUQUS_NAME + "$$RuqusClassData";
     public static final String GEN_TRANSFORMER_DATA_CLASS_NAME = RUQUS_NAME + "$$RuqusTransformerData";
+
+    /**
+     * Designates that a transformer may have a variable number of arguments.
+     */
+    public static final int VAR_ARGS = -1;
 }

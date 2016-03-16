@@ -11,10 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface Transformer {
-    /**
-     * Designates that a transformer may have a variable number of arguments.
-     */
-    int VAR_ARGS = -1;
 
     // TODO have a field-only constant?
 
@@ -32,7 +28,7 @@ public @interface Transformer {
      * verifying that the types of those arguments match that of the field.
      * <p/>
      * By default this is 1, but developers can override it if need be. All integers >= 0 are allowed.<br>If you wish to
-     * have a variable number of arguments, set this to {@link Transformer#VAR_ARGS}, but be aware that Ruqus will not
+     * have a variable number of arguments, set this to {@link C#VAR_ARGS}, but be aware that Ruqus will not
      * check that the {@code Condition}'s argument types match its field's type if you do this, you will have to do it
      * yourself in your transformer.
      */

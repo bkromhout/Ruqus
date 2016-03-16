@@ -1,1 +1,1 @@
-include ':sample', ':ruqus-compiler', ':ruqus-core', ':ruqus-annotations'
+include ':ruqus-annotations', ':ruqus-compiler', ':ruqus-core', ':sample'
