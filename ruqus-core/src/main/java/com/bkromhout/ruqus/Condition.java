@@ -89,7 +89,8 @@ public class Condition {
     public boolean isValid() {
         switch (type) {
             case NORMAL:
-                return realmClass != null && field != null && transformer != null && areArgsValid();
+                return validStr(realmClass) && Ruqus.knowsOfClass(realmClass) && isFieldDataValid() &&
+                        transformer != null && areArgsValid();
             case NO_ARG:
             case BEGIN_GROUP:
             case END_GROUP:
@@ -98,6 +99,18 @@ public class Condition {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Checks that:<ul> <li>{@link #realmClass}, {@link #field}, and {@link #fieldType} are all non-null/non-empty.</li>
+     * <li>{@link #realmClass} has a field called {@link #field}.</li> <li>{@link #field} is of type {@link
+     * #fieldType}.</li> </ul>
+     * @return True if conditions are met, otherwise false.
+     */
+    private boolean isFieldDataValid() {
+        // We need to have a non-null/non-empty realmClass, field, and field type to even check this.
+        return validStr(realmClass) && validStr(field) && fieldType != null && Ruqus.classHasField(realmClass,
+                field) && Ruqus.fieldIsOfType(realmClass, field, fieldType);
     }
 
     /**
@@ -137,6 +150,8 @@ public class Condition {
 
     public void setRealmClass(String realmClass) {
         this.realmClass = realmClass;
+        // Also try to figure out the field type, if field is already set.
+        resolveFieldType();
     }
 
     public String getField() {
@@ -147,16 +162,19 @@ public class Condition {
         if (type != Type.NORMAL)
             throw new IllegalArgumentException("Condition type must be NORMAL to set the field.");
         this.field = field;
+        // Also figure out what the field type is and set that.
+        resolveFieldType();
     }
 
     public Class<?> getFieldType() {
         return fieldType;
     }
 
-    public void setFieldType(Class<?> fieldType) {
-        if (type != Type.NORMAL)
-            throw new IllegalArgumentException("Condition type must be NORMAL to set the field type.");
-        this.fieldType = fieldType;
+    private void resolveFieldType() {
+        if (type != Type.NORMAL) return;
+        // We can only do this if we have both the realmClass and the field name.
+        if (realmClass == null || realmClass.isEmpty() || field == null || field.isEmpty()) return;
+
     }
 
     public Object[] getArgs() {
@@ -194,5 +212,14 @@ public class Condition {
             default:
                 this.transformer = transformer;
         }
+    }
+
+    /**
+     * Convenience method to ensure that a string is non-null and non-empty.
+     * @param s String to check.
+     * @return True if checks pass, otherwise false.
+     */
+    private static boolean validStr(String s) {
+        return s != null && !s.isEmpty();
     }
 }

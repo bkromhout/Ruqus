@@ -9,7 +9,7 @@ import io.realm.RealmQuery;
 /**
  * Transformer which wraps {@link RealmQuery#or()}.
  */
-@Transformer(name = Names.OR, numArgs = 0, isNoArg = true)
+@Transformer(name = Names.OR, numArgs = 0, isNoArgs = true)
 public class Or<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

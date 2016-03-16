@@ -9,7 +9,7 @@ import io.realm.RealmQuery;
 /**
  * Transformer which wraps {@link RealmQuery#beginGroup()}.
  */
-@Transformer(name = Names.BEGIN_GROUP, numArgs = 0, isNoArg = true)
+@Transformer(name = Names.BEGIN_GROUP, numArgs = 0, isNoArgs = true)
 public class BeginGroup<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

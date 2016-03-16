@@ -32,6 +32,14 @@ public abstract class TransformerData {
      * Maps all transformers' names to their classes.
      */
     protected static HashMap<String, Class<? extends RUQTransformer>> classMap = new HashMap<>();
+    /**
+     * Maps types to the transformers which accept those types.
+     */
+    protected static HashMap<Class, HashSet<String>> typesToNames = new HashMap<>();
+    /**
+     * Maps types to the visible names of transformers which accept those types.
+     */
+    protected static HashMap<Class, HashSet<String>> typesToVisibleNames = new HashMap<>();
 
     /**
      * Get a list of all normal transformers' real names.
@@ -39,6 +47,16 @@ public abstract class TransformerData {
      */
     public ArrayList<String> getNames() {
         return new ArrayList<>(realNames);
+    }
+
+    /**
+     * Get a list of all normal transformers' real names which accept the given {@code type}.
+     * @param typeAccepted Type which transformers whose names are returned must accept.
+     * @return List of normal transformer names which accept {@code typeAccepted}. Might be empty.
+     */
+    public ArrayList<String> getNames(Class typeAccepted) {
+        return typesToNames.containsKey(typeAccepted) ? new ArrayList<>(typesToNames.get(typeAccepted)) :
+                new ArrayList<String>();
     }
 
     /**
@@ -55,6 +73,12 @@ public abstract class TransformerData {
      */
     public ArrayList<String> getVisibleNames() {
         return new ArrayList<>(visibleNames.values());
+    }
+
+    public ArrayList<String> getVisibleNames(Class acceptedType) {
+        ArrayList<String> vNames = new ArrayList<>();
+        for (String name : getNames(acceptedType)) vNames.add(visibleNameOf(name, false));
+        return vNames;
     }
 
     /**

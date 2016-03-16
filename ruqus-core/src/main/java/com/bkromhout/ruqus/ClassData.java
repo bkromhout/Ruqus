@@ -81,6 +81,15 @@ public abstract class ClassData {
     }
 
     /**
+     * Check that Ruqus recognizes and has data for a RealmObject subclass called {@code realName}.
+     * @param realName Real name of a RealmObject subclass.
+     * @return True if we know about the class with the given name, otherwise false.
+     */
+    public boolean isValidName(String realName) {
+        return realNames.contains(realName);
+    }
+
+    /**
      * @param clazz Class
      * @return Whether or not the class was annotated with {@link Queryable}.
      */
