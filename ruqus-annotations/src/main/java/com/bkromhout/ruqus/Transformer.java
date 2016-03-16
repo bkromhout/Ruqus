@@ -23,15 +23,6 @@ public @interface Transformer {
     String name();
 
     /**
-     * Array of classes which represent the type(s) which this transformer will accept for its arguments.<br>For
-     * example, if a transformer wraps the {@code between()} method on {@code RealmQuery}, this should be
-     * <code>{Date.class, Double.class, Float.class, Integer.class, Long.class}</code>; if it wraps {@code
-     * beginsWith()}, this should be <code>{String.class}</code>; etc.<br>This may be set to {@code null} if {@code
-     * numArgs = 0}, and it is ignored for no-arg transformers.
-     */
-    Class[] validArgTypes();
-
-    /**
      * The number of arguments this transformer takes (not including the field itself). Ruqus uses this number to verify
      * that enough arguments are present in the {@code Condition} before it is passed to the transformer, as well as
      * verifying that the types of those arguments match that of the field.
@@ -52,4 +43,13 @@ public @interface Transformer {
      * developers will have no need for this.
      */
     boolean isNoArgs() default false;
+
+    /**
+     * Array of classes which represent the type(s) which this transformer will accept for its arguments.<br>For
+     * example, if a transformer wraps the {@code between()} method on {@code RealmQuery}, this should be
+     * <code>{Date.class, Double.class, Float.class, Integer.class, Long.class}</code>; if it wraps {@code
+     * beginsWith()}, this should be <code>{String.class}</code>; etc.<br>This may be set to {@code null} if {@code
+     * numArgs = 0}, and it is ignored for no-arg transformers.
+     */
+    Class[] validArgTypes();
 }

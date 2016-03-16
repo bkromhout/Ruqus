@@ -11,7 +11,8 @@ import java.util.Date;
 /**
  * Transformer which wraps the various {@link RealmQuery} {@code greaterThan()} methods.
  */
-@Transformer(name = Names.GREATER_THAN)
+@Transformer(name = Names.GREATER_THAN, validArgTypes = {Date.class, Double.class, Float.class, Integer.class,
+                                                         Long.class})
 public class GreaterThan<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

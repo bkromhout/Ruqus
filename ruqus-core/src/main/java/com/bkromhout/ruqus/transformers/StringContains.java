@@ -9,7 +9,7 @@ import io.realm.RealmQuery;
 /**
  * Transformer which wraps {@link RealmQuery#contains(String, String)}.
  */
-@Transformer(name = Names.STRING_CONTAINS)
+@Transformer(name = Names.STRING_CONTAINS, validArgTypes = {String.class})
 public class StringContains<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

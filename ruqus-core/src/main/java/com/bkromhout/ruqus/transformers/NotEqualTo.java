@@ -11,7 +11,8 @@ import java.util.Date;
 /**
  * Transformer which wraps the various {@link RealmQuery} {@code notEqualTo()} methods.
  */
-@Transformer(name = Names.NOT_EQUAL_TO)
+@Transformer(name = Names.NOT_EQUAL_TO, validArgTypes = {Boolean.class, Date.class, Double.class, Float.class,
+                                                         Integer.class, Long.class, Short.class, String.class})
 public class NotEqualTo<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

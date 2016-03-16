@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * Transformer which wraps the various {@link RealmQuery} {@code lessThan()} methods.
  */
-@Transformer(name = Names.LESS_THAN)
+@Transformer(name = Names.LESS_THAN, validArgTypes = {Date.class, Double.class, Float.class, Integer.class, Long.class})
 public class LessThan<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

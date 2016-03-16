@@ -9,7 +9,7 @@ import io.realm.RealmQuery;
 /**
  * Transformer which wraps {@link RealmQuery#endGroup()}.
  */
-@Transformer(name = Names.END_GROUP, numArgs = 0, isNoArgs = true)
+@Transformer(name = Names.END_GROUP, numArgs = 0, isNoArgs = true, validArgTypes = {})
 public class EndGroup<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

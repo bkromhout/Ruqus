@@ -1,8 +1,8 @@
 package com.bkromhout.ruqus.transformers;
 
 import com.bkromhout.ruqus.Condition;
-import com.bkromhout.ruqus.Transformer;
 import com.bkromhout.ruqus.RUQTransformer;
+import com.bkromhout.ruqus.Transformer;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 
@@ -11,7 +11,8 @@ import java.util.Date;
 /**
  * Transformer which wraps the various {@link RealmQuery} {@code greaterThanOrEqualTo()} methods.
  */
-@Transformer(name = Names.GREATER_THAN_OR_EQUAL_TO)
+@Transformer(name = Names.GREATER_THAN_OR_EQUAL_TO, validArgTypes = {Date.class, Double.class, Float.class,
+                                                                     Integer.class, Long.class})
 public class GreaterThanOrEqualTo<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

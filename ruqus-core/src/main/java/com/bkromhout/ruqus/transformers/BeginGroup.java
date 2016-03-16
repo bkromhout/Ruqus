@@ -1,15 +1,15 @@
 package com.bkromhout.ruqus.transformers;
 
 import com.bkromhout.ruqus.Condition;
-import com.bkromhout.ruqus.Transformer;
 import com.bkromhout.ruqus.RUQTransformer;
+import com.bkromhout.ruqus.Transformer;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 
 /**
  * Transformer which wraps {@link RealmQuery#beginGroup()}.
  */
-@Transformer(name = Names.BEGIN_GROUP, numArgs = 0, isNoArgs = true)
+@Transformer(name = Names.BEGIN_GROUP, numArgs = 0, isNoArgs = true, validArgTypes = {})
 public class BeginGroup<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
