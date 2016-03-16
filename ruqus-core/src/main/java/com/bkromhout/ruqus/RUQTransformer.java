@@ -5,7 +5,7 @@ import io.realm.RealmQuery;
 
 /**
  * Extenders must provide a way to transform a {@link RealmUserQuery} and also must be annotated with {@link
- * com.bkromhout.ruqus.Transformer}.
+ * Transformer}.
  * <p>
  * Note that Ruqus creates transformers using no-arg constructors.
  */

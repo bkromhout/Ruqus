@@ -26,12 +26,12 @@ final class TypeNames {
     // Ruqus Types.
     static final ClassName CLASS_DATA_CLASS = ClassName.get(C.GEN_PKG, C.CLASS_DATA);
     static final ClassName FIELD_DATA_CLASS = ClassName.get(C.GEN_PKG, C.FIELD_DATA);
+    static final ClassName TRANS_DATA_CLASS = ClassName.get(C.GEN_PKG, C.TRANSFORMER_DATA);
     static final ClassName RUQ_TRANS_CLASS = ClassName.get(C.GEN_PKG, C.RUQ_TRANSFORMER);
 
     // First-level Parameterized types
     static final TypeName ANY_CLASS = ParameterizedTypeName.get(CLASS, WildcardTypeName.subtypeOf(TypeName.OBJECT));
     static final TypeName ANY_REALM_OBJ_CLASS = ParameterizedTypeName.get(CLASS, WildcardTypeName.subtypeOf(REALM_OBJ));
-    static final TypeName ANY_RUQ_TRANS_CLASS = ParameterizedTypeName.get(CLASS, RUQ_TRANS_CLASS);
 
     // Second-level Parameterized types.
     static final TypeName S_ARRAY_LIST = ParameterizedTypeName.get(ClassName.get(ArrayList.class), STRING);
@@ -40,6 +40,4 @@ final class TypeNames {
     static final TypeName S_ANY_CLASS_HASH_MAP = ParameterizedTypeName.get(HASH_MAP, STRING, ANY_CLASS);
     static final TypeName S_ANY_REALM_OBJ_CLASS_HASH_MAP = ParameterizedTypeName.get(HASH_MAP, STRING,
             ANY_REALM_OBJ_CLASS);
-    static final TypeName S_ANY_RUQ_TRANS_CLASS_HASH_MAP = ParameterizedTypeName.get(HASH_MAP, STRING,
-            ANY_RUQ_TRANS_CLASS);
 }

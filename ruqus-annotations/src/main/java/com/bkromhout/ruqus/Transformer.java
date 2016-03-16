@@ -1,15 +1,13 @@
 package com.bkromhout.ruqus;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Indicates that a class provides a transformation for a RealmUserQuery.
  * <p/>
  * Classes annotated with this must also extend {@code RUQTransformer}.
  */
+@Documented
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface Transformer {

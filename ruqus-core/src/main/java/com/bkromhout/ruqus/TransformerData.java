@@ -76,11 +76,12 @@ public abstract class TransformerData {
 
     /**
      * Get the visible name for the transformer whose real name is {@code transformerName}.
-     * @param transformerName Real transformer name (Can be a normal or no arg transformer).
+     * @param transformerName Real transformer name.
+     * @param isNoArgs        If {@code transformerName} is the name of a no-args transformer or not.
      * @return Visible name.
      */
-    public static String visibleNameOf(String transformerName) {
-        return visibleNames.get(transformerName);
+    public static String visibleNameOf(String transformerName, boolean isNoArgs) {
+        return isNoArgs ? visibleNoArgNames.get(transformerName) : visibleNames.get(transformerName);
     }
 
     /**

@@ -1,8 +1,8 @@
--keep class **$$RQV { *; }
--keep class com.bkromhout.rqv.** { *; }
+-keep class **$$Ruqus** { *; }
+-keep class com.bkromhout.ruqus.** { *; }
 -keepclasseswithmembers class * {
-    @com.bkromhout.rqv.* <fields>;
+    @com.bkromhout.ruqus.* <fields>;
 }
 -keepclasseswithmembers class * {
-    @com.bkromhout.rqv.* <methods>;
+    @com.bkromhout.ruqus.* <methods>;
 }
