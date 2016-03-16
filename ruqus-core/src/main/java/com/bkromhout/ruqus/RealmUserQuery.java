@@ -30,7 +30,7 @@ public class RealmUserQuery {
 
     /**
      * Create a new {@link RealmUserQuery} from a string version of a realm user query.
-     * @param ruqString A string obtained from {@link #getInternalRuqString()}.
+     * @param ruqString A string obtained from {@link #toRuqString()}.
      */
     public RealmUserQuery(String ruqString) {
         conditions = new ArrayList<>();
@@ -101,22 +101,27 @@ public class RealmUserQuery {
 
     /**
      * Get a human-readable version of this query, suitable for displaying for the user.
+     * <p/>
+     * This will return null if the query isn't currently valid.
      * @return Human-readable query string.
      */
-    public String getUserVisibleRuqString() {
-        // TODO
-        return null;
+    @Override
+    public String toString() {
+        if (!isQueryValid()) return null;
+        // TODO.
+        return super.toString();
     }
 
     /**
-     * Get a string which holds all of the information needed create a {@link RealmUserQuery} identical to this one.
-     * This string is not something which should be shown to users, it's intended to be stored somewhere so that it can
+     * Get a string which holds all of the information needed to create a {@link RealmUserQuery} identical to this one.
+     * This string is not something which should be shown to users, it is intended to be stored somewhere so that it can
      * be used to recreate this query again later.
      * <p/>
-     * This will return null if the query isn't currently in a valid state, so be careful.
+     * This will return null if the query isn't currently in a valid state.
      * @return Internal string representation of this query.
      */
-    public String getInternalRuqString() {
+    public String toRuqString() {
+        if (!isQueryValid()) return null;
         // TODO
         return null;
     }
@@ -126,6 +131,7 @@ public class RealmUserQuery {
      * @return RealmResults, or null if query is invalid.
      */
     public <E extends RealmObject> RealmResults<E> execute() {
+        if (!isQueryValid()) return null;
         // TODO who knows if this is even legal...
         return (RealmResults<E>) RUQExecutor.get(queryType, this).executeQuery();
     }

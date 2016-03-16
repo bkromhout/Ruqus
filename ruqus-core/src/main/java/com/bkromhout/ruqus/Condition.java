@@ -234,4 +234,16 @@ public class Condition {
     private static boolean validStr(String s) {
         return s != null && !s.isEmpty();
     }
+
+    /**
+     * Return a human readable version of this condition.
+     * @return Human-readable condition string, or null if not valid.
+     */
+    @Override
+    public String toString() {
+        // TODO.
+        return super.toString();
+    }
+
+    // TODO internal string method.
 }
