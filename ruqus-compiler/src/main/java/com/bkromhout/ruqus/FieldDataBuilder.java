@@ -21,6 +21,7 @@ public class FieldDataBuilder {
     private static final String VISIBLE_NAME_OF = "visibleNameOf";
     private static final String FIELD_TYPE = "fieldType";
     private static final String REALM_LIST_TYPE = "realmListType";
+    private static final String HAS_FIELD = "hasField";
     private static final String IS_REALM_OBJECT_TYPE = "isRealmObjectType";
     private static final String IS_REALM_LIST_TYPE = "isRealmListType";
 
@@ -61,6 +62,7 @@ public class FieldDataBuilder {
                                  .addMethod(buildVisibleNameOf())
                                  .addMethod(buildFieldType())
                                  .addMethod(buildRealmListType())
+                                 .addMethod(buildHasField())
                                  .addMethod(buildIsRealmObjectType())
                                  .addMethod(buildIsRealmListType())
                                  .build();
@@ -189,6 +191,17 @@ public class FieldDataBuilder {
                          .returns(TypeNames.ANY_REALM_OBJ_CLASS)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $L.get($L)", REALM_LIST_TYPES, paramName)
+                         .build();
+    }
+
+    private MethodSpec buildHasField() {
+        String paramName = "realFieldName";
+        return MethodSpec.methodBuilder(HAS_FIELD)
+                         .addAnnotation(Override.class)
+                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .returns(TypeName.BOOLEAN)
+                         .addParameter(TypeNames.STRING, paramName)
+                         .addStatement("return $L.contains($L)", REAL_FIELD_NAMES, paramName)
                          .build();
     }
 

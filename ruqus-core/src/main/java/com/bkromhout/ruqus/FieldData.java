@@ -44,6 +44,13 @@ public abstract class FieldData {
     public abstract Class<? extends RealmObject> realmListType(String realFieldName);
 
     /**
+     * Whether or not the field whose name is {@code realFieldName} exists.
+     * @param realFieldName Field name to check for.
+     * @return True if field exists, otherwise false.
+     */
+    public abstract boolean hasField(String realFieldName);
+
+    /**
      * @param realFieldName Real field name.
      * @return True if field type extends {@link io.realm.RealmObject}, otherwise false.
      */
@@ -57,7 +64,7 @@ public abstract class FieldData {
 
     /**
      * Get the FieldData object which was generated for the class with the given name.
-     * <p>
+     * <p/>
      * This method uses reflection, for a cached version please call {@link ClassData#getFieldData(String)} instead.
      * @param realClassName Real class name.
      * @return FieldData object.
