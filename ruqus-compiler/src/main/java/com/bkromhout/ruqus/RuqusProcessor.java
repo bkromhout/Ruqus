@@ -91,10 +91,6 @@ public class RuqusProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        messager.printMessage(Diagnostic.Kind.NOTE, String.format("%d", annotations.size()));
-        for (TypeElement t : annotations) {
-            messager.printMessage(Diagnostic.Kind.NOTE, t.toString());
-        }
         // Process classes which extend RealmObject.
         buildClassAndFieldData(roundEnv);
         // Process classes which extend RUQTransformer.
@@ -267,6 +263,7 @@ public class RuqusProcessor extends AbstractProcessor {
                                  .build();
 
         // Build file and return it.
+        messager.printMessage(Diagnostic.Kind.NOTE, "Creating " + TypeNames.CLASS_DATA_CLASS.simpleName());
         return JavaFile.builder(C.GEN_PKG, clazz)
                        .addFileComment(C.GEN_CODE_FILE_COMMENT)
                        .build();
@@ -402,7 +399,7 @@ public class RuqusProcessor extends AbstractProcessor {
      */
     private JavaFile brewTransformerDataFile() {
         String genClassName = nextTDataClassName();
-        TypeName genClassType = ClassName.get(C.GEN_PKG, genClassName);
+        ClassName genClassType = ClassName.get(C.GEN_PKG, genClassName);
 
         // Build static instance var.
         FieldSpec instanceField = FieldSpec.builder(TypeNames.TRANS_DATA_CLASS, "INSTANCE",
@@ -459,6 +456,7 @@ public class RuqusProcessor extends AbstractProcessor {
                                  .build();
 
         // Build file and return it.
+        messager.printMessage(Diagnostic.Kind.NOTE, "Creating " + genClassType.simpleName());
         return JavaFile.builder(C.GEN_PKG, clazz)
                        .addFileComment(C.GEN_CODE_FILE_COMMENT)
                        .build();
