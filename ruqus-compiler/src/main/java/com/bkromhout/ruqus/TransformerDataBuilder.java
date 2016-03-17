@@ -1,6 +1,7 @@
 package com.bkromhout.ruqus;
 
 import com.google.auto.common.MoreElements;
+import com.google.auto.common.MoreTypes;
 import com.google.auto.common.SuperficialValidation;
 import com.squareup.javapoet.*;
 
@@ -11,13 +12,11 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Processes all classes annotated with {@link Transformer} in order to generate a file with information about all
@@ -69,7 +68,7 @@ public class TransformerDataBuilder {
             // Get attributes from Transformer annotation.
             Transformer tAnnot = typeElement.getAnnotation(Transformer.class);
             String visibleName = tAnnot.name();
-            Class[] validTypes = tAnnot.validArgTypes();
+            List<ClassName> validTypes = getValidTypes(tAnnot);
             Integer numArgs = tAnnot.numArgs();
             Boolean isNoArgs = tAnnot.isNoArgs();
 
@@ -90,16 +89,26 @@ public class TransformerDataBuilder {
         }
     }
 
-    private void processValidTypes(String realName, Class[] validTypes) {
-        for (Class type : validTypes) {
-            ClassName typeName = ClassName.get(type);
-            if (!typesMap.containsKey(typeName)) typesMap.put(typeName, new HashSet<String>());
-            typesMap.get(typeName).add(realName);
+    private List<ClassName> getValidTypes(Transformer tAnnot) {
+        List<ClassName> validTypes = new ArrayList<>();
+        try {
+            // The code smells are strong here, thanks Java API devs...
+            tAnnot.validArgTypes();
+        } catch (MirroredTypesException e) {
+            for (TypeMirror mirror : e.getTypeMirrors()) validTypes.add(ClassName.get(MoreTypes.asTypeElement(mirror)));
+        }
+        return validTypes;
+    }
+
+    private void processValidTypes(String realName, List<ClassName> validTypes) {
+        for (ClassName type : validTypes) {
+            if (!typesMap.containsKey(type)) typesMap.put(type, new HashSet<String>());
+            typesMap.get(type).add(realName);
         }
     }
 
     private boolean isValidTransformerClass(TypeElement element, ClassName className, String visibleName,
-                                            Class[] validTypes, Integer numArgs, Boolean isNoArgs) {
+                                            List<ClassName> validTypes, Integer numArgs, Boolean isNoArgs) {
         // Must extend (directly or indirectly) RUQTransformer.
         if (!isSubtypeOfType(element.asType(), TypeNames.RUQ_TRANS_CLASS.toString())) {
             error(element, "Skipping \"%s\" because transformer classes must extend (either directly or " +
@@ -115,7 +124,7 @@ public class TransformerDataBuilder {
             return false;
         }
         // If this isn't a no-args transformer and numArgs > 0, ensure that we have an array of types.
-        if (!isNoArgs && numArgs != 0 && (validTypes == null || validTypes.length == 0)) {
+        if (!isNoArgs && numArgs != 0 && (validTypes == null || validTypes.isEmpty())) {
             error(element, "Skipping \"%s\" because its @Transformer annotation is malformed; the validArgTypes " +
                             "array must be non-null and non-empty if isNoArgs = false and numArgs > 0.",
                     className.toString());
@@ -233,7 +242,8 @@ public class TransformerDataBuilder {
         // Loop through valid types to visible names map.
         staticBlockBuilder.add("// Map types to the visible names of transformers which accept them.\n");
         for (Map.Entry<ClassName, HashSet<String>> entry : typesMap.entrySet()) {
-            staticBlockBuilder.add("typesToVisibleNames.put($T.class, new HashSet<String>() {{\n", entry.getKey())
+            staticBlockBuilder.add("typesToVisibleNames.put($T.class, new $T() {{\n", entry.getKey(),
+                    TypeNames.S_HASH_SET)
                               .indent();
             // Add the names of transformers for this type.
             for (String s : entry.getValue()) staticBlockBuilder.addStatement("add($S)", visibleNames.get(s));

@@ -72,6 +72,11 @@ public class Ruqus {
         return INSTANCE.classData;
     }
 
+    public static FieldData getFieldData(String realmClass) {
+        ensureInit();
+        return INSTANCE.classData.getFieldData(realmClass);
+    }
+
     public static TransformerData getTransformerData() {
         ensureInit();
         return INSTANCE.transformerData;
@@ -83,6 +88,7 @@ public class Ruqus {
      * @return True if Ruqus knows of a class called {@code realmClass}, otherwise false.
      */
     public static boolean knowsOfClass(String realmClass) {
+        ensureInit();
         return INSTANCE.classData.isValidName(realmClass);
     }
 

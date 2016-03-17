@@ -95,21 +95,20 @@ public abstract class TransformerData {
 
     /**
      * Check if the transformer whose real name is {@code transformerName} is a no arg transformer.
-     * @param transformerName Real transformer name (Can be a normal or no arg transformer).
+     * @param transformerName Real transformer name (Can be a normal or no-args transformer).
      * @return True if the transformer is a no arg transformer, otherwise false.
      */
-    public boolean isNoArg(String transformerName) {
+    public boolean isNoArgs(String transformerName) {
         return realNoArgNames.contains(transformerName);
     }
 
     /**
      * Get the visible name for the transformer whose real name is {@code transformerName}.
-     * @param transformerName Real transformer name.
-     * @param isNoArgs        If {@code transformerName} is the name of a no-args transformer or not.
+     * @param transformerName Real transformer name (can be a normal or no-args transformer name).
      * @return Visible name.
      */
-    public String visibleNameOf(String transformerName, boolean isNoArgs) {
-        return isNoArgs ? visibleNoArgNames.get(transformerName) : visibleNames.get(transformerName);
+    public String visibleNameOf(String transformerName) {
+        return isNoArgs(transformerName) ? visibleNoArgNames.get(transformerName) : visibleNames.get(transformerName);
     }
 
     /**
@@ -133,7 +132,7 @@ public abstract class TransformerData {
 
     /**
      * Get the class object for the transformer whose real name is {@code transformerName}.
-     * @param transformerName Real transformer name (Can be a normal or no arg transformer).
+     * @param transformerName Real transformer name (Can be a normal or no-args transformer).
      * @return Transformer class.
      */
     public Class<? extends RUQTransformer> getTransformer(String transformerName) {

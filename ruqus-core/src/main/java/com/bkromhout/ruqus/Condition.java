@@ -1,5 +1,10 @@
 package com.bkromhout.ruqus;
 
+import com.squareup.phrase.ListPhrase;
+import com.squareup.phrase.Phrase;
+
+import java.util.Arrays;
+
 /**
  * This class is responsible for holding a condition.
  */
@@ -94,7 +99,7 @@ public class Condition {
             case BEGIN_GROUP:
             case END_GROUP:
             case OR:
-                return isRealmClassValid() && isTransformerValid() && areArgsValid();
+                return isRealmClassValid() && isTransformerValid();
             default:
                 return false;
         }
@@ -241,8 +246,42 @@ public class Condition {
      */
     @Override
     public String toString() {
-        // TODO.
-        return super.toString();
+        if (!isValid()) return null;
+        TransformerData transformerData = Ruqus.getTransformerData();
+
+        switch (type) {
+            // Normal transformers have arguments which we need to factor into our string.
+            case NORMAL:
+                FieldData fieldData = Ruqus.getFieldData(realmClass);
+                StringBuilder builder = new StringBuilder();
+                builder.append(Phrase.from("{field} {transformerVName}")
+                                     .put("field", fieldData.visibleNameOf(field))
+                                     .put("transformerVName", transformerData.visibleNameOf(transformer))
+                                     .toString());
+
+                int numArgs = transformerData.numArgsOf(transformer);
+                if (numArgs == 0)
+                    return builder.toString();
+                else if (numArgs == 1)
+                    return builder.append(" ")
+                                  .append(String.valueOf(args[0]))
+                                  .toString();
+                else if (numArgs == C.VAR_ARGS || numArgs > 1)
+                    return builder.append(" ")
+                                  .append(ListPhrase.from(" and ", ", ", ", and ")
+                                                    .join(Arrays.asList(args))
+                                                    .toString())
+                                  .toString();
+                else throw new IllegalArgumentException("numArgs < -1.");
+                // The following have no arguments, so we just return the visible name.
+            case NO_ARG:
+            case BEGIN_GROUP:
+            case END_GROUP:
+            case OR:
+                return transformerData.visibleNameOf(transformer);
+            default:
+                return super.toString();
+        }
     }
 
     // TODO internal string method.
