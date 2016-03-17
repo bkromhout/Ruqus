@@ -9,15 +9,43 @@ import java.util.Arrays;
  * This class is responsible for holding a condition.
  */
 public class Condition {
+    private static final String C_SEP = "|||";
     private static final String BEGIN_GROUP_TNAME = "BeginGroup";
     private static final String END_GROUP_TNAME = "EndGroup";
     private static final String OR_TNAME = "Or";
 
     /**
-     * Type of condition.
+     * Types of conditions.
      */
     public enum Type {
-        NORMAL, NO_ARG, BEGIN_GROUP, END_GROUP, OR
+        NORMAL("NORMAL"), NO_ARGS("NO_ARGS"), BEGIN_GROUP("BEGIN_GROUP"), END_GROUP("END_GROUP"), OR("OR");
+
+        private final String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static Type getForName(String name) {
+            switch (name) {
+                case "NORMAL":
+                    return NORMAL;
+                case "NO_ARGS":
+                    return NO_ARGS;
+                case "BEGIN_GROUP":
+                    return BEGIN_GROUP;
+                case "END_GROUP":
+                    return END_GROUP;
+                case "OR":
+                    return OR;
+                default:
+                    throw new IllegalArgumentException("Invalid Condition type name.");
+            }
+        }
     }
 
     /**
@@ -55,9 +83,43 @@ public class Condition {
         this(Type.NORMAL);
     }
 
-    public Condition(Type type) {
+    Condition(Type type) {
         this.type = type;
         handleSpecialTypes();
+    }
+
+    /**
+     * Create a condition object using a representative string.
+     * @param repStr String which contains enough information to construct a new condition object.
+     */
+    Condition(String repStr) {
+        // Split into parts.
+        String[] parts = repStr.split("\\Q" + C_SEP + "\\E");
+
+        // Figure out type.
+        type = Type.getForName(parts[0]);
+        handleSpecialTypes();
+
+        // Figure out realmClass.
+        realmClass = parts[1];
+        if (!isRealmClassValid())
+            throw new IllegalArgumentException(String.format("Ruqus doesn't have data for \"%s\".", parts[1]));
+
+        // If we have the transformer already, we're done, because the type was one of our built-in special ones.
+        // Otherwise, do the rest based on type (which at this point would have to be either NORMAL or NO_ARGS).
+        if (transformer != null) return;
+        else if (type == Type.NORMAL) {
+            // Figure out field.
+            setField(parts[2]);
+
+            // TODO Figure out args.
+
+        }
+
+        // Figure out transformer.
+        transformer = parts[type == Type.NORMAL ? 4 : 2];
+        if (!isTransformerValid()) throw new IllegalArgumentException(String.format("Ruqus doesn't have data for the " +
+                "transformer \"%s\"", transformer));
     }
 
     /**
@@ -89,13 +151,24 @@ public class Condition {
     }
 
     /**
+     * Tries to get the correct value for {@link #fieldType} based on current values for {@link #realmClass} and {@link
+     * #field}.
+     */
+    private void tryResolveFieldType() {
+        if (type != Type.NORMAL) return;
+        // We can only do this if we have both the realmClass and the field name.
+        if (realmClass == null || realmClass.isEmpty() || field == null || field.isEmpty()) return;
+        // TODO
+    }
+
+    /**
      * @return Whether or not this {@link Condition} is fully-formed and valid.
      */
     public boolean isValid() {
         switch (type) {
             case NORMAL:
                 return isRealmClassValid() && isFieldDataValid() && isTransformerValid() && areArgsValid();
-            case NO_ARG:
+            case NO_ARGS:
             case BEGIN_GROUP:
             case END_GROUP:
             case OR:
@@ -128,6 +201,7 @@ public class Condition {
      * @return True if conditions are met, otherwise false.
      */
     private boolean isTransformerValid() {
+        // TODO add a call which makes sure that Ruqus knows of the transformer as well, for all c types.
         return validStr(transformer) && (type != Type.NORMAL || Ruqus.transformerAcceptsType(transformer, fieldType));
     }
 
@@ -137,7 +211,7 @@ public class Condition {
      */
     private boolean areArgsValid() {
         if (type != Type.NORMAL) return true;
-        int numArgs = Ruqus.getTransformerData().numArgsOf(transformer);
+        int numArgs = Ruqus.numberOfArgsFor(transformer);
         if (numArgs == C.VAR_ARGS) return fieldType != null && args != null && args.length > 0;
         else if (numArgs == 0) return true;
         else if (numArgs > 0) {
@@ -187,13 +261,6 @@ public class Condition {
         return fieldType;
     }
 
-    private void tryResolveFieldType() {
-        if (type != Type.NORMAL) return;
-        // We can only do this if we have both the realmClass and the field name.
-        if (realmClass == null || realmClass.isEmpty() || field == null || field.isEmpty()) return;
-
-    }
-
     public Object[] getArgs() {
         return args;
     }
@@ -241,7 +308,7 @@ public class Condition {
     }
 
     /**
-     * Return a human readable version of this condition.
+     * Return a human-readable string which describes this condition.
      * @return Human-readable condition string, or null if not valid.
      */
     @Override
@@ -274,7 +341,7 @@ public class Condition {
                                   .toString();
                 else throw new IllegalArgumentException("numArgs < -1.");
                 // The following have no arguments, so we just return the visible name.
-            case NO_ARG:
+            case NO_ARGS:
             case BEGIN_GROUP:
             case END_GROUP:
             case OR:
@@ -284,5 +351,39 @@ public class Condition {
         }
     }
 
-    // TODO internal string method.
+    /**
+     * Return a string representation of this {@link Condition} which contains enough information to recreate it later.
+     * @return String representation, or null if not valid.
+     */
+    public String toInternalString() {
+        if (!isValid()) return null;
+        StringBuilder builder = new StringBuilder();
+        builder.append(type.getName()) // Write out type.
+               .append(C_SEP)
+               .append(realmClass) // Write out real realm class name.
+               .append(C_SEP);
+        switch (type) {
+            case NORMAL:
+                builder.append(field) // Write out real field name.
+                       .append(C_SEP)
+                       .append(argsToString()) // Write out args.
+                       .append(C_SEP);
+            case NO_ARGS:
+            case BEGIN_GROUP:
+            case END_GROUP:
+            case OR:
+                builder.append(transformer); // Write out real transformer name.
+                break;
+        }
+        return builder.toString();
+    }
+
+    private String argsToString() {
+        StringBuilder argsStr = new StringBuilder();
+        for (Object arg : args)
+            argsStr.append(String.valueOf(arg))
+                   .append(",");
+        if (argsStr.length() > 1) argsStr.deleteCharAt(argsStr.lastIndexOf(","));
+        return argsStr.toString();
+    }
 }

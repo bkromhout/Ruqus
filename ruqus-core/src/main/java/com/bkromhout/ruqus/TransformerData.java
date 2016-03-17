@@ -113,11 +113,12 @@ public abstract class TransformerData {
 
     /**
      * Get the number of arguments accepted by the transformer whose real name is {@code transformerName}.
-     * @param transformerName Real transformer name (Normal transformers only).
-     * @return Number of arguments. Might be {@link C#VAR_ARGS}, which equates to -1.
+     * @param transformerName Real transformer name (Can be a normal or no-args transformer).
+     * @return Number of arguments. Might be {@link C#VAR_ARGS}, which equates to -1. Will return 0 if transformer is a
+     * no-args transformer.
      */
     public int numArgsOf(String transformerName) {
-        return numArgs.get(transformerName);
+        return isNoArgs(transformerName) ? 0 : numArgs.get(transformerName);
     }
 
     /**

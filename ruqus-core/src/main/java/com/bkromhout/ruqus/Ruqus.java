@@ -125,6 +125,15 @@ public class Ruqus {
     }
 
     /**
+     * Gets the number of arguments which the transformer whose name is {@code transformerName} accepts.
+     * @param transformerName Real name of transformer.
+     * @return Number of arguments accepted. May be {@link C#VAR_ARGS}, which equates to -1.
+     */
+    public static int numberOfArgsFor(String transformerName) {
+        return INSTANCE.transformerData.numArgsOf(transformerName);
+    }
+
+    /**
      * Whether or not the transformer whose name is {@code transformerName} accepts the given {@code type}.
      * @param transformerName Real name of a normal transformer.
      * @param type            Type to check for.
