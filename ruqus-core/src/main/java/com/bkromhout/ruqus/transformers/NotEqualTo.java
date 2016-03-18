@@ -13,9 +13,9 @@ import java.util.Date;
  */
 @Transformer(name = Names.NOT_EQUAL_TO, validArgTypes = {Boolean.class, Date.class, Double.class, Float.class,
                                                          Integer.class, Long.class, Short.class, String.class})
-public class NotEqualTo<T extends RealmObject> extends RUQTransformer<T> {
+public class NotEqualTo extends RUQTransformer {
     @Override
-    public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
+    public <T extends RealmObject> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
         // Checks.
         if (!condition.isValid()) throw new IllegalArgumentException("Condition isn't valid.");
         if (condition.getType() != Condition.Type.NORMAL)

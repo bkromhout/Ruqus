@@ -9,7 +9,7 @@ import io.realm.RealmQuery;
  * <p>
  * Note that Ruqus creates transformers using no-arg constructors.
  */
-public abstract class RUQTransformer<T extends RealmObject> {
+public abstract class RUQTransformer {
     // No-args constructor.
     protected RUQTransformer() {}
 
@@ -19,5 +19,5 @@ public abstract class RUQTransformer<T extends RealmObject> {
      * @param condition  The {@link Condition} which this transformation is being applied to enforce.
      * @return Transformed {@link RealmQuery}.
      */
-    public abstract RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition);
+    public abstract <T extends RealmObject> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition);
 }

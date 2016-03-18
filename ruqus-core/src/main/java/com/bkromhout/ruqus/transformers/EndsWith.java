@@ -10,9 +10,9 @@ import io.realm.RealmQuery;
  * Transformer which wraps {@link RealmQuery#endsWith(String, String)}.
  */
 @Transformer(name = Names.ENDS_WITH, validArgTypes = {String.class})
-public class EndsWith<T extends RealmObject> extends RUQTransformer<T> {
+public class EndsWith extends RUQTransformer {
     @Override
-    public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
+    public <T extends RealmObject> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
         // Checks.
         if (!condition.isValid()) throw new IllegalArgumentException("Condition isn't valid.");
         if (condition.getType() != Condition.Type.NORMAL)

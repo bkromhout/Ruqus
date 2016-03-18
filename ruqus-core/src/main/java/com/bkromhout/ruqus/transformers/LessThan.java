@@ -12,9 +12,9 @@ import java.util.Date;
  * Transformer which wraps the various {@link RealmQuery} {@code lessThan()} methods.
  */
 @Transformer(name = Names.LESS_THAN, validArgTypes = {Date.class, Double.class, Float.class, Integer.class, Long.class})
-public class LessThan<T extends RealmObject> extends RUQTransformer<T> {
+public class LessThan extends RUQTransformer {
     @Override
-    public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
+    public <T extends RealmObject> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
         // Checks.
         if (!condition.isValid()) throw new IllegalArgumentException("Condition isn't valid.");
         if (condition.getType() != Condition.Type.NORMAL)
