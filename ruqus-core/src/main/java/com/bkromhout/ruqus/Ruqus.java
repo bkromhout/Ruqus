@@ -44,10 +44,11 @@ public class Ruqus {
                 noneYet = false;
                 num++;
             } catch (ClassNotFoundException e) {
-                if (noneYet) throw ex("Could not find generated Ruqus class data, did the annotation processor run?");
+                if (noneYet)
+                    throw ex("Could not find generated Ruqus transformer data, did the annotation processor run?");
                 else break;
             } catch (Exception e) {
-                if (noneYet) throw ex("Could not get generated Ruqus class data.");
+                if (noneYet) throw ex("Could not get generated Ruqus transformer data.");
                 else break;
             }
         }
@@ -241,6 +242,15 @@ public class Ruqus {
      */
     static boolean transformerAcceptsType(String transformerName, Class type) {
         return getTransformerData().acceptsType(transformerName, type);
+    }
+
+    /**
+     * Get an instance of the transformer whose real name is {@code transformerName}.
+     * @param transformerName Fully-qualified name of the transformer class to get an instance of.
+     * @return Instance of the transformer class with the given name.
+     */
+    static RUQTransformer getTransformer(String transformerName) {
+        return getTransformerData().getTransformer(transformerName);
     }
 
     /**

@@ -264,7 +264,7 @@ public class ClassDataBuilder {
                                  .build();
 
         // Build file and return it.
-        messager.printMessage(Diagnostic.Kind.NOTE, "Creating " + TypeNames.CLASS_DATA_CLASS.simpleName());
+        messager.printMessage(Diagnostic.Kind.NOTE, "Creating " + C.GEN_CLASS_DATA_CLASS_NAME);
         return JavaFile.builder(C.GEN_PKG, clazz)
                        .addFileComment(C.GEN_CODE_FILE_COMMENT)
                        .build();

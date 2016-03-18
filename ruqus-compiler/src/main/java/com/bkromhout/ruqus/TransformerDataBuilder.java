@@ -225,8 +225,8 @@ public class TransformerDataBuilder {
             staticBlockBuilder.addStatement(addNumArgsStmt, entry.getKey(), entry.getValue());
 
         // Loop through transformer class object names.
-        String addClassStmt = "classMap.put($S, $T.class)";
-        staticBlockBuilder.add("// Add transformer class objects.\n");
+        String addClassStmt = "instanceMap.put($S, new $T())";
+        staticBlockBuilder.add("// Add transformer class instances.\n");
         for (Map.Entry<String, ClassName> entry : classMap.entrySet())
             staticBlockBuilder.addStatement(addClassStmt, entry.getKey(), entry.getValue());
 
