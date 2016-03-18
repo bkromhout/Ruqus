@@ -55,6 +55,15 @@ public abstract class ClassData {
     }
 
     /**
+     * Check that Ruqus recognizes and has data for a RealmObject subclass called {@code realName}.
+     * @param realName Real name of a RealmObject subclass.
+     * @return True if we know about the class with the given name, otherwise false.
+     */
+    public boolean isValidName(String realName) {
+        return realNames.contains(realName);
+    }
+
+    /**
      * Get the actual class object for this class.
      * @return Class object.
      */
@@ -78,15 +87,6 @@ public abstract class ClassData {
      */
     public String visibleNameOf(String realName) {
         return visibleNames.get(realName);
-    }
-
-    /**
-     * Check that Ruqus recognizes and has data for a RealmObject subclass called {@code realName}.
-     * @param realName Real name of a RealmObject subclass.
-     * @return True if we know about the class with the given name, otherwise false.
-     */
-    public boolean isValidName(String realName) {
-        return realNames.contains(realName);
     }
 
     /**

@@ -10,6 +10,7 @@ import java.util.Arrays;
  */
 public class Condition {
     private static final String C_SEP = "|||";
+    private static final String ARG_SEP = ";,;";
     private static final String BEGIN_GROUP_TNAME = "BeginGroup";
     private static final String END_GROUP_TNAME = "EndGroup";
     private static final String OR_TNAME = "Or";
@@ -79,7 +80,7 @@ public class Condition {
     /**
      * Create a new {@link Condition}.
      */
-    public Condition() {
+    Condition() {
         this(Type.NORMAL);
     }
 
@@ -112,8 +113,10 @@ public class Condition {
             // Figure out field.
             setField(parts[2]);
 
-            // TODO Figure out args.
-
+            // Figure out args.
+            String[] argParts = parts[3].split("\\Q" + ARG_SEP + "\\E");
+            args = new Object[argParts.length];
+            for (int i = 0; i < argParts.length; i++) args[i] = Caster.parseString(argParts[i]);
         }
 
         // Figure out transformer.
@@ -158,7 +161,8 @@ public class Condition {
         if (type != Type.NORMAL) return;
         // We can only do this if we have both the realmClass and the field name.
         if (realmClass == null || realmClass.isEmpty() || field == null || field.isEmpty()) return;
-        // TODO
+        // Get field type from our generated info.
+        fieldType = Ruqus.typeForField(realmClass, field);
     }
 
     /**
@@ -201,8 +205,8 @@ public class Condition {
      * @return True if conditions are met, otherwise false.
      */
     private boolean isTransformerValid() {
-        // TODO add a call which makes sure that Ruqus knows of the transformer as well, for all c types.
-        return validStr(transformer) && (type != Type.NORMAL || Ruqus.transformerAcceptsType(transformer, fieldType));
+        return validStr(transformer) && Ruqus.knowsOfTransformer(transformer) &&
+                (type != Type.NORMAL || Ruqus.transformerAcceptsType(transformer, fieldType));
     }
 
     /**
@@ -355,7 +359,7 @@ public class Condition {
      * Return a string representation of this {@link Condition} which contains enough information to recreate it later.
      * @return String representation, or null if not valid.
      */
-    public String toInternalString() {
+    String toInternalString() {
         if (!isValid()) return null;
         StringBuilder builder = new StringBuilder();
         builder.append(type.getName()) // Write out type.
@@ -381,9 +385,9 @@ public class Condition {
     private String argsToString() {
         StringBuilder argsStr = new StringBuilder();
         for (Object arg : args)
-            argsStr.append(String.valueOf(arg))
-                   .append(",");
-        if (argsStr.length() > 1) argsStr.deleteCharAt(argsStr.lastIndexOf(","));
+            argsStr.append(Caster.makeString(arg))
+                   .append(ARG_SEP);
+        if (argsStr.length() > 1) argsStr.deleteCharAt(argsStr.lastIndexOf(ARG_SEP));
         return argsStr.toString();
     }
 }

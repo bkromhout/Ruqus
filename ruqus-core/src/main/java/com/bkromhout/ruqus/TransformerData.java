@@ -94,8 +94,17 @@ public abstract class TransformerData {
     }
 
     /**
+     * Check that Ruqus recognizes and has data for a transformer called {@code transformerName}.
+     * @param transformerName Real transformer name.
+     * @return True if we know about the transformer with the given name, otherwise false.
+     */
+    public boolean isValidName(String transformerName) {
+        return classMap.containsKey(transformerName);
+    }
+
+    /**
      * Check if the transformer whose real name is {@code transformerName} is a no arg transformer.
-     * @param transformerName Real transformer name (Can be a normal or no-args transformer).
+     * @param transformerName Real transformer name.
      * @return True if the transformer is a no arg transformer, otherwise false.
      */
     public boolean isNoArgs(String transformerName) {
@@ -104,7 +113,7 @@ public abstract class TransformerData {
 
     /**
      * Get the visible name for the transformer whose real name is {@code transformerName}.
-     * @param transformerName Real transformer name (can be a normal or no-args transformer name).
+     * @param transformerName Real transformer name.
      * @return Visible name.
      */
     public String visibleNameOf(String transformerName) {
@@ -113,7 +122,7 @@ public abstract class TransformerData {
 
     /**
      * Get the number of arguments accepted by the transformer whose real name is {@code transformerName}.
-     * @param transformerName Real transformer name (Can be a normal or no-args transformer).
+     * @param transformerName Real transformer name.
      * @return Number of arguments. Might be {@link C#VAR_ARGS}, which equates to -1. Will return 0 if transformer is a
      * no-args transformer.
      */
@@ -133,7 +142,7 @@ public abstract class TransformerData {
 
     /**
      * Get the class object for the transformer whose real name is {@code transformerName}.
-     * @param transformerName Real transformer name (Can be a normal or no-args transformer).
+     * @param transformerName Real transformer name.
      * @return Transformer class.
      */
     public Class<? extends RUQTransformer> getTransformer(String transformerName) {

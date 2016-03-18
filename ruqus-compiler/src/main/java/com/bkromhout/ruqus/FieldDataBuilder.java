@@ -206,13 +206,15 @@ public class FieldDataBuilder {
     }
 
     private MethodSpec buildIsRealmObjectType() {
+        // TODO May want to find a way to have this not do reflection?
         String paramName = "realFieldName";
         return MethodSpec.methodBuilder(IS_REALM_OBJECT_TYPE)
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                          .returns(TypeName.BOOLEAN)
                          .addParameter(TypeNames.STRING, paramName)
-                         .addStatement("return $L($L).isInstance($T.class)", FIELD_TYPE, paramName, TypeNames.REALM_OBJ)
+                         .addStatement("return $T.class.isAssignableFrom($L($L))", TypeNames.REALM_OBJ, FIELD_TYPE,
+                                 paramName)
                          .build();
     }
 
