@@ -33,5 +33,5 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             app:rqv_card_mode="Outline"
-            app:rqv_outline_text="@string/choose_sort_order_prompt"/>
+            app:rqv_outline_text="@string/choose_sort_fields_prompt"/>
 </RelativeLayout>

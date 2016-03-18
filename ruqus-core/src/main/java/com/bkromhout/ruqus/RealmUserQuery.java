@@ -93,9 +93,8 @@ public class RealmUserQuery {
     /**
      * Set the type of object this query should return.
      * @param typeClass Class of type to return.
-     * @throws IllegalArgumentException if {@code typeClass} isn't annotated with {@link Queryable}.
      */
-    void setQueryClass(Class<? extends RealmObject> typeClass) throws IllegalArgumentException {
+    void setQueryClass(Class<? extends RealmObject> typeClass) {
         queryClass = typeClass;
     }
 
@@ -105,25 +104,6 @@ public class RealmUserQuery {
      */
     int conditionCount() {
         return conditions.size();
-    }
-
-    /**
-     * Get the condition at {@code index}.
-     * @param index Index of the condition to retrieve.
-     * @return Condition, or null if the index is invalid.
-     */
-    Condition getConditionAt(int index) {
-        return (index >= 0 && index < conditions.size()) ? conditions.get(index) : null;
-    }
-
-    /**
-     * Remove the condition at {@code index}.
-     * @param index Index of the condition to remove.
-     * @return Removed condition, or null if the index is invalid.
-     */
-    Condition removeConditionAt(int index) {
-        // TODO be smart about groups!
-        return (index >= 0 && index < conditions.size()) ? conditions.remove(index) : null;
     }
 
     /**
@@ -193,7 +173,7 @@ public class RealmUserQuery {
 
     /**
      * Get a human-readable version of this query, suitable for displaying for the user.
-     * <p>
+     * <p/>
      * This will return null if the query isn't currently valid.
      * @return Human-readable query string.
      */
@@ -283,7 +263,7 @@ public class RealmUserQuery {
      * Get a string which holds all of the information needed to create a {@link RealmUserQuery} identical to this one.
      * This string is not something which should be shown to users, it is intended to be stored somewhere so that it can
      * be used to recreate this query again later.
-     * <p>
+     * <p/>
      * This will return null if the query isn't currently in a valid state.
      * @return Internal string representation of this query.
      */

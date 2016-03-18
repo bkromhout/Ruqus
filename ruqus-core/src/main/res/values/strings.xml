@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="choose_queryable_title">Choose Type</string>
     <string name="choose_queryable_prompt">Choose the type to search for</string>
+    <string name="choose_queryable_warning">(Changing the type will remove any conditions and sort fields you've defined)</string>
 
     <string name="add_condition">Add Condition</string>
     <string name="remove_condition">Remove Condition</string>
+    <string name="new_condition_title">New Condition</string>
+    <string name="choose_op_or_field_prompt">Choose an operator or a field</string>
+    <string name="choose_sub_field_prompt">Choose a sub-field</string>
 
-    <string name="choose_sort_order_prompt">Choose Sort Order (Currently None)</string>
+    <string name="choose_sort_fields_title">Choose Sort Fields</string>
+    <string name="choose_sort_fields_prompt">Choose Sort Fields (Currently None)</string>
 </resources>

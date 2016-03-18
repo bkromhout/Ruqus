@@ -103,26 +103,30 @@ public class RealmQueryView extends RelativeLayout {
         queryableChooser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO.
+                onQueryableChooserClicked();
             }
         });
 
         sortChooser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO.
+                onSortChooserClicked();
             }
         });
 
         if (ruq == null) {
             // If we don't have a realm user query already, setup is very minimal, we just disable the scrollview and
             // sort choosers.
-            scrollView.setEnabled(false);
-            sortChooser.setEnabled(false);
+            setConditionsAndSortEnabled(false);
             return;
         }
 
         // TODO
+    }
+
+    private void setConditionsAndSortEnabled(boolean enabled) {
+        scrollView.setEnabled(enabled);
+        sortChooser.setEnabled(enabled);
     }
 
     /**
@@ -137,5 +141,13 @@ public class RealmQueryView extends RelativeLayout {
             addCond.setMode(RQVCard.Mode.OUTLINE);
             addCond.setOutlineText(R.string.add_condition);
         }
+    }
+
+    private void onQueryableChooserClicked() {
+
+    }
+
+    private void onSortChooserClicked() {
+
     }
 }
