@@ -111,34 +111,34 @@ public class TransformerDataBuilder {
                                             List<ClassName> validTypes, Integer numArgs, Boolean isNoArgs) {
         // Must extend (directly or indirectly) RUQTransformer.
         if (!isSubtypeOfType(element.asType(), TypeNames.RUQ_TRANS_CLASS.toString())) {
-            error(element, "Skipping \"%s\" because transformer classes must extend (either directly or " +
-                            "indirectly) %s, but instead it extends %s.", ClassName.get(element).toString(),
+            error(element, "Failed while processing \"%s\" because transformer classes must extend (either directly " +
+                            "or indirectly) %s, but instead it extends %s.", ClassName.get(element).toString(),
                     TypeNames.RUQ_TRANS_CLASS.toString(), element.getSuperclass().toString());
             return false;
         }
 
         // Ensure that visible name is non-null and non-empty.
         if (visibleName == null || visibleName.isEmpty()) {
-            error(element, "Skipping \"%s\" because its @Transformer annotation is malformed; name must be " +
-                    "non-null and non-empty", className.toString());
+            error(element, "Failed while processing \"%s\" because its @Transformer annotation is malformed; name " +
+                    "must be non-null and non-empty", className.toString());
             return false;
         }
         // If this isn't a no-args transformer and numArgs > 0, ensure that we have an array of types.
         if (!isNoArgs && numArgs != 0 && (validTypes == null || validTypes.isEmpty())) {
-            error(element, "Skipping \"%s\" because its @Transformer annotation is malformed; the validArgTypes " +
-                            "array must be non-null and non-empty if isNoArgs = false and numArgs > 0.",
+            error(element, "Failed while processing \"%s\" because its @Transformer annotation is malformed; the " +
+                            "validArgTypes array must be non-null and non-empty if isNoArgs = false and numArgs > 0.",
                     className.toString());
             return false;
         }
         // Ensure we don't have any duplicated visible names for each type of transformer.
         if (isNoArgs && visibleNANames.values().contains(visibleName)) {
-            error(element, "Skipping \"%s\" because there is already a no-args transformer class which has the " +
-                    "visible name \"%s\"; Ruqus currently cannot handle having multiple no-args transformer " +
-                    "classes with the same visible name.", className.toString(), visibleName);
+            error(element, "Failed while processing \"%s\" because there is already a no-args transformer class " +
+                    "which has the visible name \"%s\"; Ruqus currently cannot handle having multiple no-args " +
+                    "transformer classes with the same visible name.", className.toString(), visibleName);
             return false;
         } else if (visibleNames.values().contains(visibleName)) {
-            error(element, "Skipping \"%s\" because there is already a normal transformer class which has the " +
-                    "visible name \"%s\"; Ruqus currently cannot handle having multiple normal transformer " +
+            error(element, "Failed while processing \"%s\" because there is already a normal transformer class which " +
+                    "has the visible name \"%s\"; Ruqus currently cannot handle having multiple normal transformer " +
                     "classes with the same visible name.", className.toString(), visibleName);
             return false;
         }

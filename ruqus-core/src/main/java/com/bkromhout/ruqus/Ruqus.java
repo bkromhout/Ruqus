@@ -69,16 +69,16 @@ public class Ruqus {
         if (INSTANCE == null) throw ex("Ruqus.init() must be called first.");
     }
 
-    public static ClassData getClassData() {
+    static ClassData getClassData() {
         ensureInit();
         return INSTANCE.classData;
     }
 
-    public static FieldData getFieldData(String realmClass) {
+    static FieldData getFieldData(String realmClass) {
         return getClassData().getFieldData(realmClass);
     }
 
-    public static TransformerData getTransformerData() {
+    static TransformerData getTransformerData() {
         ensureInit();
         return INSTANCE.transformerData;
     }
@@ -88,8 +88,17 @@ public class Ruqus {
      * @param realmClass Name to check for.
      * @return True if Ruqus knows of a class called {@code realmClass}, otherwise false.
      */
-    public static boolean knowsOfClass(String realmClass) {
+    static boolean knowsOfClass(String realmClass) {
         return getClassData().isValidName(realmClass);
+    }
+
+    /**
+     * Check that Ruqus recognizes and has data for a RealmObject subclass {@code clazz}.
+     * @param realmClass A RealmObject subclass.
+     * @return True if we know about the class, otherwise false.
+     */
+    static boolean knowsOfClass(Class<? extends RealmObject> realmClass) {
+        return getClassData().isValidClass(realmClass);
     }
 
     /**
@@ -97,27 +106,61 @@ public class Ruqus {
      * @param transformer Name to check for.
      * @return True if Ruqus knows of a transformer called {@code transformer}, otherwise false.
      */
-    public static boolean knowsOfTransformer(String transformer) {
+    static boolean knowsOfTransformer(String transformer) {
         return getTransformerData().isValidName(transformer);
     }
 
     /**
-     * Check if a {@code realmClass} has a given {@code field}.
+     * Check if {@code realmClass} is marked is Queryable.
+     * @param realmClass Class to check.
+     * @return True if class is queryable, otherwise false.
+     */
+    static boolean isClassQueryable(Class<? extends RealmObject> realmClass) {
+        ClassData classData = getClassData();
+        return classData.isQueryable(realmClass);
+    }
+
+    /**
+     * Check if a {@code realmClass} has a given {@code field}. This will drill down linked fields, checking all of them
+     * along the way.
      * @param realmClass Name of the RealmObject subclass to check.
      * @param field      Name of the field to check for.
      * @return True if {@code realmClass} has {@code field}.
      */
-    public static boolean classHasField(String realmClass, String field) {
-        FieldData fieldData = getFieldData(realmClass);
+    static boolean classHasField(String realmClass, String field) {
+        if (field == null || field.isEmpty()) throw ex("field cannot be non-null or empty.");
+        ClassData classData = getClassData();
+        FieldData fieldData = classData.getFieldData(realmClass);
         if (fieldData == null) throw ex("\"%s\" is not a valid realm object class name.", realmClass);
-        return fieldData.hasField(field);
+
+        // Split field name up so that we can drill down to the end of any linked fields.
+        String[] fieldParts = field.split("\\Q.\\E");
+        for (String fieldPart : fieldParts) {
+            // Make sure we have this field part.
+            if (!fieldData.hasField(fieldPart)) return false;
+            // Now, if the field type is RealmObject or RealmList, we'll need to drill down.
+            if (fieldData.isRealmListType(fieldPart) || fieldData.isRealmObjectType(fieldPart)) {
+                // Try to get it as a realm list type.
+                Class clazz = fieldData.realmListType(fieldPart);
+                // If that doesn't work, do it the normal way.
+                if (clazz == null) clazz = fieldData.fieldType(fieldPart);
+                // Either way, we now have something which extends RealmObject. Get the field data for that object so
+                // that we can check the next part of the link field in the next iteration.
+                // noinspection unchecked
+                fieldData = classData.getFieldData(clazz);
+                continue;
+            }
+            // If it isn't, we can return true, because we already checked that we have it.
+            return true;
+        }
+        throw ex("Couldn't verify if \"%\" has field \"%s\".", realmClass, field);
     }
 
     /**
      * Get the type of {@code field} on {@code realmClass}. If this is a linked field (e.g., the immediate type on the
      * class is a RealmObject subclass or a RealmList of such), this will drill down to the end of the linked field to
      * get the type from the end of it.
-     * <p>
+     * <p/>
      * For example, if {@code field} is something like "age", and the type for it in {@code realmClass} is Integer,
      * that's what would be returned.<br>But if instead {@code field} was something like "dog.age", where the immediate
      * type is a class called "{@code Dog}" which extends RealmObject and has an Integer field called "age", this method
@@ -126,10 +169,11 @@ public class Ruqus {
      * @param field      Name of the field whose type is being retrieved.
      * @return Type of the field, or the field at the end of the linked field string.
      */
-    public static Class<?> typeForField(String realmClass, String field) {
+    static Class<?> typeForField(String realmClass, String field) {
         if (field == null || field.isEmpty()) throw ex("field cannot be non-null or empty.");
         ClassData classData = getClassData();
         FieldData fieldData = classData.getFieldData(realmClass);
+        if (fieldData == null) throw ex("\"%s\" is not a valid realm object class name.", realmClass);
 
         // Split field name up so that we can drill down to the end of any linked fields.
         String[] fieldParts = field.split("\\Q.\\E");
@@ -161,7 +205,7 @@ public class Ruqus {
      * @param type       Type class.
      * @return True if {@code type} is assignable to {@code field}'s actual type.
      */
-    public static boolean fieldIsOfType(String realmClass, String field, Class<?> type) {
+    static boolean fieldIsOfType(String realmClass, String field, Class<?> type) {
         FieldData fieldData = getFieldData(realmClass);
         if (fieldData == null) throw ex("\"%s\" is not a valid realm object class name.", realmClass);
         Class<?> actualType = fieldData.fieldType(field);
@@ -175,7 +219,7 @@ public class Ruqus {
      * @param transformerName Real name of transformer.
      * @return Number of arguments accepted. May be {@link C#VAR_ARGS}, which equates to -1.
      */
-    public static int numberOfArgsFor(String transformerName) {
+    static int numberOfArgsFor(String transformerName) {
         return getTransformerData().numArgsOf(transformerName);
     }
 
@@ -185,14 +229,14 @@ public class Ruqus {
      * @param type            Type to check for.
      * @return True if the transformer with the given name accepts the given type, otherwise false.
      */
-    public static boolean transformerAcceptsType(String transformerName, Class type) {
+    static boolean transformerAcceptsType(String transformerName, Class type) {
         return getTransformerData().acceptsType(transformerName, type);
     }
 
     /**
      * Convenience method for throwing an IllegalArgumentException with a formatted string.
      */
-    public static IllegalArgumentException ex(String format, Object... args) {
+    static IllegalArgumentException ex(String format, Object... args) {
         return new IllegalArgumentException(String.format(format, args));
     }
 }

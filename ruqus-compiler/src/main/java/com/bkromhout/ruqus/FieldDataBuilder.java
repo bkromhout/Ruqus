@@ -51,7 +51,7 @@ public class FieldDataBuilder {
         // Build class.
         TypeSpec clazz = TypeSpec.classBuilder(className.simpleName())
                                  .superclass(TypeNames.FIELD_DATA_CLASS)
-                                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                                 .addModifiers(Modifier.FINAL)
                                  .addField(buildRealNamesField())
                                  .addField(buildVisibleNamesField())
                                  .addField(buildTypesField())
@@ -146,7 +146,7 @@ public class FieldDataBuilder {
     private MethodSpec buildGetFieldNames() {
         return MethodSpec.methodBuilder(GET_FIELD_NAMES)
                          .addAnnotation(Override.class)
-                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .addModifiers(Modifier.FINAL)
                          .returns(TypeNames.S_ARRAY_LIST)
                          .addStatement("return new $T($L)", TypeNames.S_ARRAY_LIST, REAL_FIELD_NAMES)
                          .build();
@@ -155,7 +155,7 @@ public class FieldDataBuilder {
     private MethodSpec buildGetVisibleNames() {
         return MethodSpec.methodBuilder(GET_VISIBLE_NAMES)
                          .addAnnotation(Override.class)
-                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .addModifiers(Modifier.FINAL)
                          .returns(TypeNames.S_ARRAY_LIST)
                          .addStatement("return new $T($L.values())", TypeNames.S_ARRAY_LIST, VISIBLE_FIELD_NAMES)
                          .build();
@@ -165,7 +165,7 @@ public class FieldDataBuilder {
         String paramName = "realFieldName";
         return MethodSpec.methodBuilder(VISIBLE_NAME_OF)
                          .addAnnotation(Override.class)
-                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .addModifiers(Modifier.FINAL)
                          .returns(TypeNames.STRING)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $L.get($L)", VISIBLE_FIELD_NAMES, paramName)
@@ -176,7 +176,7 @@ public class FieldDataBuilder {
         String paramName = "realFieldName";
         return MethodSpec.methodBuilder(FIELD_TYPE)
                          .addAnnotation(Override.class)
-                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .addModifiers(Modifier.FINAL)
                          .returns(TypeNames.ANY_CLASS)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $L.get($L)", TYPES, paramName)
@@ -187,7 +187,7 @@ public class FieldDataBuilder {
         String paramName = "realFieldName";
         return MethodSpec.methodBuilder(REALM_LIST_TYPE)
                          .addAnnotation(Override.class)
-                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .addModifiers(Modifier.FINAL)
                          .returns(TypeNames.ANY_REALM_OBJ_CLASS)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $L.get($L)", REALM_LIST_TYPES, paramName)
@@ -198,7 +198,7 @@ public class FieldDataBuilder {
         String paramName = "realFieldName";
         return MethodSpec.methodBuilder(HAS_FIELD)
                          .addAnnotation(Override.class)
-                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .addModifiers(Modifier.FINAL)
                          .returns(TypeName.BOOLEAN)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $L.contains($L)", REAL_FIELD_NAMES, paramName)
@@ -210,7 +210,7 @@ public class FieldDataBuilder {
         String paramName = "realFieldName";
         return MethodSpec.methodBuilder(IS_REALM_OBJECT_TYPE)
                          .addAnnotation(Override.class)
-                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .addModifiers(Modifier.FINAL)
                          .returns(TypeName.BOOLEAN)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $T.class.isAssignableFrom($L($L))", TypeNames.REALM_OBJ, FIELD_TYPE,
@@ -222,7 +222,7 @@ public class FieldDataBuilder {
         String paramName = "realFieldName";
         return MethodSpec.methodBuilder(IS_REALM_LIST_TYPE)
                          .addAnnotation(Override.class)
-                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                         .addModifiers(Modifier.FINAL)
                          .returns(TypeName.BOOLEAN)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $L.containsKey($L)", REALM_LIST_TYPES, paramName)

@@ -9,7 +9,7 @@ import io.realm.RealmQuery;
 /**
  * Created by bkromhout on 3/16/16.
  */
-@Transformer(name = "NoOp")
+@Transformer(name = "NoOp", isNoArgs = true, numArgs = 0, validArgTypes = {})
 public class NoOp<T extends RealmObject> extends RUQTransformer<T> {
     @Override
     public RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {

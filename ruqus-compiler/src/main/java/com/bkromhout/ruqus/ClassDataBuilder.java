@@ -71,8 +71,9 @@ public class ClassDataBuilder {
             String realName = className.simpleName();
             // Check that the real name of the class isn't already in use.
             if (realClassNames.contains(realName)) {
-                error(element, "Skipping \"%s\" because there is already a realm object class called \"%s\"; Ruqus " +
-                        "currently cannot handle multiple classes with the same name.", className.toString(), realName);
+                error(element, "Failed while processing \"%s\" because there is already a realm object class called " +
+                                "\"%s\"; Ruqus currently cannot handle multiple classes with the same name.",
+                        className.toString(), realName);
                 continue;
             }
             // Check class for queryable and visible name annotations to try and figure out visible name.
@@ -94,9 +95,9 @@ public class ClassDataBuilder {
             }
             // Check that visible name hasn't already been used.
             if (visibleNames.values().contains(visibleName)) {
-                error(element, "Skipping \"%s\" because there is already a realm object class which has the visible " +
-                        "name \"%s\"; Ruqus currently cannot handle having multiple classes with the same visible " +
-                        "name.", className.toString(), visibleName);
+                error(element, "Failed while processing \"%s\" because there is already a realm object class which " +
+                        "has the visible name \"%s\"; Ruqus currently cannot handle having multiple classes with the " +
+                        "same visible name.", className.toString(), visibleName);
                 continue;
             }
 

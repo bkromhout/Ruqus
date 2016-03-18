@@ -12,7 +12,7 @@ class RUQExecutor<E extends RealmObject> {
     private Class<E> clazz;
     private RealmUserQuery ruq;
 
-    public static <E extends RealmObject> RUQExecutor<E> get(Class<E> clazz, RealmUserQuery ruq) {
+    static <E extends RealmObject> RUQExecutor<E> get(Class<E> clazz, RealmUserQuery ruq) {
         return new RUQExecutor<E>(clazz, ruq);
     }
 
@@ -21,12 +21,12 @@ class RUQExecutor<E extends RealmObject> {
         this.ruq = ruq;
     }
 
-    public RealmResults<E> executeQuery() {
+    RealmResults<E> executeQuery() {
         // Ensure types on executor and query match.
-        if (!clazz.getCanonicalName().equals(ruq.getQueryType().getCanonicalName()))
+        if (!clazz.getCanonicalName().equals(ruq.getQueryClass().getCanonicalName()))
             throw new IllegalArgumentException(String.format("Parameterized types of RUQExecutor and RealmUserQuery " +
                             "do not match! Executor's type: \"%s\", Query's type: \"%s\"", clazz.getCanonicalName(),
-                    ruq.getQueryType().getCanonicalName()));
+                    ruq.getQueryClass().getCanonicalName()));
 
         // Create the query using the default realm instance.
         RealmQuery<E> query = RealmQuery.createQuery(Realm.getDefaultInstance(), clazz);

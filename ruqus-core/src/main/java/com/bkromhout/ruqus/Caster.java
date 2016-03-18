@@ -16,7 +16,7 @@ public class Caster {
     private static final String SHORT = "SHORT";
     private static final String STRING = "STRING";
 
-    public static String makeString(Object data) {
+    static String makeString(Object data) {
         Class clazz = data.getClass();
         if (Boolean.class == clazz || boolean.class == clazz) return String.valueOf(data) + SEP + BOOLEAN;
         else if (Date.class == clazz) return String.valueOf(((Date) data).getTime()) + SEP + DATE;
@@ -29,7 +29,7 @@ public class Caster {
         else throw new IllegalArgumentException("Invalid data type.");
     }
 
-    public static Object parseString(String data) {
+    static Object parseString(String data) {
         String[] parts = data.split("\\Q" + SEP + "\\E");
         switch (parts[1]) {
             case BOOLEAN:

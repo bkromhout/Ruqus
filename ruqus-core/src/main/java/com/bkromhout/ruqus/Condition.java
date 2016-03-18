@@ -91,11 +91,11 @@ public class Condition {
 
     /**
      * Create a condition object using a representative string.
-     * @param repStr String which contains enough information to construct a new condition object.
+     * @param conditionString String which contains enough information to construct a new condition object.
      */
-    Condition(String repStr) {
+    Condition(String conditionString) {
         // Split into parts.
-        String[] parts = repStr.split("\\Q" + C_SEP + "\\E");
+        String[] parts = conditionString.split("\\Q" + C_SEP + "\\E");
 
         // Figure out type.
         type = Type.getForName(parts[0]);
@@ -230,7 +230,7 @@ public class Condition {
         return type;
     }
 
-    public void setType(Type type) {
+    void setType(Type type) {
         if (this.type == type) return;
         // If this is a different type, clear our vars.
         resetState();
@@ -243,7 +243,7 @@ public class Condition {
         return realmClass;
     }
 
-    public void setRealmClass(String realmClass) {
+    void setRealmClass(String realmClass) {
         this.realmClass = realmClass;
         // Also try to figure out the field type, if field is already set.
         tryResolveFieldType();
@@ -253,7 +253,7 @@ public class Condition {
         return field;
     }
 
-    public void setField(String field) {
+    void setField(String field) {
         if (type != Type.NORMAL)
             throw new IllegalArgumentException("Condition type must be NORMAL to set the field.");
         this.field = field;
@@ -269,17 +269,17 @@ public class Condition {
         return args;
     }
 
-    public void setArgs(Object[] args) {
+    void setArgs(Object[] args) {
         if (type != Type.NORMAL)
             throw new IllegalArgumentException("Condition type must be NORMAL to set arguments.");
         this.args = args;
     }
 
-    public String getTransformer() {
+    String getTransformer() {
         return transformer;
     }
 
-    public void setTransformer(String transformer) {
+    void setTransformer(String transformer) {
         // Be convenient if the transformer we're setting is associated with one of our specific types.
         switch (transformer) {
             case BEGIN_GROUP_TNAME:
@@ -359,7 +359,7 @@ public class Condition {
      * Return a string representation of this {@link Condition} which contains enough information to recreate it later.
      * @return String representation, or null if not valid.
      */
-    String toInternalString() {
+    String toConditionString() {
         if (!isValid()) return null;
         StringBuilder builder = new StringBuilder();
         builder.append(type.getName()) // Write out type.

@@ -13,27 +13,27 @@ public abstract class FieldData {
      * Get a list of real field names.
      * @return Real field names.
      */
-    public abstract ArrayList<String> getFieldNames();
+    abstract ArrayList<String> getFieldNames();
 
     /**
      * Get a list of visible field names.
      * @return Visible field names.
      */
-    public abstract ArrayList<String> getVisibleNames();
+    abstract ArrayList<String> getVisibleNames();
 
     /**
      * Get the human-readable name of a field from its real field name.
      * @param realFieldName Real name of a field.
      * @return Human-readable field name.
      */
-    public abstract String visibleNameOf(String realFieldName);
+    abstract String visibleNameOf(String realFieldName);
 
     /**
      * The class of the type for this field.
      * @param realFieldName Real field name.
      * @return Field type.
      */
-    public abstract Class<?> fieldType(String realFieldName);
+    abstract Class<?> fieldType(String realFieldName);
 
     /**
      * If {@link #isRealmListType(String)} returns true, this will return the class of the type of realm object that the
@@ -41,26 +41,26 @@ public abstract class FieldData {
      * @param realFieldName Real field name.
      * @return Field type, if this field is a {@link io.realm.RealmList}. Otherwise null.
      */
-    public abstract Class<? extends RealmObject> realmListType(String realFieldName);
+    abstract Class<? extends RealmObject> realmListType(String realFieldName);
 
     /**
      * Whether or not the field whose name is {@code realFieldName} exists.
      * @param realFieldName Field name to check for.
      * @return True if field exists, otherwise false.
      */
-    public abstract boolean hasField(String realFieldName);
+    abstract boolean hasField(String realFieldName);
 
     /**
      * @param realFieldName Real field name.
      * @return True if field type extends {@link io.realm.RealmObject}, otherwise false.
      */
-    public abstract boolean isRealmObjectType(String realFieldName);
+    abstract boolean isRealmObjectType(String realFieldName);
 
     /**
      * @param realFieldName Real field name.
      * @return True if field is a {@link io.realm.RealmList} type, otherwise false.
      */
-    public abstract boolean isRealmListType(String realFieldName);
+    abstract boolean isRealmListType(String realFieldName);
 
     /**
      * Get the FieldData object which was generated for the class with the given name.
