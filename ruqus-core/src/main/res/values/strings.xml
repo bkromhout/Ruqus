@@ -4,11 +4,15 @@
     <string name="choose_queryable_prompt">Choose the type to search for</string>
     <string name="choose_queryable_warning">(Changing the type will remove any conditions and sort fields you've defined)</string>
 
+    <string name="add_operator">Add Operator</string>
+    <string name="remove_operator">Remove Operator</string>
+    <string name="new_operator_title">New Operator</string>
+
     <string name="add_condition">Add Condition</string>
     <string name="remove_condition">Remove Condition</string>
     <string name="new_condition_title">New Condition</string>
-    <string name="choose_op_or_field_prompt">Choose an operator or a field</string>
-    <string name="choose_sub_field_prompt">Choose a sub-field</string>
+    <string name="choose_field_prompt">Choose a field on $1%s: </string>
+    <string name="choose_sub_field_prompt">Choose a sub-field on $1%s: </string>
 
     <string name="choose_sort_fields_title">Choose Sort Fields</string>
     <string name="choose_sort_fields_prompt">Choose Sort Fields (Currently None)</string>
