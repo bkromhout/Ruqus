@@ -61,22 +61,4 @@ public abstract class FieldData {
      * @return True if field is a {@link io.realm.RealmList} type, otherwise false.
      */
     abstract boolean isRealmListType(String realFieldName);
-
-    /**
-     * Get the FieldData object which was generated for the class with the given name.
-     * <p/>
-     * This method uses reflection, for a cached version please call {@link ClassData#getFieldData(String)} instead.
-     * @param realClassName Real class name.
-     * @return FieldData object.
-     */
-    static FieldData getForClassName(String realClassName) {
-        try {
-            return (FieldData) Class.forName(C.GEN_PKG_PREFIX + realClassName + C.FIELD_DATA_SUFFIX).newInstance();
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Could not find generated Ruqus field data for " + realClassName +
-                    ", did the annotation processor run?");
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not get generated Ruqus field data for" + realClassName + ".");
-        }
-    }
 }
