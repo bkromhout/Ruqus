@@ -123,6 +123,7 @@ public class TransformerDataBuilder {
                     "must be non-null and non-empty", className.toString());
             return false;
         }
+
         // If this isn't a no-args transformer and numArgs > 0, ensure that we have an array of types.
         if (!isNoArgs && numArgs != 0 && (validTypes == null || validTypes.isEmpty())) {
             error(element, "Failed while processing \"%s\" because its @Transformer annotation is malformed; the " +
@@ -130,6 +131,7 @@ public class TransformerDataBuilder {
                     className.toString());
             return false;
         }
+
         // Ensure we don't have any duplicated visible names for each type of transformer.
         if (isNoArgs && visibleNANames.values().contains(visibleName)) {
             error(element, "Failed while processing \"%s\" because there is already a no-args transformer class " +
