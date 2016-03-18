@@ -15,6 +15,7 @@ public class RealmUserQuery {
     private static final String PART_SEP = "#$_Ruqus_RUQ_$#";
     private static final String COND_SEP = "#$_Condition_$#";
     private static final String SORT_SEP = "#$_Sort_$#";
+    private static final String SORT_SUB_SEP = "<<>>";
 
     /**
      * Type of object which will be returned by the query.
@@ -48,8 +49,37 @@ public class RealmUserQuery {
      * @param ruqString A string obtained from {@link #toRuqString()}.
      */
     public RealmUserQuery(String ruqString) {
+        if (ruqString == null || ruqString.isEmpty())
+            throw new IllegalArgumentException("ruqString must ne non-null and non-empty");
+
+        // Split RUQ string into parts, make sure we have all of them.
+        String[] parts = ruqString.split("\\Q" + PART_SEP + "\\E");
+        if (parts.length != 3) throw new IllegalArgumentException("ruqString is missing parts.");
+
+        // Figure out query class.
+        if (parts[0].isEmpty()) throw new IllegalArgumentException("Query class part must not be empty.");
+        queryClass = Ruqus.getClassFromName(parts[0]);
+
+        // Figure out Conditions.
         conditions = new ArrayList<>();
-        // TODO parse internal ruq string to re-create a ruq.
+        if (!parts[1].isEmpty()) {
+            String[] condStrings = parts[1].split("\\Q" + COND_SEP + "\\E");
+            for (String condString : condStrings) conditions.add(new Condition(condString));
+        }
+
+        // Figure out sort fields and directions.
+        sortFields = new ArrayList<>();
+        sortDirs = new ArrayList<>();
+        if (!parts[2].isEmpty()) {
+            String[] sortStrings = parts[2].split("\\Q" + SORT_SEP + "\\E");
+            for (String sortString : sortStrings) {
+                String[] sortStringParts = sortString.split("\\Q" + SORT_SUB_SEP + "\\E");
+                if (sortStringParts.length != 2)
+                    throw new IllegalArgumentException(String.format("Invalid sort string \"%s\".", sortString));
+                sortFields.add(sortStringParts[0]);
+                sortDirs.add(sortStringParts[1].equals("ASC") ? Sort.ASCENDING : Sort.DESCENDING);
+            }
+        }
     }
 
     /**
@@ -163,7 +193,7 @@ public class RealmUserQuery {
 
     /**
      * Get a human-readable version of this query, suitable for displaying for the user.
-     * <p/>
+     * <p>
      * This will return null if the query isn't currently valid.
      * @return Human-readable query string.
      */
@@ -253,13 +283,38 @@ public class RealmUserQuery {
      * Get a string which holds all of the information needed to create a {@link RealmUserQuery} identical to this one.
      * This string is not something which should be shown to users, it is intended to be stored somewhere so that it can
      * be used to recreate this query again later.
-     * <p/>
+     * <p>
      * This will return null if the query isn't currently in a valid state.
      * @return Internal string representation of this query.
      */
     public String toRuqString() {
         if (!isQueryValid()) return null;
-        // TODO
-        return null;
+        StringBuilder builder = new StringBuilder();
+
+        // Write out query class's name.
+        builder.append(queryClass.getSimpleName())
+               .append(PART_SEP);
+
+        // Write out condition strings.
+        if (!conditions.isEmpty()) {
+            for (Condition condition : conditions)
+                builder.append(condition.toConditionString())
+                       .append(COND_SEP);
+            builder.delete(builder.lastIndexOf(COND_SEP), builder.length());
+        }
+        builder.append(PART_SEP);
+
+        // Write out sort strings.
+        if (!sortFields.isEmpty()) {
+            for (int i = 0; i < sortFields.size(); i++) {
+                builder.append(sortFields.get(i))
+                       .append(SORT_SUB_SEP)
+                       .append(sortDirs.get(i) == Sort.ASCENDING ? "ASC" : "DESC")
+                       .append(SORT_SEP);
+            }
+            builder.delete(builder.lastIndexOf(SORT_SEP), builder.length());
+        }
+
+        return builder.toString();
     }
 }

@@ -111,6 +111,16 @@ public class Ruqus {
     }
 
     /**
+     * Get the actual class object for the RealmObject subclass with the given real name.
+     * @param realmClassName Name of a RealmObject subclass.
+     * @return Class object whose name is {@code realmClassName}.
+     */
+    static Class<? extends RealmObject> getClassFromName(String realmClassName) {
+        ClassData classData = getClassData();
+        return classData.getClassObj(realmClassName);
+    }
+
+    /**
      * Check if {@code realmClass} is marked is Queryable.
      * @param realmClass Class to check.
      * @return True if class is queryable, otherwise false.
@@ -160,7 +170,7 @@ public class Ruqus {
      * Get the type of {@code field} on {@code realmClass}. If this is a linked field (e.g., the immediate type on the
      * class is a RealmObject subclass or a RealmList of such), this will drill down to the end of the linked field to
      * get the type from the end of it.
-     * <p/>
+     * <p>
      * For example, if {@code field} is something like "age", and the type for it in {@code realmClass} is Integer,
      * that's what would be returned.<br>But if instead {@code field} was something like "dog.age", where the immediate
      * type is a class called "{@code Dog}" which extends RealmObject and has an Integer field called "age", this method
