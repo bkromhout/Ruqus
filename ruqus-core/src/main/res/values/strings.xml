@@ -13,6 +13,7 @@
     <string name="new_condition_title">New Condition</string>
     <string name="choose_field_prompt">Choose a field on $1%s: </string>
     <string name="choose_sub_field_prompt">Choose a sub-field on $1%s: </string>
+    <string name="choose_condition">Choose a condition: </string>
 
     <string name="choose_sort_fields_title">Choose Sort Fields</string>
     <string name="choose_sort_fields_prompt">Choose Sort Fields (Currently None)</string>
