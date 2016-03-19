@@ -5,10 +5,12 @@
     <string name="choose_queryable_warning">(Changing the type will remove any conditions and sort fields you've defined)</string>
 
     <string name="add_operator">Add Operator</string>
+    <string name="add_operator_nl">Add\nOperator</string>
     <string name="remove_operator">Remove Operator</string>
     <string name="new_operator_title">New Operator</string>
 
     <string name="add_condition">Add Condition</string>
+    <string name="add_condition_nl">Add\nCondition</string>
     <string name="remove_condition">Remove Condition</string>
     <string name="new_condition_title">New Condition</string>
     <string name="choose_field_prompt">Choose a field on $1%s: </string>

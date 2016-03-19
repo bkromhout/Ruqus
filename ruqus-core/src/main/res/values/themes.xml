@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Light" parent="Theme.AppCompat.Light"/>
+    <style name="RuqusLight" parent="Theme.AppCompat.Light"/>
 
-    <style name="Dark" parent="Theme.AppCompat"/>
+    <style name="RuqusDark" parent="Theme.AppCompat"/>
 </resources>

@@ -2,9 +2,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
        android:shape="rectangle">
 
-    <size android:height="@dimen/card_height"/>
+    <size android:height="@dimen/ruqus_card_height"/>
 
-    <corners android:radius="@dimen/card_corner_radius"/>
+    <corners android:radius="@dimen/ruqus_card_corner_radius"/>
 
     <stroke
             android:color="@color/textColorSecondary"

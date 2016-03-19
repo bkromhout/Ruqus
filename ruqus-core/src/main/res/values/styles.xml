@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="LightCard" parent="CardView.Light">
+    <style name="RuqusLightCard" parent="CardView.Light">
         <item name="cardBackgroundColor">@color/cardview_light_background</item>
         <item name="android:textColorPrimary">@color/textColorPrimaryDark</item>
     </style>
 
-    <style name="DarkCard" parent="CardView.Dark">
+    <style name="RuqusDarkCard" parent="CardView.Dark">
         <item name="cardBackgroundColor">@color/cardview_dark_background</item>
         <item name="android:textColorPrimary">@color/textColorPrimaryLight</item>
     </style>

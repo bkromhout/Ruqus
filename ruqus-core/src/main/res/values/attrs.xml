@@ -15,4 +15,14 @@
         <attr name="rqv_outline_text" format="string"/>
         <attr name="rqv_card_text" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="RQVCard2">
+        <attr name="rqv_card_mode">
+            <enum name="Outlines" value="0"/>
+            <enum name="Card" value="1"/>
+        </attr>
+        <attr name="rqv_outline1_text" format="string"/>
+        <attr name="rqv_outline2_text" format="string"/>
+        <attr name="rqv_card_text" format="string"/>
+    </declare-styleable>
 </resources>

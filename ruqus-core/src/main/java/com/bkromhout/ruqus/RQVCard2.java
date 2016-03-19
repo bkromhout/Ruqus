@@ -8,21 +8,23 @@ import android.support.annotation.StringRes;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Custom Ruqus CardView.
+ * Similar to {@link RQVCard}, but has two text views in outline mode.
  */
-class RQVCard extends FrameLayout {
+public class RQVCard2 extends FrameLayout {
     /**
      * View modes. Can either be the card outline or the actual card.
      */
     public enum Mode {
-        OUTLINE, CARD
+        OUTLINES, CARD
     }
 
-    private FrameLayout outlineView;
-    private TextView outlineTextView;
+    private LinearLayout outlinesView;
+    private TextView outline1TextView;
+    private TextView outline2TextView;
     private CardView cardView;
     private TextView cardTextView;
 
@@ -31,19 +33,23 @@ class RQVCard extends FrameLayout {
      */
     private Mode mode;
 
-    public RQVCard(Context context) {
+    public RQVCard2(Context context) {
         this(context, null, 0, RuqusTheme.LIGHT);
     }
 
-    public RQVCard(Context context, AttributeSet attrs) {
+    public RQVCard2(Context context, RuqusTheme theme) {
+        this(context, null, 0, theme);
+    }
+
+    public RQVCard2(Context context, AttributeSet attrs) {
         this(context, attrs, 0, RuqusTheme.LIGHT);
     }
 
-    public RQVCard(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RQVCard2(Context context, AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, RuqusTheme.LIGHT);
     }
 
-    public RQVCard(Context context, AttributeSet attrs, int defStyleAttr, RuqusTheme theme) {
+    public RQVCard2(Context context, AttributeSet attrs, int defStyleAttr, RuqusTheme theme) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, theme);
     }
@@ -55,21 +61,23 @@ class RQVCard extends FrameLayout {
      */
     private void init(Context context, AttributeSet attrs, RuqusTheme theme) {
         // Inflate and bind views.
-        inflate(context, R.layout.rqv_card, this);
-        outlineView = (FrameLayout) findViewById(R.id.outline);
-        outlineTextView = (TextView) findViewById(R.id.outline_text);
+        inflate(context, R.layout.rqv_card2, this);
+        outlinesView = (LinearLayout) findViewById(R.id.outlines);
+        outline1TextView = (TextView) findViewById(R.id.outline1_text);
+        outline2TextView = (TextView) findViewById(R.id.outline2_text);
         cardView = (CardView) findViewById(R.id.card);
         cardTextView = (TextView) findViewById(R.id.card_text);
         setTheme(theme);
 
         // Read attributes.
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RQVCard);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RQVCard2);
         // Get card mode, default to outline.
-        mode = typedArray.getResourceId(R.styleable.RQVCard_rqv_card_mode, 0) == 0 ? Mode.OUTLINE : Mode.CARD;
-        // Set outline text.
-        outlineTextView.setText(typedArray.getString(R.styleable.RQVCard_rqv_outline_text));
+        mode = typedArray.getResourceId(R.styleable.RQVCard2_rqv_card_mode, 0) == 0 ? Mode.OUTLINES : Mode.CARD;
+        // Set outlines text.
+        outline1TextView.setText(typedArray.getString(R.styleable.RQVCard2_rqv_outline1_text));
+        outline2TextView.setText(typedArray.getString(R.styleable.RQVCard2_rqv_outline2_text));
         // Set card text.
-        cardTextView.setText(typedArray.getString(R.styleable.RQVCard_rqv_card_text));
+        cardTextView.setText(typedArray.getString(R.styleable.RQVCard2_rqv_card_text));
 
         typedArray.recycle();
     }
@@ -79,7 +87,7 @@ class RQVCard extends FrameLayout {
      */
     private void updateMode() {
         // Change visibility outline/card views.
-        outlineView.setVisibility(mode == Mode.OUTLINE ? VISIBLE : GONE);
+        outlinesView.setVisibility(mode == Mode.OUTLINES ? VISIBLE : GONE);
         cardView.setVisibility(mode == Mode.CARD ? VISIBLE : GONE);
     }
 
@@ -119,27 +127,39 @@ class RQVCard extends FrameLayout {
     }
 
     /**
-     * Set the text shown in outline mode.
-     * @param strRes String resource ID.
+     * Set the texts shown in outline mode.
+     * @param strRes1 String resource ID.
+     * @param strRes2 String resource ID.
      */
-    void setOutlineText(@StringRes int strRes) {
-        outlineTextView.setText(strRes);
+    void setOutlineText(@StringRes int strRes1, @StringRes int strRes2) {
+        outline1TextView.setText(strRes1);
+        outline2TextView.setText(strRes2);
     }
 
     /**
-     * Set the text shown in outline mode.
-     * @param str String.
+     * Set the texts shown in outline mode.
+     * @param str1 String.
+     * @param str2 String.
      */
-    void setOutlineText(String str) {
-        outlineTextView.setText(str);
+    void setOutlineText(String str1, String str2) {
+        outline1TextView.setText(str1);
+        outline2TextView.setText(str2);
     }
 
     /**
-     * Set the OnClickListener for the outline text view.
+     * Set the OnClickListener for the first outline text view.
      * @param listener OnClickListener.
      */
-    void setOutlineClickListener(@Nullable OnClickListener listener) {
-        outlineTextView.setOnClickListener(listener);
+    void setOutline1ClickListener(@Nullable OnClickListener listener) {
+        outline1TextView.setOnClickListener(listener);
+    }
+
+    /**
+     * Set the OnClickListener for the second outline text view.
+     * @param listener OnClickListener.
+     */
+    void setOutline2ClickListener(@Nullable OnClickListener listener) {
+        outline2TextView.setOnClickListener(listener);
     }
 
     /**

@@ -13,10 +13,6 @@ import android.widget.ScrollView;
  * @author bkromhout
  */
 public class RealmQueryView extends RelativeLayout {
-    public enum RuqusTheme {
-        LIGHT, DARK
-    }
-
     // Views.
     private RQVCard queryableChooser;
     private ScrollView scrollView;
@@ -99,6 +95,7 @@ public class RealmQueryView extends RelativeLayout {
      * Initialize the UI.
      */
     private void initUi() {
+        setTheme(theme);
         // Set click handlers for queryable and sort choosers.
         queryableChooser.setOnClickListener(new OnClickListener() {
             @Override
@@ -106,7 +103,6 @@ public class RealmQueryView extends RelativeLayout {
                 onQueryableChooserClicked();
             }
         });
-
         sortChooser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,26 +120,59 @@ public class RealmQueryView extends RelativeLayout {
         // TODO
     }
 
+    public void setTheme(RuqusTheme theme) {
+        this.theme = theme;
+
+        // Set theme on queryable and sort choosers.
+        queryableChooser.setTheme(theme);
+        sortChooser.setTheme(theme);
+
+        // Set theme on all condition cards.
+        for (int i = 0; i < conditionsCont.getChildCount(); i++)
+            ((RQVCard2) conditionsCont.getChildAt(i)).setTheme(theme);
+    }
+
     private void setConditionsAndSortEnabled(boolean enabled) {
         scrollView.setEnabled(enabled);
         sortChooser.setEnabled(enabled);
     }
 
     /**
-     * Creates an {@link RQVCard} and sets it to outline mode with the text "Add Condition", then adds it to the end of
-     * {@link #conditionsCont}.
+     * Creates an {@link RQVCard2} and sets it to outlines mode with the texts "Add Operator" and "Add Condition", then
+     * adds it to the end of {@link #conditionsCont}.
      */
-    private void appendAddConditionView() {
+    private void appendAddView() {
         // Only add the view if we have the same number of views and conditions currently (indicates each view is
         // tied to a condition.
         if (ruq != null && conditionsCont.getChildCount() == ruq.conditionCount()) {
-            RQVCard addCond = new RQVCard(getContext());
-            addCond.setMode(RQVCard.Mode.OUTLINE);
-            addCond.setOutlineText(R.string.add_condition);
+            RQVCard2 add = new RQVCard2(getContext(), theme);
+            add.setMode(RQVCard2.Mode.OUTLINES);
+            add.setOutlineText(R.string.add_operator_nl, R.string.add_condition_nl);
+            add.setOutline1ClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onAddOperatorClicked();
+                }
+            });
+            add.setOutline2ClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onAddConditionClicked();
+                }
+            });
+            conditionsCont.addView(add);
         }
     }
 
     private void onQueryableChooserClicked() {
+
+    }
+
+    private void onAddOperatorClicked() {
+
+    }
+
+    private void onAddConditionClicked() {
 
     }
 
