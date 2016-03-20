@@ -92,6 +92,14 @@ public class RealmUserQuery {
 
     /**
      * Set the type of object this query should return.
+     * @param typeClassName Name of class of type to return.
+     */
+    void setQueryClass(String typeClassName) {
+        setQueryClass(Ruqus.getClassFromName(typeClassName));
+    }
+
+    /**
+     * Set the type of object this query should return.
      * @param typeClass Class of type to return.
      */
     void setQueryClass(Class<? extends RealmObject> typeClass) {

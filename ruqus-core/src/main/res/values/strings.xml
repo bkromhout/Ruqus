@@ -2,7 +2,7 @@
 <resources>
     <string name="choose_queryable_title">Choose Type</string>
     <string name="choose_queryable_prompt">Choose the type to search for</string>
-    <string name="choose_queryable_warning">(Changing the type will remove any conditions and sort fields you've defined)</string>
+    <string name="choose_queryable_warning">(Changing the type will reset your query!)</string>
 
     <string name="add_operator">Add Operator</string>
     <string name="add_operator_nl">Add\nOperator</string>

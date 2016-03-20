@@ -112,6 +112,16 @@ public class Ruqus {
     }
 
     /**
+     * Translate the visible name of a RealmObject subclass to its real name.
+     * @param visibleName Visible name of a RealmObject subclass.
+     * @return Real name of the RealmObject subclass with the given {@code visibleName}.
+     */
+    static String classNameFromVisibleName(String visibleName) {
+        ClassData classData = getClassData();
+        return classData.getNames().get(classData.getVisibleNames(false).indexOf(visibleName));
+    }
+
+    /**
      * Get the actual class object for the RealmObject subclass with the given real name.
      * @param realmClassName Name of a RealmObject subclass.
      * @return Class object whose name is {@code realmClassName}.
