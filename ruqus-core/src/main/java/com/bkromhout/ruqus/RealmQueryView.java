@@ -3,13 +3,18 @@ package com.bkromhout.ruqus;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import io.realm.Sort;
+
+import java.util.ArrayList;
 
 /**
  * RealmQueryView
@@ -175,16 +180,24 @@ public class RealmQueryView extends FrameLayout {
             // If we're switching back to main mode, remove all views from the builder container.
             builderCont.removeAllViews();
         }
-
+        mainCont.setVisibility(GONE);
+        builderCont.setVisibility(GONE);
+        // Switch mode and UI.
         switch (mode) {
             case MAIN:
-
+                mainCont.setVisibility(VISIBLE);
+                currIdx = -1;
                 break;
             case C_BUILD:
-
+                if (currIdx == -1)
+                    throw new IllegalArgumentException("Must set currIdx to switch to the condition builder.");
+                initConditionBuilder(currIdx >= conditionsCont.getChildCount() - 1 ? null
+                        : ruq.getConditions().get(currIdx));
+                builderCont.setVisibility(VISIBLE);
                 break;
             case S_BUILD:
-
+                initSortBuilder(ruq.getSortFields(), ruq.getSortDirs());
+                builderCont.setVisibility(VISIBLE);
                 break;
         }
     }
@@ -217,20 +230,42 @@ public class RealmQueryView extends FrameLayout {
             RQVCard2 add = new RQVCard2(getContext(), theme);
             add.setMode(RQVCard2.Mode.OUTLINES);
             add.setOutlineText(R.string.add_operator_nl, R.string.add_condition_nl);
+            // Set tag to the current child count of the conditions container, since that will be this item's index
+            // once it is added to the end of it.
+            add.setTag(R.id.index, conditionsCont.getChildCount());
+            // Set the outline text views' OnClickListeners.
             add.setOutline1ClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onAddOperatorClicked();
+                    onOperatorClicked((Integer) v.getTag(R.id.index), null);
                 }
             });
             add.setOutline2ClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onAddConditionClicked();
+                    onConditionClicked((Integer) v.getTag(R.id.index));
                 }
             });
+            // Add to the conditions container.
             conditionsCont.addView(add);
         }
+    }
+
+    /**
+     * Sets up the builder container to start building/modifying a condition.
+     * @param condition The condition to modify, or null if we wish to build a new condition.
+     */
+    private void initConditionBuilder(Condition condition) {
+        // TODO.
+    }
+
+    /**
+     * Sets up the builder container to add/change/remove sort fields.
+     * @param sortFields Current sort field.
+     * @param sortDirs   Current sort directions.
+     */
+    private void initSortBuilder(ArrayList<String> sortFields, ArrayList<Sort> sortDirs) {
+        // TODO
     }
 
     /**
@@ -265,16 +300,62 @@ public class RealmQueryView extends FrameLayout {
                 .show();
     }
 
-    private void onAddOperatorClicked() {
-
+    /**
+     * Called when an {@link RQVCard2}'s outline text view which reads "Add Operator", or a card which has been filled
+     * in with a real operator, is clicked. Shows a dialog of visible names of all no-args transformers (AKA,
+     * "Operators").
+     * @param index   Index of the card in the conditions container.
+     * @param currVal The text which is currently on the card, or null if the card is in outline mode.
+     */
+    private void onOperatorClicked(final int index, final String currVal) {
+        new MaterialDialog.Builder(getContext())
+                .title(index == conditionsCont.getChildCount() - 1 ? R.string.add_operator : R.string.change_operator)
+                .items(Ruqus.getTransformerData().getVisibleNoArgNames())
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                        if (currVal == null || !currVal.equals(text.toString())) setOperator(index, text.toString());
+                    }
+                })
+                .show();
     }
 
-    private void onAddConditionClicked() {
-
+    /**
+     * Called when an {@link RQVCard2}'s outline text view which reads "Add Condition", or when a card which has been
+     * filled in with a real condition, is clicked. Switches to condition builder mode.
+     * @param index Index of the card in the conditions container.
+     */
+    private void onConditionClicked(final int index) {
+        this.currIdx = index;
+        switchMode(Mode.C_BUILD);
     }
 
+    /**
+     * Called when the sort mode chooser is clicked. Switches to sort builder mode.
+     */
     private void onSortChooserClicked() {
+        switchMode(Mode.S_BUILD);
+    }
 
+    /**
+     * Show a dialog asking if we want to delete the long-clicked card.
+     * @param index Index of the card in the conditions container.
+     */
+    private void onPartLongClicked(final int index) {
+        new MaterialDialog.Builder(getContext())
+                .title(R.string.remove_operator)
+                .negativeText(R.string.no)
+                .positiveText(R.string.yes)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        // Remove from RUQ.
+                        ruq.getConditions().remove(index);
+                        // Remove from conditions container.
+                        conditionsCont.removeViewAt(index);
+                    }
+                })
+                .show();
     }
 
     /**
@@ -293,7 +374,65 @@ public class RealmQueryView extends FrameLayout {
         setConditionsAndSortEnabled(true);
     }
 
-    private void setSorts() {
+    /**
+     * Called when a card has been set as an operator card.
+     * @param index       Index of the card in the conditions container.
+     * @param visibleName String to put on the card.
+     */
+    private void setOperator(int index, String visibleName) {
+        String realName = Ruqus.transformerNameFromVisibleName(visibleName, true);
+        RQVCard2 card = (RQVCard2) conditionsCont.getChildAt(index);
+        card.setTag(R.id.curr_val, visibleName);
+        if (index == conditionsCont.getChildCount() - 1) {
+            // This was an outline-mode card before this, and ruq doesn't have a condition for it.
+            // Set the card's card listener and long click listener.
+            card.setCardClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onOperatorClicked((Integer) v.getTag(R.id.index), (String) v.getTag(R.id.curr_val));
+                }
+            });
+            card.setOnLongClickListener(new OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onPartLongClicked((Integer) v.getTag(R.id.index));
+                    return true;
+                }
+            });
+            // Set the card's text.
+            card.setCardText(visibleName);
+            // Set the card's mode to CARD.
+            card.setMode(RQVCard2.Mode.CARD);
+
+            // Create a new condition; we just need to set the transformer's real name and the realm class's name
+            // since it's an no-args condition.
+            Condition condition = new Condition();
+            condition.setTransformer(realName);
+            condition.setRealmClass(ruq.getQueryClass().getSimpleName());
+
+            // Add the condition to the query.
+            ruq.getConditions().add(condition);
+
+            // Finally, append another add view to the conditions container.
+            appendAddView();
+        } else {
+            // This was a card-mode card already, ruq already had a condition for it.
+            // Update card text.
+            card.setCardText(visibleName);
+
+            // Update condition.
+            Condition condition = ruq.getConditions().get(index);
+            condition.setTransformer(realName);
+            condition.setRealmClass(ruq.getQueryClass().getSimpleName());
+        }
+    }
+
+    /**
+     * Called when the sort options have been changed.
+     * @param sortFields List of new sort fields.
+     * @param sortDirs   List of new sort directions.
+     */
+    private void setSorts(ArrayList<String> sortFields, ArrayList<Sort> sortDirs) {
         // TODO.
     }
 }

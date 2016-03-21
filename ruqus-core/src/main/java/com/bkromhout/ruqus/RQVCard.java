@@ -165,4 +165,20 @@ class RQVCard extends FrameLayout {
     void setCardClickListener(@Nullable OnClickListener listener) {
         cardView.setOnClickListener(listener);
     }
+
+    @Override
+    public void setTag(Object tag) {
+        super.setTag(tag);
+        // Also set the tags on the other views this holds that can be assigned click listeners.
+        cardView.setTag(tag);
+        outlineTextView.setTag(tag);
+    }
+
+    @Override
+    public void setTag(int key, Object tag) {
+        super.setTag(key, tag);
+        // Also set the tags on the other views this holds that can be assigned click listeners.
+        cardView.setTag(key, tag);
+        outlineTextView.setTag(key, tag);
+    }
 }
