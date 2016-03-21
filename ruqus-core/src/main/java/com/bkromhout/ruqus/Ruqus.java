@@ -1,6 +1,12 @@
 package com.bkromhout.ruqus;
 
+import android.content.Context;
+import android.os.Build;
 import io.realm.RealmObject;
+import io.realm.Sort;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Access to Ruqus information. This class mostly serves as a convenience class, using the instances of {@link
@@ -8,6 +14,7 @@ import io.realm.RealmObject;
  * of the library to make on-liner calls as much as possible.
  */
 public class Ruqus {
+    static int LIGHT_TEXT_COLOR, DARK_TEXT_COLOR;
     /**
      * Whether or not Ruqus.init() has already been called.
      */
@@ -59,8 +66,20 @@ public class Ruqus {
      * and it requires reflection. It is recommended that it be called as early as possible in the application's
      * lifecycle.
      */
-    public static void init() {
-        if (INSTANCE == null) INSTANCE = new Ruqus();
+    public static void init(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new Ruqus();
+
+            if (Build.VERSION.SDK_INT < 23) {
+                //noinspection deprecation
+                LIGHT_TEXT_COLOR = context.getResources().getColor(R.color.textColorPrimaryLight);
+                //noinspection deprecation
+                DARK_TEXT_COLOR = context.getResources().getColor(R.color.textColorPrimaryDark);
+            } else {
+                LIGHT_TEXT_COLOR = context.getColor(R.color.textColorPrimaryLight);
+                DARK_TEXT_COLOR = context.getColor(R.color.textColorPrimaryDark);
+            }
+        }
     }
 
     /**
@@ -218,6 +237,86 @@ public class Ruqus {
     }
 
     /**
+     * Get the real name of a field on the given class.
+     * @param realmClass       Real name of a RealmObject subclass.
+     * @param visibleFieldName Visible name of a field.
+     * @return Real name of the field on the given class with the given visible field name.
+     */
+    static String fieldNameFromVisibleName(String realmClass, String visibleFieldName) {
+        FieldData fieldData = getFieldData(realmClass);
+        return fieldData.getFieldNames().get(fieldData.getVisibleNames().indexOf(visibleFieldName));
+    }
+
+    /**
+     * Return a list of visible names for all fields on the given RealmObject subclass, but for any fields whose types
+     * are either also RealmObject subclass or RealmList, add entries for their fields as well.
+     * @param realmClass Name of the RealmObject subclass.
+     * @return List of visible flat field names.
+     */
+    static ArrayList<String> visibleFlatFieldsForClass(String realmClass) {
+        ClassData classData = getClassData();
+        return _visibleFlatFieldsForClass(classData, classData.getFieldData(realmClass), "");
+    }
+
+    private static ArrayList<String> _visibleFlatFieldsForClass(ClassData classData, FieldData fieldData,
+                                                                String prepend) {
+        ArrayList<String> vNames = new ArrayList<>();
+        // Loop through real names.
+        for (String name : fieldData.getFieldNames()) {
+            // Get visible name of field.
+            String visibleName = fieldData.visibleNameOf(name);
+            // Do something different based on field's type.
+            if (fieldData.isRealmListType(name)) {
+                // Field type is RealmList, recurse and get its visible names as well.
+                vNames.addAll(_visibleFlatFieldsForClass(classData,
+                        classData.getFieldData(fieldData.realmListType(name)), prepend + " > " + visibleName));
+            } else if (fieldData.isRealmObjectType(name)) {
+                // Field type is RealmObject, recurse and get its visible names as well.
+                //noinspection unchecked
+                vNames.addAll(_visibleFlatFieldsForClass(classData,
+                        classData.getFieldData((Class<? extends RealmObject>) fieldData.fieldType(name)),
+                        prepend + " > " + visibleName));
+            } else {
+                // Normal field, just add its visible name.
+                vNames.add(visibleName);
+            }
+        }
+        return vNames;
+    }
+
+    /**
+     * Takes a visible flat field name and converts it to a real flat field name.
+     * @param realmClass       Name of the RealmObject subclass.
+     * @param visibleFlatField Visible flat field name.
+     * @return Real flat field name.
+     */
+    static String flatFieldNameFromVisibleFlatFieldName(String realmClass, String visibleFlatField) {
+        ClassData classData = getClassData();
+        FieldData fieldData = classData.getFieldData(realmClass);
+        String[] parts = visibleFlatField.split("\\Q > \\E");
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < parts.length; i++) {
+            // Use the field data to get the real name of the field.
+            String realFieldName = fieldData.getFieldNames().get(fieldData.getVisibleNames().indexOf(parts[i]));
+            // Append the real name.
+            builder.append(realFieldName);
+            if (i < parts.length - 1) {
+                // This is a RealmObject/RealmList-type field. Append a dot and switch the field data.
+                builder.append(".");
+                if (fieldData.isRealmListType(realFieldName)) {
+                    fieldData = classData.getFieldData(fieldData.realmListType(realFieldName));
+                } else {
+                    //noinspection unchecked
+                    fieldData = classData.getFieldData(
+                            (Class<? extends RealmObject>) fieldData.fieldType(realFieldName));
+                }
+            }
+        }
+        return builder.toString();
+    }
+
+    /**
      * Check if a {@code field} of a {@code realmClass} is of the given {@code type}. (Note that this method uses {@link
      * Class#isAssignableFrom(Class)} to check if the given {@code type} can be used for the field; that is, {@code
      * type} may be a subclass of the field's actual type.
@@ -274,6 +373,50 @@ public class Ruqus {
      */
     static RUQTransformer getTransformer(String transformerName) {
         return getTransformerData().getTransformer(transformerName);
+    }
+
+    /**
+     * Gets a "pretty" version of the sort direction based on a field's type.
+     * @param fieldName Field name.
+     * @param sortDir   Sort direction.
+     * @return Pretty sort direction string.
+     */
+    static String prettySortDirStringForField(String realmClass, String fieldName, Sort sortDir) {
+        Class fieldType = typeForField(realmClass, fieldName);
+        if (sortDir == Sort.ASCENDING) {
+            // Ascending direction.
+            if (Boolean.class.isAssignableFrom(fieldType)) return "False before True";
+            else if (Date.class.isAssignableFrom(fieldType)) return "Earliest to Latest";
+            else if (Number.class.isAssignableFrom(fieldType)) return "Lowest to Highest";
+            else if (String.class.isAssignableFrom(fieldType)) return "a to Z";
+            else throw new IllegalArgumentException("Invalid field type.");
+        } else {
+            // Descending direction.
+            if (Boolean.class.isAssignableFrom(fieldType)) return "True before False";
+            else if (Date.class.isAssignableFrom(fieldType)) return "Latest to Earliest";
+            else if (Number.class.isAssignableFrom(fieldType)) return "Highest to Lowest";
+            else if (String.class.isAssignableFrom(fieldType)) return "Z to a";
+            else throw new IllegalArgumentException("Invalid field type.");
+        }
+    }
+
+    /**
+     * Returns an array which contains two "pretty" sort strings.
+     * @param realmClass Name of the RealmObject subclass.
+     * @param fieldName  Field name.
+     * @return String array like {[asc pretty name], [desc pretty name]}.
+     */
+    static String[] prettySortDirStringsForField(String realmClass, String fieldName) {
+        Class fieldType = typeForField(realmClass, fieldName);
+        if (Boolean.class.isAssignableFrom(fieldType))
+            return new String[] {"False before True", "True before False"};
+        else if (Date.class.isAssignableFrom(fieldType))
+            return new String[] {"Earliest to Latest", "Latest to Earliest"};
+        else if (Number.class.isAssignableFrom(fieldType))
+            return new String[] {"Lowest to Highest", "Highest to Lowest"};
+        else if (String.class.isAssignableFrom(fieldType))
+            return new String[] {"a to Z", "Z to a"};
+        else throw new IllegalArgumentException("Invalid field type.");
     }
 
     /**

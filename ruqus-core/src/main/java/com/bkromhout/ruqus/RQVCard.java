@@ -2,7 +2,6 @@ package com.bkromhout.ruqus;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.CardView;
@@ -93,13 +92,7 @@ class RQVCard extends FrameLayout {
                 R.color.cardview_dark_background);
 
         // Set text view text color.
-        int textColor;
-        if (Build.VERSION.SDK_INT < 23) //noinspection deprecation
-            textColor = getContext().getResources().getColor(theme == RuqusTheme.LIGHT ? R.color.textColorPrimaryDark :
-                    R.color.textColorPrimaryLight);
-        else textColor = getContext().getColor(theme == RuqusTheme.LIGHT ? R.color.textColorPrimaryDark :
-                R.color.textColorPrimaryLight);
-        cardTextView.setTextColor(textColor);
+        cardTextView.setTextColor(theme == RuqusTheme.LIGHT ? Ruqus.LIGHT_TEXT_COLOR : Ruqus.DARK_TEXT_COLOR);
     }
 
     /**
@@ -148,6 +141,14 @@ class RQVCard extends FrameLayout {
      */
     void setCardText(@StringRes int strRes) {
         cardTextView.setText(strRes);
+    }
+
+    /**
+     * Get the text being shown on the card.
+     * @return Card text
+     */
+    String getCardText() {
+        return cardTextView.getText().toString();
     }
 
     /**

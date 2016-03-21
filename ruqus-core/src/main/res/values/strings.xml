@@ -2,6 +2,8 @@
 <resources>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="Save">Save</string>
+    <string name="Cancel">Cancel</string>
 
     <string name="choose_queryable_title">Choose Type</string>
     <string name="choose_queryable_prompt">Choose the type to search for</string>
@@ -22,4 +24,7 @@
 
     <string name="choose_sort_fields_title">Choose Sort Fields</string>
     <string name="choose_sort_fields_prompt">Choose Sort Fields (Currently None)</string>
+    <string name="sort_field_label">Sort field $1%d on $2%s: </string>
+    <string name="add_sort_field">Add Sort Field</string>
+    <string name="remove_sort_field">Remove Sort Field</string>
 </resources>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+    <TextView
+            android:id="@+id/sort_field_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sort_field_label"/>
+
+    <LinearLayout
+            android:id="@+id/spin_and_remove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sort_field_label"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+        <Spinner
+                android:id="@+id/sort_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"
+                android:spinnerMode="dropdown"
+                tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
+
+        <ImageButton
+                android:id="@+id/remove_field"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/remove_sort_field"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_remove"
+                tools:src="@drawable/ic_remove"/>
+    </LinearLayout>
+
+    <RadioGroup
+            android:id="@+id/rg_sort_dir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/spin_and_remove"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:checkedButton="@+id/asc"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+        <RadioButton
+                android:id="@id/asc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                tools:text="Earliest to Latest"/>
+
+        <RadioButton
+                android:id="@+id/desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Latest to Earliest"/>
+    </RadioGroup>
+
+</RelativeLayout>

@@ -14,7 +14,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        Ruqus.init();
+        Ruqus.init(this);
     }
 
     public static Context getAppCtx() {

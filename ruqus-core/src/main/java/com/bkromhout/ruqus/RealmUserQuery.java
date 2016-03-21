@@ -6,7 +6,6 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Used to let end-users build Realm Queries by wrapping {@link io.realm.RealmQuery}.
@@ -216,13 +215,18 @@ public class RealmUserQuery {
         }
 
         // Finally, state any sort fields we'll use to sort the results (and the directions of each).
-        if (!sortFields.isEmpty()) {
-            builder.append(" Sort the results by ")
-                   .append(ListPhrase.from(" and ", ", ", ", and ").join(sortStrings()).toString())
-                   .append(".");
-        }
+        if (!sortFields.isEmpty()) builder.append(" Sort the results by ")
+                                          .append(getSortString());
 
         return builder.toString();
+    }
+
+    /**
+     * Return a human-readable sort string.
+     * @return Human-readable sort string.
+     */
+    String getSortString() {
+        return ListPhrase.from(" and ", ", ", ", and ").join(sortStrings()).toString() + ".";
     }
 
     /**
@@ -236,36 +240,12 @@ public class RealmUserQuery {
             sorts.add(String.format(
                     "%s (%s)",
                     fieldData.visibleNameOf(sortFields.get(i)),
-                    prettySortDirStringForField(sortFields.get(i), sortDirs.get(i))
+                    Ruqus.prettySortDirStringForField(queryClass.getSimpleName(), sortFields.get(i), sortDirs.get(i))
             ));
         }
         return sorts;
     }
 
-    /**
-     * Gets a "pretty" version of the sort direction based on a field's type.
-     * @param fieldName Field name.
-     * @param sortDir   Sort direction.
-     * @return Pretty sort direction string.
-     */
-    private String prettySortDirStringForField(String fieldName, Sort sortDir) {
-        Class fieldType = Ruqus.typeForField(queryClass.getSimpleName(), fieldName);
-        if (sortDir == Sort.ASCENDING) {
-            // Ascending direction.
-            if (Boolean.class.isAssignableFrom(fieldType)) return "false before true";
-            else if (Date.class.isAssignableFrom(fieldType)) return "earliest to latest";
-            else if (Number.class.isAssignableFrom(fieldType)) return "lowest to highest";
-            else if (String.class.isAssignableFrom(fieldType)) return "a to Z";
-            else throw new IllegalArgumentException("Invalid field type.");
-        } else {
-            // Descending direction.
-            if (Boolean.class.isAssignableFrom(fieldType)) return "true before false";
-            else if (Date.class.isAssignableFrom(fieldType)) return "latest to earliest";
-            else if (Number.class.isAssignableFrom(fieldType)) return "highest to lowest";
-            else if (String.class.isAssignableFrom(fieldType)) return "Z to a";
-            else throw new IllegalArgumentException("Invalid field type.");
-        }
-    }
 
     /**
      * Get a string which holds all of the information needed to create a {@link RealmUserQuery} identical to this one.
