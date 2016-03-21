@@ -83,7 +83,7 @@ public class Ruqus {
     }
 
     /**
-     * Ensures that {@link Ruqus#init()} has been called.
+     * Ensures that {@link Ruqus#init(Context)} has been called.
      */
     private static void ensureInit() {
         if (INSTANCE == null) throw ex("Ruqus.init() must be called first.");
