@@ -1,6 +1,7 @@
 package com.bkromhout.ruqus.transformers;
 
 import com.bkromhout.ruqus.Condition;
+import com.bkromhout.ruqus.FieldType;
 import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
 import io.realm.RealmObject;
@@ -23,20 +24,21 @@ public class GreaterThanOrEqualTo extends RUQTransformer {
 
         // Get data from Conditions.
         String field = condition.getField();
-        String fieldTypeName = condition.getFieldType().getCanonicalName();
+        FieldType fieldType = condition.getFieldType();
         Object[] args = condition.getArgs();
 
         // Use different methods based on field type.
-        if (Names.DATE_CANON_NAME.equals(fieldTypeName))
+        if (FieldType.DATE == fieldType)
             return realmQuery.greaterThanOrEqualTo(field, (Date) args[0]);
-        else if (Names.DOUBLE_CANON_NAME.equals(fieldTypeName))
+        else if (FieldType.DOUBLE == fieldType)
             return realmQuery.greaterThanOrEqualTo(field, (Double) args[0]);
-        else if (Names.FLOAT_CANON_NAME.equals(fieldTypeName))
+        else if (FieldType.FLOAT == fieldType)
             return realmQuery.greaterThanOrEqualTo(field, (Float) args[0]);
-        else if (Names.INTEGER_CANON_NAME.equals(fieldTypeName))
+        else if (FieldType.INTEGER == fieldType)
             return realmQuery.greaterThanOrEqualTo(field, (Integer) args[0]);
-        else if (Names.LONG_CANON_NAME.equals(fieldTypeName))
+        else if (FieldType.LONG == fieldType)
             return realmQuery.greaterThanOrEqualTo(field, (Long) args[0]);
-        else throw new IllegalArgumentException(String.format("Illegal argument type \"%s\".", fieldTypeName));
+        else
+            throw new IllegalArgumentException(String.format("Illegal argument type \"%s\".", fieldType.getTypeName()));
     }
 }

@@ -1,6 +1,7 @@
 package com.bkromhout.ruqus.transformers;
 
 import com.bkromhout.ruqus.Condition;
+import com.bkromhout.ruqus.FieldType;
 import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
 import io.realm.RealmObject;
@@ -23,18 +24,19 @@ public class EqualTo extends RUQTransformer {
 
         // Get data from Conditions.
         String field = condition.getField();
-        String fieldTypeName = condition.getFieldType().getCanonicalName();
+        FieldType fieldType = condition.getFieldType();
         Object[] args = condition.getArgs();
 
         // Use different methods based on field type.
-        if (Names.BOOLEAN_CANON_NAME.equals(fieldTypeName)) return realmQuery.equalTo(field, (Boolean) args[0]);
-        else if (Names.DATE_CANON_NAME.equals(fieldTypeName)) return realmQuery.equalTo(field, (Date) args[0]);
-        else if (Names.DOUBLE_CANON_NAME.equals(fieldTypeName)) return realmQuery.equalTo(field, (Double) args[0]);
-        else if (Names.FLOAT_CANON_NAME.equals(fieldTypeName)) return realmQuery.equalTo(field, (Float) args[0]);
-        else if (Names.INTEGER_CANON_NAME.equals(fieldTypeName)) return realmQuery.equalTo(field, (Integer) args[0]);
-        else if (Names.LONG_CANON_NAME.equals(fieldTypeName)) return realmQuery.equalTo(field, (Long) args[0]);
-        else if (Names.SHORT_CANON_NAME.equals(fieldTypeName)) return realmQuery.equalTo(field, (Short) args[0]);
-        else if (Names.STRING_CANON_NAME.equals(fieldTypeName)) return realmQuery.equalTo(field, (String) args[0]);
-        else throw new IllegalArgumentException(String.format("Illegal argument type \"%s\".", fieldTypeName));
+        if (FieldType.BOOLEAN == fieldType) return realmQuery.equalTo(field, (Boolean) args[0]);
+        else if (FieldType.DATE == fieldType) return realmQuery.equalTo(field, (Date) args[0]);
+        else if (FieldType.DOUBLE == fieldType) return realmQuery.equalTo(field, (Double) args[0]);
+        else if (FieldType.FLOAT == fieldType) return realmQuery.equalTo(field, (Float) args[0]);
+        else if (FieldType.INTEGER == fieldType) return realmQuery.equalTo(field, (Integer) args[0]);
+        else if (FieldType.LONG == fieldType) return realmQuery.equalTo(field, (Long) args[0]);
+        else if (FieldType.SHORT == fieldType) return realmQuery.equalTo(field, (Short) args[0]);
+        else if (FieldType.STRING == fieldType) return realmQuery.equalTo(field, (String) args[0]);
+        else
+            throw new IllegalArgumentException(String.format("Illegal argument type \"%s\".", fieldType.getTypeName()));
     }
 }

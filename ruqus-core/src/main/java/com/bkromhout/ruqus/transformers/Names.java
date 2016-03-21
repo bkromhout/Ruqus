@@ -1,21 +1,9 @@
 package com.bkromhout.ruqus.transformers;
 
-import java.util.Date;
-
 /**
  * Transformer names.
  */
 final class Names {
-    // Java type canonical names.
-    static final String BOOLEAN_CANON_NAME = Boolean.class.getName();
-    static final String DATE_CANON_NAME = Date.class.getName();
-    static final String DOUBLE_CANON_NAME = Double.class.getName();
-    static final String FLOAT_CANON_NAME = Float.class.getName();
-    static final String INTEGER_CANON_NAME = Integer.class.getName();
-    static final String LONG_CANON_NAME = Long.class.getName();
-    static final String SHORT_CANON_NAME = Short.class.getName();
-    static final String STRING_CANON_NAME = String.class.getName();
-
     // Class names.
     public static final String BEGIN_GROUP = "(";
     public static final String BEGINS_WITH = "begins with";

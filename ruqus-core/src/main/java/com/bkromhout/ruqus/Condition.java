@@ -66,7 +66,7 @@ public class Condition {
      * The type of the field. If the field is a primitive, this will be the boxed version of it. If the field is a
      * subclass of RealmObject or a RealmList, this will be the type of the field on that object.
      */
-    private Class<?> fieldType;
+    private FieldType fieldType;
     /**
      * The args which will be used for this condition. The types of these will be verified to ensure that they match
      * {@link #fieldType} before they are passed to the transformer.
@@ -116,7 +116,7 @@ public class Condition {
             // Figure out args.
             String[] argParts = parts[3].split("\\Q" + ARG_SEP + "\\E");
             args = new Object[argParts.length];
-            for (int i = 0; i < argParts.length; i++) args[i] = Caster.parseString(argParts[i]);
+            for (int i = 0; i < argParts.length; i++) args[i] = FieldType.parseDataString(argParts[i]);
         }
 
         // Figure out transformer.
@@ -162,7 +162,7 @@ public class Condition {
         // We can only do this if we have both the realmClass and the field name.
         if (realmClass == null || realmClass.isEmpty() || field == null || field.isEmpty()) return;
         // Get field type from our generated info.
-        fieldType = Ruqus.typeForField(realmClass, field);
+        fieldType = Ruqus.typeEnumForField(realmClass, field);
     }
 
     /**
@@ -206,7 +206,7 @@ public class Condition {
      */
     private boolean isTransformerValid() {
         return validStr(transformer) && Ruqus.knowsOfTransformer(transformer) &&
-                (type != Type.NORMAL || Ruqus.transformerAcceptsType(transformer, fieldType));
+                (type != Type.NORMAL || Ruqus.transformerAcceptsType(transformer, fieldType.getClazz()));
     }
 
     /**
@@ -221,7 +221,7 @@ public class Condition {
         else if (numArgs > 0) {
             if (fieldType == null || args == null || args.length < numArgs) return false;
             // Ensure that the first [numArgs] items in args have the same type as fieldType.
-            for (int i = 0; i < numArgs; i++) if (!fieldType.isInstance(args[i])) return false;
+            for (int i = 0; i < numArgs; i++) if (!fieldType.getClazz().isInstance(args[i])) return false;
             return true;
         } else throw new IllegalArgumentException("Transformer \"" + transformer + "\" has numArgs set to < -1.");
     }
@@ -261,7 +261,7 @@ public class Condition {
         tryResolveFieldType();
     }
 
-    public Class<?> getFieldType() {
+    public FieldType getFieldType() {
         return fieldType;
     }
 
@@ -385,7 +385,7 @@ public class Condition {
     private String argsToString() {
         StringBuilder argsStr = new StringBuilder();
         for (Object arg : args)
-            argsStr.append(Caster.makeString(arg))
+            argsStr.append(FieldType.makeDataString(arg))
                    .append(ARG_SEP);
         if (argsStr.length() > 1) argsStr.deleteCharAt(argsStr.lastIndexOf(ARG_SEP));
         return argsStr.toString();

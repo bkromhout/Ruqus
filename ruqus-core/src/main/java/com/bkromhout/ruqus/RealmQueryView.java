@@ -617,11 +617,12 @@ public class RealmQueryView extends FrameLayout {
          * Called when the selected spinner item is changed.
          */
         void setSortDirOptions(int index, String visibleFieldName) {
-            String[] pretty = Ruqus.prettySortDirStringsForField(currClassName,
-                    Ruqus.flatFieldNameFromVisibleFlatFieldName(currClassName, visibleFieldName));
+            String[] pretty = Ruqus.typeEnumForField(currClassName, Ruqus.fieldFromVisibleField(
+                    currClassName, visibleFieldName)).getPrettySortStrings();
             RadioGroup rg = sortDirOptions.get(index);
             ((RadioButton) rg.findViewById(R.id.asc)).setText(pretty[0]);
             ((RadioButton) rg.findViewById(R.id.desc)).setText(pretty[1]);
+            rg.setVisibility(VISIBLE);
         }
 
         /**
@@ -633,7 +634,7 @@ public class RealmQueryView extends FrameLayout {
 
             // Get sort fields.
             for (Spinner spinner : spinners)
-                sortFields.add(Ruqus.fieldNameFromVisibleName(currClassName, (String) spinner.getSelectedItem()));
+                sortFields.add(Ruqus.fieldFromVisibleField(currClassName, (String) spinner.getSelectedItem()));
             for (RadioGroup radioGroup : sortDirOptions)
                 sortDirs.add(radioGroup.getCheckedRadioButtonId() == R.id.asc ? Sort.ASCENDING : Sort.DESCENDING);
 

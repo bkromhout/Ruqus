@@ -1,6 +1,7 @@
 package com.bkromhout.ruqus.transformers;
 
 import com.bkromhout.ruqus.Condition;
+import com.bkromhout.ruqus.FieldType;
 import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
 import io.realm.RealmObject;
@@ -20,10 +21,11 @@ public class BeginsWith extends RUQTransformer {
 
         // Get data from Conditions.
         String field = condition.getField();
-        String fieldTypeName = condition.getFieldType().getCanonicalName();
+        FieldType fieldType = condition.getFieldType();
         Object[] args = condition.getArgs();
 
-        if (Names.STRING_CANON_NAME.equals(fieldTypeName)) return realmQuery.beginsWith(field, (String) args[0]);
-        else throw new IllegalArgumentException(String.format("Illegal argument type \"%s\".", fieldTypeName));
+        if (FieldType.STRING == fieldType) return realmQuery.beginsWith(field, (String) args[0]);
+        else
+            throw new IllegalArgumentException(String.format("Illegal argument type \"%s\".", fieldType.getTypeName()));
     }
 }

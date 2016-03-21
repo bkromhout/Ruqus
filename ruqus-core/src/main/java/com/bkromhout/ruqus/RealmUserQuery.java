@@ -180,7 +180,7 @@ public class RealmUserQuery {
 
     /**
      * Get a human-readable version of this query, suitable for displaying for the user.
-     * <p/>
+     * <p>
      * This will return null if the query isn't currently valid.
      * @return Human-readable query string.
      */
@@ -240,7 +240,8 @@ public class RealmUserQuery {
             sorts.add(String.format(
                     "%s (%s)",
                     fieldData.visibleNameOf(sortFields.get(i)),
-                    Ruqus.prettySortDirStringForField(queryClass.getSimpleName(), sortFields.get(i), sortDirs.get(i))
+                    Ruqus.typeEnumForField(queryClass.getSimpleName(), sortFields.get(i))
+                         .getPrettySortString(sortDirs.get(i))
             ));
         }
         return sorts;
@@ -251,7 +252,7 @@ public class RealmUserQuery {
      * Get a string which holds all of the information needed to create a {@link RealmUserQuery} identical to this one.
      * This string is not something which should be shown to users, it is intended to be stored somewhere so that it can
      * be used to recreate this query again later.
-     * <p/>
+     * <p>
      * This will return null if the query isn't currently in a valid state.
      * @return Internal string representation of this query.
      */
