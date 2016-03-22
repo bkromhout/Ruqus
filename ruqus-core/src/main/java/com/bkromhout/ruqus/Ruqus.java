@@ -261,7 +261,6 @@ public class Ruqus {
      * @return List of visible flat field names.
      */
     static ArrayList<String> visibleFlatFieldsForClass(String realmClass) {
-        // TODO cache this??
         ClassData classData = getClassData();
         return _visibleFlatFieldsForClass(classData, classData.getFieldData(realmClass), "");
     }

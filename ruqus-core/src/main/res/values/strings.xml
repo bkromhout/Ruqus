@@ -26,6 +26,8 @@
     <string name="enter_number_hint">Enter a number</string>
     <string name="enter_whole_number_hint">Enter a whole number</string>
     <string name="enter_string_hint">Enter a string</string>
+    <string name="empty_error">Please enter a value.</string>
+    <string name="out_of_range_number_error">Value must be between $1%s and $2%s.</string>
 
     <string name="choose_sort_fields_title">Choose Sort Fields</string>
     <string name="choose_sort_fields_prompt">Choose Sort Fields (Currently None)</string>

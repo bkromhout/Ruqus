@@ -476,19 +476,85 @@ public class RealmQueryView extends FrameLayout {
      * Helps keep track of views while in condition builder mode.
      */
     private class ConditionBuilderHelper extends BuilderHelper {
+        public Spinner fieldChooser;
+        public FieldType fieldType;
+        public LinearLayout conditionalChooserCont;
+        public Spinner conditionalChooser;
+        public ArrayList<View> argViews;
 
-        ConditionBuilderHelper() {
+        ConditionBuilderHelper(Condition condition) {
             super();
-        }
+            // Set header text.
+            header.setText(R.string.edit_condition_title);
+            // Create array.
+            argViews = new ArrayList<>();
+            // Inflate and set up Spinners and labels.
+            // Set up field chooser.
+            LinearLayout fieldChooserCont = (LinearLayout) View.inflate(getContext(), R.layout.tv_spinner, null);
+            ((TextView) fieldChooserCont.findViewById(R.id.label)).setText(
+                    getContext().getString(R.string.choose_field_prompt, queryableChooser.getCardText()));
+            fieldChooser = (Spinner) fieldChooserCont.findViewById(R.id.spinner);
+            // Set up field chooser spinner. TODO
+            ArrayAdapter<String> fieldAdapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_spinner_dropdown_item, currVisibleFlatFieldNames);
+            fieldChooser.setAdapter(fieldAdapter);
+            fieldChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    setField((String) parent.getItemAtPosition(position));
+                }
 
-        void bind() {
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    removeArgViews();
+                    conditionalChooserCont.setVisibility(GONE);
+                }
+            });
 
+            // Set up conditional chooser.
+            conditionalChooserCont = (LinearLayout) View.inflate(getContext(), R.layout.tv_spinner, null);
+            ((TextView) conditionalChooserCont.findViewById(R.id.label)).setText(R.string.choose_conditional);
+            conditionalChooser = (Spinner) conditionalChooserCont.findViewById(R.id.spinner);
+            // Set up conditional chooser spinner. TODO
+            conditionalChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    removeArgViews();
+                    addArgViewsFor((String) parent.getItemAtPosition(position));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    removeArgViews();
+                }
+            });
+
+            // Set save button.
             saveButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO.
+                    saveClicked();
                 }
             });
+        }
+
+        private void setField(String visibleFieldName) {
+            // TODO
+        }
+
+        private void addArgViewsFor(String visibleTransName) {
+            // TODO
+        }
+
+        private void removeArgViews() {
+            int total = builderCont.getChildCount();
+            if (total <= 3) return;
+            for (int i = 2; i <= total - 2; i++) builderCont.removeViewAt(i);
+        }
+
+        private void saveClicked() {
+            // TODO
+            // Validate!!!
         }
     }
 
@@ -546,7 +612,7 @@ public class RealmQueryView extends FrameLayout {
         /**
          * Called to add a sort field layout.
          */
-        void addSortField() {
+        private void addSortField() {
             final int idx = spinners.size();
             RelativeLayout sortPart = (RelativeLayout) View.inflate(getContext(), R.layout.sort_part, null);
 
@@ -600,7 +666,7 @@ public class RealmQueryView extends FrameLayout {
         /**
          * Called when a remove button is clicked.
          */
-        void removeSortField(int index) {
+        private void removeSortField(int index) {
             // Remove from holder.
             spinners.remove(index);
             removeButtons.remove(index);
@@ -616,7 +682,7 @@ public class RealmQueryView extends FrameLayout {
         /**
          * Called when the selected spinner item is changed.
          */
-        void setSortDirOptions(int index, String visibleFieldName) {
+        private void setSortDirOptions(int index, String visibleFieldName) {
             String[] pretty = Ruqus.typeEnumForField(currClassName, Ruqus.fieldFromVisibleField(
                     currClassName, visibleFieldName)).getPrettySortStrings();
             RadioGroup rg = sortDirOptions.get(index);
@@ -628,7 +694,7 @@ public class RealmQueryView extends FrameLayout {
         /**
          * Called when the save button is clicked.
          */
-        void saveClicked() {
+        private void saveClicked() {
             ArrayList<String> sortFields = new ArrayList<>();
             ArrayList<Sort> sortDirs = new ArrayList<>();
 
