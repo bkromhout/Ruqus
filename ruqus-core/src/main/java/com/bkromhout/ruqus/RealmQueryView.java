@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
@@ -175,23 +177,30 @@ public class RealmQueryView extends FrameLayout {
         // TODO
     }
 
-    /**
-     * Call to save the state of this view.
-     * @param outState Bundle to save state to.
-     */
-    public void saveInstanceState(Bundle outState) {
-        if (outState == null) return;
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        // Allow parent classes to save state.
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+
+        // TODO Save our state.
         // TODO theme, mode, currIdx, ruq string
         // TODO add holder to builderCont tag??
+
+        return ss;
     }
 
-    /**
-     * Call to restore the state of this view.
-     * @param inState Bundle to restore state to.
-     */
-    public void restoreInstanceState(Bundle inState) {
-        if (inState == null) return;
-        // TODO
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        //Allow parent classes to restore state.
+        if (!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+
+        // TODO Restore our state.
     }
 
     private void switchMode(Mode mode) {
@@ -1068,5 +1077,33 @@ public class RealmQueryView extends FrameLayout {
             // Switch back to main container.
             switchMode(Mode.MAIN);
         }
+    }
+
+    static class SavedState extends BaseSavedState {
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            // TODO
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            // TODO
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }
