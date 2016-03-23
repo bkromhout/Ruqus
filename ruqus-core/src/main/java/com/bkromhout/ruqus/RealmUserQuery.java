@@ -1,5 +1,7 @@
 package com.bkromhout.ruqus;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.squareup.phrase.ListPhrase;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
  * <p>
  * TODO make this Parcelable!
  */
-public class RealmUserQuery {
+public class RealmUserQuery implements Parcelable {
     private static final String PART_SEP = "#$_Ruqus_RUQ_$#";
     private static final String COND_SEP = "#$_Condition_$#";
     private static final String SORT_SEP = "#$_Sort_$#";
@@ -288,4 +290,38 @@ public class RealmUserQuery {
 
         return builder.toString();
     }
+
+    /* Parcelable implementation. */
+
+    @Override
+    public int describeContents() { return 0; }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeSerializable(this.queryClass);
+        dest.writeTypedList(conditions);
+        dest.writeStringList(this.sortFields);
+        ArrayList<Integer> temp = new ArrayList<>();
+        for (Sort sortDir : this.sortDirs) temp.add(sortDir.ordinal());
+        dest.writeList(temp);
+    }
+
+    protected RealmUserQuery(Parcel in) {
+        // noinspection unchecked
+        this.queryClass = (Class<? extends RealmObject>) in.readSerializable();
+        this.conditions = in.createTypedArrayList(Condition.CREATOR);
+        this.sortFields = in.createStringArrayList();
+        this.sortDirs = new ArrayList<>();
+        ArrayList<Integer> temp = new ArrayList<>();
+        in.readList(temp, null);
+        for (Integer sortOrdinal : temp) this.sortDirs.add(Sort.values()[sortOrdinal]);
+    }
+
+    public static final Parcelable.Creator<RealmUserQuery> CREATOR = new Parcelable.Creator<RealmUserQuery>() {
+        @Override
+        public RealmUserQuery createFromParcel(Parcel source) {return new RealmUserQuery(source);}
+
+        @Override
+        public RealmUserQuery[] newArray(int size) {return new RealmUserQuery[size];}
+    };
 }
