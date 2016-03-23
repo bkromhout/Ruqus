@@ -143,6 +143,27 @@ public enum FieldType {
         }
     }
 
+    static Object parseNumberIfPossible(FieldType type, String string) {
+        try {
+            switch (type) {
+                case DOUBLE:
+                    return Double.valueOf(string);
+                case FLOAT:
+                    return Float.valueOf(string);
+                case INTEGER:
+                    return Integer.valueOf(string);
+                case LONG:
+                    return Long.valueOf(string);
+                case SHORT:
+                    return Short.valueOf(string);
+                default:
+                    return null;
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     private static class S {
         static final String SEP = "::";
         static final String BOOLEAN_NAME = "BOOLEAN";

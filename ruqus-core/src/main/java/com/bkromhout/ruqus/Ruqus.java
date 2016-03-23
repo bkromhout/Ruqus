@@ -6,6 +6,7 @@ import io.realm.RealmObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Access to Ruqus information. This class mostly serves as a convenience class, using the instances of {@link
@@ -13,7 +14,11 @@ import java.util.HashMap;
  * of the library to make on-liner calls as much as possible.
  */
 public class Ruqus {
+    private static final String FLAT_SEP = ".";
+    private static final String VIS_FLAT_SEP = "VIS_FLAT_SEP";
+
     static int LIGHT_TEXT_COLOR, DARK_TEXT_COLOR;
+    static String CHOOSE_FIELD, CHOOSE_CONDITIONAL;
     /**
      * Whether or not Ruqus.init() has already been called.
      */
@@ -90,6 +95,9 @@ public class Ruqus {
                 LIGHT_TEXT_COLOR = context.getColor(R.color.textColorPrimaryLight);
                 DARK_TEXT_COLOR = context.getColor(R.color.textColorPrimaryDark);
             }
+
+            CHOOSE_FIELD = context.getString(R.string.choose_field);
+            CHOOSE_CONDITIONAL = context.getString(R.string.choose_conditional);
         }
     }
 
@@ -185,7 +193,7 @@ public class Ruqus {
         if (fieldData == null) throw ex("\"%s\" is not a valid realm object class name.", realmClass);
 
         // Split field name up so that we can drill down to the end of any linked fields.
-        String[] fieldParts = field.split("\\Q.\\E");
+        String[] fieldParts = field.split("\\Q" + FLAT_SEP + "\\E");
         for (String fieldPart : fieldParts) {
             // Make sure we have this field part.
             if (!fieldData.hasField(fieldPart)) return false;
@@ -232,7 +240,7 @@ public class Ruqus {
             FieldData fieldData = classData.getFieldData(realmClass);
             if (fieldData == null) throw ex("\"%s\" is not a valid realm object class name.", realmClass);
             // Split field name up so that we can drill down to the end of any linked fields.
-            String[] fieldParts = field.split("\\Q.\\E");
+            String[] fieldParts = field.split("\\Q" + FLAT_SEP + "\\E");
             Class fieldTypeClazz = null;
             for (String fieldPart : fieldParts) {
                 // Try to get it as a realm list type.
@@ -276,13 +284,13 @@ public class Ruqus {
             if (fieldData.isRealmListType(name)) {
                 // Field type is RealmList, recurse and get its visible names as well.
                 vNames.addAll(_visibleFlatFieldsForClass(classData,
-                        classData.getFieldData(fieldData.realmListType(name)), prepend + ">" + visibleName));
+                        classData.getFieldData(fieldData.realmListType(name)), prepend + VIS_FLAT_SEP + visibleName));
             } else if (fieldData.isRealmObjectType(name)) {
                 // Field type is RealmObject, recurse and get its visible names as well.
                 //noinspection unchecked
                 vNames.addAll(_visibleFlatFieldsForClass(classData,
                         classData.getFieldData((Class<? extends RealmObject>) fieldData.fieldType(name)),
-                        prepend + ">" + visibleName));
+                        prepend + VIS_FLAT_SEP + visibleName));
             } else {
                 // Normal field, just add its visible name.
                 vNames.add(visibleName);
@@ -306,7 +314,7 @@ public class Ruqus {
         // If not cached, must go figure it out.
         ClassData classData = getClassData();
         FieldData fieldData = classData.getFieldData(realmClass);
-        String[] parts = visibleFieldName.split("\\Q>\\E");
+        String[] parts = visibleFieldName.split("\\Q" + VIS_FLAT_SEP + "\\E");
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < parts.length; i++) {
@@ -316,7 +324,7 @@ public class Ruqus {
             builder.append(realFieldName);
             if (i < parts.length - 1) {
                 // This is a RealmObject/RealmList-type field. Append a dot and switch the field data.
-                builder.append(".");
+                builder.append(FLAT_SEP);
                 if (fieldData.isRealmListType(realFieldName)) {
                     fieldData = classData.getFieldData(fieldData.realmListType(realFieldName));
                 } else {
@@ -328,8 +336,45 @@ public class Ruqus {
         }
         // Cache this before returning it.
         String value = builder.toString();
-        INSTANCE.flatVisFieldToFlatField.put(key, value);
+        INSTANCE.flatVisFieldToFlatField.put(key, realmClass + "$" + value);
         return value;
+    }
+
+    /**
+     * Takes a real flat field name and converts it to a visible flat field name.
+     * @param realmClass Name of the RealmObject subclass.
+     * @param field      Real flat field name.
+     * @return Visible flat field name.
+     */
+    static String visibleFieldFromField(String realmClass, String field) {
+        ensureInit();
+        String value = realmClass + "$" + field;
+        // Try to get cached key first.
+        if (INSTANCE.flatVisFieldToFlatField.containsValue(value)) {
+            for (Map.Entry<String, String> entry : INSTANCE.flatVisFieldToFlatField.entrySet()) {
+                if (entry.getValue().equals(value)) return entry.getKey();
+            }
+        }
+
+        // If not cached, must go figure it out.
+        StringBuilder builder = new StringBuilder();
+        String className = realmClass;
+        String[] parts = field.split("\\Q" + FLAT_SEP + "\\E");
+        for (int i = 0; i < parts.length; i++) {
+            if (i != parts.length - 1) {
+                // Not at the end of the link yet.
+                className = parts[i];
+                builder.append(INSTANCE.classData.visibleNameOf(parts[i]))
+                       .append(VIS_FLAT_SEP);
+            } else {
+                // This is the end of the link.
+                builder.append(getFieldData(className).visibleNameOf(parts[i]));
+            }
+        }
+        // Cache this before returning it.
+        String key = builder.toString();
+        INSTANCE.flatVisFieldToFlatField.put(realmClass + "$" + key, value);
+        return key;
     }
 
     /**

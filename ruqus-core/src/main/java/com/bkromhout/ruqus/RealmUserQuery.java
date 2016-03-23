@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 /**
  * Used to let end-users build Realm Queries by wrapping {@link io.realm.RealmQuery}.
+ * <p>
+ * TODO make this Parcelable!
  */
 public class RealmUserQuery {
     private static final String PART_SEP = "#$_Ruqus_RUQ_$#";

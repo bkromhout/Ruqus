@@ -18,20 +18,27 @@
     <string name="add_condition_nl">Add\nCondition</string>
     <string name="remove_condition">Remove Condition?</string>
     <string name="edit_condition_title">Edit Condition</string>
-    <string name="choose_field_prompt">Choose a field on $1%s: </string>
-    <string name="choose_conditional">Choose Conditional: </string>
+    <string name="choose_field">Choose a Field</string>
+    <string name="choose_conditional">Choose a Conditional</string>
     <string name="true_string">True</string>
     <string name="false_string">False</string>
     <string name="choose_date_hint">Choose a date</string>
     <string name="enter_number_hint">Enter a number</string>
     <string name="enter_whole_number_hint">Enter a whole number</string>
     <string name="enter_string_hint">Enter a string</string>
-    <string name="empty_error">Please enter a value.</string>
-    <string name="out_of_range_number_error">Value must be between $1%s and $2%s.</string>
+
+    <string name="error_must_set_field">A field must be chosen.</string>
+    <string name="error_must_set_conditional">A conditional must be chosen.</string>
+    <string name="error_empty_input">Please enter a value.</string>
+    <string name="error_out_of_range_double">Value must be between 4.9*10^-324 and 1.79*10^308.</string>
+    <string name="error_out_of_range_float">Value must be between 1.4*10^-45 and 3.4*10^38.</string>
+    <string name="error_out_of_range_integer">Value must be a whole number between –2^31 and 2^31 – 1.</string>
+    <string name="error_out_of_range_long">Value must be a whole number between –2^63 and 2^63 – 1.</string>
+    <string name="error_out_of_range_short">Value must be a whole number between –2^15 and 2^15 – 1.</string>
 
     <string name="choose_sort_fields_title">Choose Sort Fields</string>
     <string name="choose_sort_fields_prompt">Choose Sort Fields (Currently None)</string>
-    <string name="sort_field_label">Sort field $1%d on $2%s: </string>
+    <string name="sort_field_label">Sort field $1%d: </string>
     <string name="add_sort_field">Add Sort Field</string>
     <string name="remove_sort_field">Remove Sort Field</string>
 </resources>
