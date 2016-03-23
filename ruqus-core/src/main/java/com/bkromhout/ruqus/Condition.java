@@ -1,5 +1,7 @@
 package com.bkromhout.ruqus;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.squareup.phrase.ListPhrase;
 import com.squareup.phrase.Phrase;
 
@@ -8,7 +10,7 @@ import java.util.Arrays;
 /**
  * This class is responsible for holding a condition.
  */
-public class Condition {
+public class Condition implements Parcelable {
     private static final String C_SEP = "|||";
     private static final String ARG_SEP = ";,;";
     private static final String BEGIN_GROUP_TNAME = "BeginGroup";
@@ -114,9 +116,7 @@ public class Condition {
             setField(parts[2]);
 
             // Figure out args.
-            String[] argParts = parts[3].split("\\Q" + ARG_SEP + "\\E");
-            args = new Object[argParts.length];
-            for (int i = 0; i < argParts.length; i++) args[i] = FieldType.parseDataString(argParts[i]);
+            args = argsFromString(parts[3]);
         }
 
         // Figure out transformer.
@@ -390,4 +390,45 @@ public class Condition {
         if (argsStr.length() > 1) argsStr.deleteCharAt(argsStr.lastIndexOf(ARG_SEP));
         return argsStr.toString();
     }
+
+    private Object[] argsFromString(String argsString) {
+        String[] argParts = argsString.split("\\Q" + ARG_SEP + "\\E");
+        Object[] args = new Object[argParts.length];
+        for (int i = 0; i < argParts.length; i++) args[i] = FieldType.parseDataString(argParts[i]);
+        return args;
+    }
+
+    /* Parcelable implementation. */
+
+    @Override
+    public int describeContents() { return 0; }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.type == null ? -1 : this.type.ordinal());
+        dest.writeString(this.realmClass);
+        dest.writeString(this.field);
+        dest.writeInt(this.fieldType == null ? -1 : this.fieldType.ordinal());
+        dest.writeString(argsToString());
+        dest.writeString(this.transformer);
+    }
+
+    protected Condition(Parcel in) {
+        int tmpType = in.readInt();
+        this.type = tmpType == -1 ? null : Type.values()[tmpType];
+        this.realmClass = in.readString();
+        this.field = in.readString();
+        int tmpFieldType = in.readInt();
+        this.fieldType = tmpFieldType == -1 ? null : FieldType.values()[tmpFieldType];
+        this.args = argsFromString(in.readString());
+        this.transformer = in.readString();
+    }
+
+    public static final Parcelable.Creator<Condition> CREATOR = new Parcelable.Creator<Condition>() {
+        @Override
+        public Condition createFromParcel(Parcel source) {return new Condition(source);}
+
+        @Override
+        public Condition[] newArray(int size) {return new Condition[size];}
+    };
 }
