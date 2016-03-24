@@ -432,6 +432,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                 builderCont.setVisibility(VISIBLE);
                 break;
         }
+        this.mode = mode;
     }
 
     /**
