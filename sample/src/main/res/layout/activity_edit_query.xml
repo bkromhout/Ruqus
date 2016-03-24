@@ -11,6 +11,7 @@
         tools:context="com.bkromhout.ruqus.sample.EditQueryActivity">
 
     <com.bkromhout.ruqus.RealmQueryView
+            android:id="@+id/rqv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 </RelativeLayout>
