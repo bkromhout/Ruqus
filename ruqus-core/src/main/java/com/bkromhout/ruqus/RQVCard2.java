@@ -179,6 +179,14 @@ public class RQVCard2 extends FrameLayout {
         cardView.setOnClickListener(listener);
     }
 
+    /**
+     * Set the OnLongClickListener for the card view.
+     * @param listener OnLongClickListener.
+     */
+    void setCardLongClickListener(@Nullable OnLongClickListener listener) {
+        cardView.setOnLongClickListener(listener);
+    }
+
     @Override
     public void setTag(Object tag) {
         super.setTag(tag);

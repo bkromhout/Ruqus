@@ -629,7 +629,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         String realName = Ruqus.transformerNameFromVisibleName(visibleName, true);
         RQVCard2 card = (RQVCard2) partsCont.getChildAt(index);
         card.setTag(R.id.curr_val, visibleName);
-        if (index == partsCont.getChildCount() - 1) {
+        if (card.getMode() == RQVCard2.Mode.OUTLINES) {
             // This was an outline-mode card before this, and ruq doesn't have a condition for it.
             // Set the card's card listener and long click listener.
             card.setCardClickListener(new OnClickListener() {
@@ -638,7 +638,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     onOperatorClicked((Integer) v.getTag(R.id.index), (String) v.getTag(R.id.curr_val));
                 }
             });
-            card.setOnLongClickListener(new OnLongClickListener() {
+            card.setCardLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     onPartLongClicked((Integer) v.getTag(R.id.index));
@@ -758,7 +758,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                             onConditionClicked((Integer) v.getTag(R.id.index));
                         }
                     });
-                    card.setOnLongClickListener(new OnLongClickListener() {
+                    card.setCardLongClickListener(new OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
                             onPartLongClicked((Integer) v.getTag(R.id.index));
