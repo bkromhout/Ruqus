@@ -32,7 +32,7 @@ public class Dog extends RealmObject {
         this.name = name;
         this.age = age;
         this.bones = new RealmList<>();
-        this.bones.addAll(bones);
+        if (bones != null) this.bones.addAll(bones);
         this.isDoge = isDoge;
     }
 }
