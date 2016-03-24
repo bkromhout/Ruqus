@@ -841,6 +841,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         fieldChooser.setVisibility(GONE);
         conditionalChooser.setVisibility(GONE);
         builderParts.removeAllViews();
+        builderCont.setVisibility(GONE);
 
         // Clean up vars.
         currPartIdx = -1;
@@ -1120,6 +1121,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         // Clean up views.
         addSortField.setVisibility(GONE);
         builderParts.removeAllViews();
+        builderCont.setVisibility(GONE);
 
         // Clean up vars.
         sortSpinnerIds = null;
