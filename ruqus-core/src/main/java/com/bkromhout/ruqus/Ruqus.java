@@ -219,12 +219,12 @@ public class Ruqus {
      * Get the enum type of a [flat-]field's type. If this is a flat-field (e.g., the immediate type on the class is a
      * RealmObject subclass or a RealmList of such), this will drill down to the end of the flat-field to get the type
      * from the end of it.
-     * <p>
+     * <p/>
      * For example, if {@code field} is something like "age", and the type for it in {@code realmClass} is Integer,
      * that's what would be returned.<br>But if instead {@code field} was something like "dog.age", where the immediate
      * type is a class called "{@code Dog}" which extends RealmObject and has an Integer field called "age", this method
      * would drill down and find that information, and still return Integer.
-     * <p>
+     * <p/>
      * Caches values for quicker future access.
      * @param realmClass Name of RealmObject subclass which contains the {@code field}.
      * @param field      Name of the field whose type is being retrieved.
@@ -265,6 +265,8 @@ public class Ruqus {
     /**
      * Return a list of visible names for all fields on the given RealmObject subclass, but for any fields whose types
      * are either also RealmObject subclass or RealmList, add entries for their fields as well.
+     * <p/>
+     * TODO something is broke here.
      * @param realmClass Name of the RealmObject subclass.
      * @return List of visible flat field names.
      */
