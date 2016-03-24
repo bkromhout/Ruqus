@@ -138,6 +138,53 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
     }
 
     /**
+     * Sets the theme of the view and any child views.
+     * @param theme Theme to switch to.
+     */
+    public void setTheme(RuqusTheme theme) {
+        this.theme = theme;
+
+        // Set theme on queryable and sort choosers.
+        queryableChooser.setTheme(theme);
+        sortChooser.setTheme(theme);
+
+        // Set theme on all condition cards.
+        for (int i = 0; i < partsCont.getChildCount(); i++)
+            ((RQVCard2) partsCont.getChildAt(i)).setTheme(theme);
+
+        // TODO Set for builder modes.
+    }
+
+    /**
+     * Check whether the {@link RealmUserQuery} that this {@link RealmQueryView} currently has is fully-formed.
+     * @return True if query is fully-formed, otherwise false.
+     */
+    public boolean isQueryValid() {
+        return ruq.isQueryValid();
+    }
+
+    /**
+     * Get the {@link RealmUserQuery} which this {@link RealmQueryView} currently has. Note that {@link RealmUserQuery}
+     * implements {@link Parcelable}, which allows it to be passed around quickly and easily.
+     * <p/>
+     * This method does not guarantee that the returned query will be fully-formed and valid. Call {@link
+     * RealmUserQuery#isQueryValid()} to check for validity before calling {@link RealmUserQuery#execute()}.
+     * @return Realm user query object.
+     */
+    public RealmUserQuery getRealmUserQuery() {
+        return this.ruq;
+    }
+
+    /**
+     * Set up this {@link RealmQueryView} using the given {@link RealmUserQuery}.
+     * @param ruq Realm user query to use to set up this {@link RealmQueryView}. Must be fully-formed.
+     */
+    public void setRealmUserQuery(RealmUserQuery ruq) {
+        this.ruq = ruq;
+        setupUsingRUQ();
+    }
+
+    /**
      * Initialize our view.
      * @param context Context to use.
      * @param attrs   Attributes.
@@ -406,24 +453,6 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
 
         // Append an add part view.
         appendAddPartView();
-    }
-
-    /**
-     * Sets the theme of the view and any child views.
-     * @param theme Theme to switch to.
-     */
-    public void setTheme(RuqusTheme theme) {
-        this.theme = theme;
-
-        // Set theme on queryable and sort choosers.
-        queryableChooser.setTheme(theme);
-        sortChooser.setTheme(theme);
-
-        // Set theme on all condition cards.
-        for (int i = 0; i < partsCont.getChildCount(); i++)
-            ((RQVCard2) partsCont.getChildAt(i)).setTheme(theme);
-
-        // TODO Set for builder modes.
     }
 
     /**
