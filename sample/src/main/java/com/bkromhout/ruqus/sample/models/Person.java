@@ -27,6 +27,8 @@ public class Person extends RealmObject {
     @Hide
     private long id;
 
+    public Person() {}
+
     public Person(String name, int age, Dog dog, long id) {
         this.name = name;
         this.age = age;
