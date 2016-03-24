@@ -234,8 +234,8 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
 
         if (theme == null) {
             // Get theme, default to light.
-            theme = typedArray.getResourceId(R.styleable.RealmQueryView_ruqus_theme, 0) == 0 ? RuqusTheme.LIGHT :
-                    RuqusTheme.DARK;
+            theme = typedArray.getInt(R.styleable.RealmQueryView_ruqus_theme, RuqusTheme.LIGHT.ordinal()) == 0
+                    ? RuqusTheme.LIGHT : RuqusTheme.DARK;
         }
 
         typedArray.recycle();

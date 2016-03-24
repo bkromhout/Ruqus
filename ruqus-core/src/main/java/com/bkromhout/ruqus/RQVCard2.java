@@ -71,7 +71,7 @@ public class RQVCard2 extends FrameLayout {
         // Read attributes.
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RQVCard2);
         // Get card mode, default to outline.
-        mode = typedArray.getResourceId(R.styleable.RQVCard2_rqv_card2_mode, 0) == 0 ? Mode.OUTLINES : Mode.CARD;
+        mode = typedArray.getInt(R.styleable.RQVCard2_rqv_card2_mode, 0) == 0 ? Mode.OUTLINES : Mode.CARD;
         // Set outlines text.
         outline1TextView.setText(typedArray.getString(R.styleable.RQVCard2_rqv_outline1_text));
         outline2TextView.setText(typedArray.getString(R.styleable.RQVCard2_rqv_outline2_text));
