@@ -92,7 +92,7 @@ class RQVCard extends FrameLayout {
                 R.color.cardview_dark_background);
 
         // Set text view text color.
-        cardTextView.setTextColor(theme == RuqusTheme.LIGHT ? Ruqus.LIGHT_TEXT_COLOR : Ruqus.DARK_TEXT_COLOR);
+        cardTextView.setTextColor(theme == RuqusTheme.LIGHT ? Ruqus.DARK_TEXT_COLOR : Ruqus.LIGHT_TEXT_COLOR);
     }
 
     /**
