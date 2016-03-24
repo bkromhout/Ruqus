@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Helps generate *$$RuqusFieldData classes.
  */
-public class FieldDataBuilder {
+class FieldDataBuilder {
     private static final String REAL_FIELD_NAMES = "realFieldNames";
     private static final String VISIBLE_FIELD_NAMES = "visibleFieldNames";
     private static final String TYPES = "types";
@@ -25,11 +25,11 @@ public class FieldDataBuilder {
     private static final String IS_REALM_OBJECT_TYPE = "isRealmObjectType";
     private static final String IS_REALM_LIST_TYPE = "isRealmListType";
 
-    ClassName className;
-    HashSet<String> realNames;
-    HashMap<String, String> visibleNames;
-    HashMap<String, TypeName> types;
-    HashMap<String, ClassName> realmListTypes;
+    private ClassName className;
+    private HashSet<String> realNames;
+    private HashMap<String, String> visibleNames;
+    private HashMap<String, TypeName> types;
+    private HashMap<String, ClassName> realmListTypes;
 
     FieldDataBuilder(String className) {
         this.className = ClassName.get(C.GEN_PKG, className + C.FIELD_DATA_SUFFIX);

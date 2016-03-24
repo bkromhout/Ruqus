@@ -13,10 +13,11 @@ final class Names {
     public static final String EQUAL_TO = "is";
     public static final String GREATER_THAN = "is greater than";
     public static final String GREATER_THAN_OR_EQUAL_TO = "is greater than or equal to";
-    public static final String HAS = "is present";
-    public static final String HAS_NOT = "isn't present";
+    //public static final String HAS = "is present";
+    //public static final String HAS_NOT = "isn't present";
     public static final String LESS_THAN = "is less than";
     public static final String LESS_THAN_OR_EQUAL_TO = "is less than or equal to";
+    //public static final String NOT = "not";
     public static final String NOT_EQUAL_TO = "is not";
     public static final String OR = "Or";
     public static final String STRING_CONTAINS = "contains the string";

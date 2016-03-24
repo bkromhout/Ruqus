@@ -13,12 +13,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Static utility methods which don't belong in {@link Ruqus}.
  */
 class Util {
-
+    /**
+     * For generating unique view IDs.
+     */
     private static final AtomicInteger nextGeneratedId = new AtomicInteger(1);
     /**
      * Formatting for date fields.
      */
-    static DateFormat dateFormat = SimpleDateFormat.getDateInstance();
+    static final DateFormat dateFormat = SimpleDateFormat.getDateInstance();
 
     static Calendar calFromString(String dateString) {
         Calendar c = Calendar.getInstance();
@@ -37,14 +39,11 @@ class Util {
         return dateFormat.format(c.getTime());
     }
 
-    /*
-     * Things to help us with obtaining unique view IDs.
-     * Credit to Xiaochao Yang's StackOverflow post here: http://stackoverflow.com/a/15442898/2263250
-     */
-
     /**
      * Generate a value suitable for use in {@link View#setId(int)}. This value will not collide with ID values
      * generated at build time by aapt for R.id.
+     * <p/>
+     * This is literally just a copy of API >= 17's {@link View#generateViewId()}.
      * @return a generated ID value
      */
     private static int generateViewId() {

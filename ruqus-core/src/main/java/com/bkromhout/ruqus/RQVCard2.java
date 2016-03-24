@@ -48,7 +48,7 @@ public class RQVCard2 extends FrameLayout {
         this(context, attrs, defStyleAttr, RuqusTheme.LIGHT);
     }
 
-    public RQVCard2(Context context, AttributeSet attrs, int defStyleAttr, RuqusTheme theme) {
+    private RQVCard2(Context context, AttributeSet attrs, int defStyleAttr, RuqusTheme theme) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, theme);
     }
@@ -117,6 +117,7 @@ public class RQVCard2 extends FrameLayout {
      */
     void setMode(Mode mode) {
         this.mode = mode;
+        updateMode();
     }
 
     /**

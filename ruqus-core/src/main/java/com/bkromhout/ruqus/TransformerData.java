@@ -7,7 +7,7 @@ import java.util.HashSet;
 /**
  * Generated extended class will contain data about all classes annotated with {@link Transformer}.
  */
-public abstract class TransformerData {
+abstract class TransformerData {
     /**
      * List of fully-qualified names for all transformers which aren't no-arg transformers.
      */

@@ -7,8 +7,7 @@
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
-            tools:visibility="gone">
+            android:visibility="visible">
 
         <com.bkromhout.ruqus.RQVCard
                 android:id="@+id/queryable_type"
@@ -19,7 +18,7 @@
                 app:rqv_outline_text="@string/choose_queryable_prompt"/>
 
         <ScrollView
-                android:id="@+id/rqv_scroll_view"
+                android:id="@+id/main_scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/queryable_type"
@@ -27,7 +26,7 @@
                 android:scrollbars="vertical">
 
             <LinearLayout
-                    android:id="@+id/rqv_content"
+                    android:id="@+id/query_parts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"/>
@@ -46,8 +45,7 @@
             android:id="@+id/builder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:visibility="gone">
 
         <TextView
                 android:id="@+id/builder_header"

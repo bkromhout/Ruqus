@@ -20,9 +20,9 @@ import java.util.*;
  * Processes all classes annotated with {@link RealmClass} in order to generate a file with information about all
  * RealmObject subclasses for Ruqus to use at runtime (instead of doing a ton of reflection).
  */
-public class ClassDataBuilder {
+class ClassDataBuilder {
 
-    private Messager messager;
+    private final Messager messager;
     private static HashSet<String> realClassNames;
     private static HashSet<String> queryable;
     private static HashMap<String, ClassName> classMap;
@@ -248,7 +248,7 @@ public class ClassDataBuilder {
             staticBlockBuilder.addStatement(addVisibleNameStmt, entry.getKey(), entry.getValue());
 
         // Loop through field data classes.
-        String addFieldDataStmt = "fieldDatas.put($S, new $T())";
+        String addFieldDataStmt = "fieldData.put($S, new $T())";
         staticBlockBuilder.add("// Add field data classes.\n");
         for (Map.Entry<String, FieldDataBuilder> entry : fieldData.entrySet())
             staticBlockBuilder.addStatement(addFieldDataStmt, entry.getKey(), entry.getValue().getClassName());

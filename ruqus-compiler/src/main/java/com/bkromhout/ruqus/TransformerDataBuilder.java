@@ -22,9 +22,9 @@ import java.util.*;
  * Processes all classes annotated with {@link Transformer} in order to generate a file with information about all
  * transformers for Ruqus to use at runtime (instead of doing a ton of reflection).
  */
-public class TransformerDataBuilder {
+class TransformerDataBuilder {
 
-    private Messager messager;
+    private final Messager messager;
     private static HashSet<String> realClassNames;
     private static HashSet<String> realNAClassNames;
     private static HashMap<String, String> visibleNames;

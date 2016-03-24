@@ -3,8 +3,4 @@
     <string name="curr_query">Current Query:</string>
     <string name="query_results">Query Results:</string>
     <string name="edit_query">Edit Query</string>
-
-    <string name="cat_name">Cat</string>
-    <string name="dog_name">Dog</string>
-    <string name="person_name">Person</string>
 </resources>

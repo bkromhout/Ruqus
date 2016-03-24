@@ -105,7 +105,7 @@ public class RealmUserQuery implements Parcelable {
      * Set the type of object this query should return.
      * @param typeClass Class of type to return.
      */
-    void setQueryClass(Class<? extends RealmObject> typeClass) {
+    private void setQueryClass(Class<? extends RealmObject> typeClass) {
         queryClass = typeClass;
     }
 
@@ -306,7 +306,7 @@ public class RealmUserQuery implements Parcelable {
         dest.writeList(temp);
     }
 
-    protected RealmUserQuery(Parcel in) {
+    RealmUserQuery(Parcel in) {
         // noinspection unchecked
         this.queryClass = (Class<? extends RealmObject>) in.readSerializable();
         this.conditions = in.createTypedArrayList(Condition.CREATOR);

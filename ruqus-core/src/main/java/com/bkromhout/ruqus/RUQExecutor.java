@@ -8,8 +8,8 @@ import java.util.ArrayList;
  * Responsible for executing a RealmUserQuery.
  */
 class RUQExecutor<E extends RealmObject> {
-    private Class<E> clazz;
-    private RealmUserQuery ruq;
+    private final Class<E> clazz;
+    private final RealmUserQuery ruq;
 
     static <E extends RealmObject> RUQExecutor<E> get(Class<E> clazz, RealmUserQuery ruq) {
         return new RUQExecutor<>(clazz, ruq);

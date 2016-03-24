@@ -439,7 +439,7 @@ public class Ruqus {
     /**
      * Convenience method for throwing an IllegalArgumentException with a formatted string.
      */
-    static IllegalArgumentException ex(String format, Object... args) {
+    private static IllegalArgumentException ex(String format, Object... args) {
         return new IllegalArgumentException(String.format(format, args));
     }
 }

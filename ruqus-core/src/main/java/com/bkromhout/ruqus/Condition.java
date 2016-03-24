@@ -413,7 +413,7 @@ public class Condition implements Parcelable {
         dest.writeString(this.transformer);
     }
 
-    protected Condition(Parcel in) {
+    private Condition(Parcel in) {
         int tmpType = in.readInt();
         this.type = tmpType == -1 ? null : Type.values()[tmpType];
         this.realmClass = in.readString();

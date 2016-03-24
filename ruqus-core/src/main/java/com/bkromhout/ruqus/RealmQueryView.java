@@ -32,7 +32,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
     private RelativeLayout mainCont;
     private RQVCard queryableChooser;
     private ScrollView scrollView;
-    private LinearLayout conditionsCont;
+    private LinearLayout partsCont;
     private RQVCard sortChooser;
 
     /* Views for either builder mode. */
@@ -95,8 +95,18 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
     private ArrayList<Integer> argViewIds;
 
     /* Variables for the sort builder. */
-
-
+    /**
+     * Holds IDs of sort field spinners.
+     */
+    private ArrayList<Integer> sortSpinnerIds;
+    /**
+     * Holds IDs of buttons which remove sort fields.
+     */
+    private ArrayList<Integer> removeSortBtnIds;
+    /**
+     * Holds IDs of radio groups which set sort directions.
+     */
+    private ArrayList<Integer> sortDirRgIds;
 
     /* Constructors. */
 
@@ -138,8 +148,8 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         // Find main mode views.
         mainCont = (RelativeLayout) findViewById(R.id.main);
         queryableChooser = (RQVCard) findViewById(R.id.queryable_type);
-        scrollView = (ScrollView) findViewById(R.id.rqv_scroll_view);
-        conditionsCont = (LinearLayout) findViewById(R.id.rqv_content);
+        scrollView = (ScrollView) findViewById(R.id.main_scroll_view);
+        partsCont = (LinearLayout) findViewById(R.id.query_parts);
         sortChooser = (RQVCard) findViewById(R.id.sort_type);
 
         // Find common builder mode views.
@@ -204,7 +214,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
             }
         });
 
-        // Set up common builder views. TODO
+        // Set up common builder views.
         cancelButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,7 +228,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
             }
         });
 
-        // Set up condition builder views. TODO
+        // Set up condition builder views.
         fieldChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -270,8 +280,13 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
             }
         });
 
-        // Set up sort builder views. TODO
-
+        // Set up sort builder views.
+        addSortField.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addSortFieldView(-1, null);
+            }
+        });
 
         // Finish setup.
         if (ruq == null) {
@@ -282,15 +297,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         }
 
         // If we have a RUQ already, we need to draw our view accordingly.
-        setupViewUsingRUQ();
-    }
-
-    /**
-     * Draw the view correctly based on the current RUQ as long as it is present and valid.
-     */
-    private void setupViewUsingRUQ() {
-        if (ruq == null || !ruq.isQueryValid()) return;
-        // TODO
+        setupUsingRUQ();
     }
 
     @Override
@@ -299,9 +306,25 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         Parcelable superState = super.onSaveInstanceState();
         SavedState ss = new SavedState(superState);
 
-        // TODO Save our state.
-        // TODO theme, mode, currPartIdx, ruq string
-        // TODO add holder to builderParts tag??
+        // Save our state.
+        ss.theme = this.theme;
+        ss.ruq = this.ruq;
+        ss.mode = this.mode;
+        ss.currClassName = this.currClassName;
+        ss.currVisibleFlatFieldNames = this.currVisibleFlatFieldNames;
+        if (this.mode == Mode.C_BUILD) {
+            // Only save condition builder variables if we're in that mode.
+            ss.currPartIdx = this.currPartIdx;
+            ss.currFieldName = this.currFieldName;
+            ss.currFieldType = this.currFieldType;
+            ss.currTransName = this.currTransName;
+            ss.argViewIds = this.argViewIds;
+        } else if (this.mode == Mode.S_BUILD) {
+            // Only save sort builder variables if we're in that mode.
+            ss.sortSpinnerIds = this.sortSpinnerIds;
+            ss.removeSortBtnIds = this.removeSortBtnIds;
+            ss.sortDirRgIds = this.sortDirRgIds;
+        }
 
         return ss;
     }
@@ -316,7 +339,25 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
-        // TODO Restore our state.
+        // Restore our state.
+        this.theme = ss.theme;
+        this.ruq = ss.ruq;
+        this.mode = ss.mode;
+        this.currClassName = ss.currClassName;
+        this.currVisibleFlatFieldNames = ss.currVisibleFlatFieldNames;
+        if (this.mode == Mode.C_BUILD) {
+            // Only try to restore condition builder variables if we were in that mode.
+            this.currPartIdx = ss.currPartIdx;
+            this.currFieldName = ss.currFieldName;
+            this.currFieldType = ss.currFieldType;
+            this.currTransName = ss.currTransName;
+            this.argViewIds = ss.argViewIds;
+        } else if (this.mode == Mode.S_BUILD) {
+            // Only try to restore sort builder variables if we were in that mode.
+            this.sortSpinnerIds = ss.sortSpinnerIds;
+            this.removeSortBtnIds = ss.removeSortBtnIds;
+            this.sortDirRgIds = ss.sortDirRgIds;
+        }
     }
 
     /**
@@ -334,7 +375,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                 mainCont.setVisibility(VISIBLE);
                 break;
             case C_BUILD: {
-                initConditionBuilderMode(currPartIdx >= conditionsCont.getChildCount() - 1 ? null
+                initConditionBuilderMode(currPartIdx >= partsCont.getChildCount() - 1 ? null
                         : ruq.getConditions().get(currPartIdx));
                 builderCont.setVisibility(VISIBLE);
                 break;
@@ -344,6 +385,27 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                 builderCont.setVisibility(VISIBLE);
                 break;
         }
+    }
+
+    /**
+     * Set up the view using the current value of {@link #ruq}.
+     */
+    private void setupUsingRUQ() {
+        if (ruq == null || !ruq.isQueryValid()) return;
+        // Set queryable class.
+        String realName = ruq.getQueryClass().getSimpleName();
+        setQueryable(realName, Ruqus.getClassData().visibleNameOf(realName));
+
+        // Set sort fields (if present).
+        sortChooser.setMode(ruq.getSortFields().size() > 0 ? RQVCard.Mode.CARD : RQVCard.Mode.OUTLINE);
+        sortChooser.setCardText("Sorted by " + ruq.getSortString());
+
+        // Add part cards.
+        partsCont.removeAllViews(); // Make sure parts container is empty first!
+        for (Condition condition : ruq.getConditions()) appendPartView(condition);
+
+        // Append an add part view.
+        appendAddPartView();
     }
 
     /**
@@ -358,8 +420,8 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         sortChooser.setTheme(theme);
 
         // Set theme on all condition cards.
-        for (int i = 0; i < conditionsCont.getChildCount(); i++)
-            ((RQVCard2) conditionsCont.getChildAt(i)).setTheme(theme);
+        for (int i = 0; i < partsCont.getChildCount(); i++)
+            ((RQVCard2) partsCont.getChildAt(i)).setTheme(theme);
 
         // TODO Set for builder modes.
     }
@@ -374,19 +436,54 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
     }
 
     /**
-     * Creates an {@link RQVCard2} and sets it to outlines mode with the texts "Add Operator" and "Add Condition", then
-     * adds it to the end of {@link #conditionsCont}.
+     * Creates an {@link RQVCard2} and sets it to card mode, filling it in using the given {@code condition}.
+     * @param condition Condition to use to fill the card's text.
      */
-    private void appendAddView() {
+    private void appendPartView(Condition condition) {
+        if (condition == null) throw new IllegalArgumentException("Must provide a Condition.");
+        // Get visible condition string.
+        String visCondString = condition.toString();
+        // Create a new card.
+        RQVCard2 cond = new RQVCard2(getContext(), theme);
+        cond.setMode(RQVCard2.Mode.CARD);
+        // Set index tag to the current child count of the conditions container, since that will be this item's index
+        // once it is added to the end of it. Also set content tag to the same as the current content.
+        cond.setTag(R.id.index, partsCont.getChildCount());
+        cond.setTag(R.id.curr_val, visCondString);
+        // Set the card's listener and long click listener.
+        cond.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onConditionClicked((Integer) v.getTag(R.id.index));
+            }
+        });
+        cond.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onPartLongClicked((Integer) v.getTag(R.id.index));
+                return true;
+            }
+        });
+        // Set a unique view ID.
+        cond.setId(Util.getUniqueViewId());
+        // Add to the parts container.
+        partsCont.addView(cond);
+    }
+
+    /**
+     * Creates an {@link RQVCard2} and sets it to outlines mode with the texts "Add Operator" and "Add Condition", then
+     * adds it to the end of {@link #partsCont}.
+     */
+    private void appendAddPartView() {
         // Only add the view if we have the same number of views and conditions currently (indicates each view is
         // tied to a condition.
-        if (ruq != null && conditionsCont.getChildCount() == ruq.conditionCount()) {
+        if (ruq != null && partsCont.getChildCount() == ruq.conditionCount()) {
             RQVCard2 add = new RQVCard2(getContext(), theme);
             add.setMode(RQVCard2.Mode.OUTLINES);
             add.setOutlineText(R.string.add_operator_nl, R.string.add_condition_nl);
             // Set tag to the current child count of the conditions container, since that will be this item's index
             // once it is added to the end of it.
-            add.setTag(R.id.index, conditionsCont.getChildCount());
+            add.setTag(R.id.index, partsCont.getChildCount());
             // Set the outline text views' OnClickListeners.
             add.setOutline1ClickListener(new OnClickListener() {
                 @Override
@@ -400,8 +497,10 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     onConditionClicked((Integer) v.getTag(R.id.index));
                 }
             });
-            // Add to the conditions container.
-            conditionsCont.addView(add);
+            // Set a unique view ID.
+            add.setId(Util.getUniqueViewId());
+            // Add to the parts container.
+            partsCont.addView(add);
         }
     }
 
@@ -420,7 +519,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         queryableChooser.setMode(RQVCard.Mode.OUTLINE);
         sortChooser.setMode(RQVCard.Mode.OUTLINE);
         // Clear all children from condition container.
-        conditionsCont.removeAllViews();
+        partsCont.removeAllViews();
         // Disable conditions container and sort chooser.
         setConditionsAndSortEnabled(false);
     }
@@ -436,6 +535,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     @Override
                     public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                         String realName = Ruqus.classNameFromVisibleName(text.toString());
+                        reset();
                         setQueryable(realName, text.toString());
                         ruq.setQueryClass(realName);
                     }
@@ -448,9 +548,6 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
      * @param visibleName Visible name of the queryable class.
      */
     private void setQueryable(String realName, String visibleName) {
-        // Reset.
-        reset();
-
         // Set instance vars.
         currClassName = realName;
         currVisibleFlatFieldNames = Ruqus.visibleFlatFieldsForClass(currClassName);
@@ -464,7 +561,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         queryableChooser.setMode(RQVCard.Mode.CARD);
 
         // Append an add view to the conditions container, then enable the conditions container and sort chooser.
-        appendAddView();
+        appendAddPartView();
         setConditionsAndSortEnabled(true);
     }
 
@@ -482,7 +579,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
      */
     private void onOperatorClicked(final int index, final String currVal) {
         new MaterialDialog.Builder(getContext())
-                .title(index == conditionsCont.getChildCount() - 1 ? R.string.add_operator : R.string.change_operator)
+                .title(index == partsCont.getChildCount() - 1 ? R.string.add_operator : R.string.change_operator)
                 .items(Ruqus.getTransformerData().getVisibleNoArgNames())
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
@@ -500,9 +597,9 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
      */
     private void setOperator(int index, String visibleName) {
         String realName = Ruqus.transformerNameFromVisibleName(visibleName, true);
-        RQVCard2 card = (RQVCard2) conditionsCont.getChildAt(index);
+        RQVCard2 card = (RQVCard2) partsCont.getChildAt(index);
         card.setTag(R.id.curr_val, visibleName);
-        if (index == conditionsCont.getChildCount() - 1) {
+        if (index == partsCont.getChildCount() - 1) {
             // This was an outline-mode card before this, and ruq doesn't have a condition for it.
             // Set the card's card listener and long click listener.
             card.setCardClickListener(new OnClickListener() {
@@ -533,7 +630,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
             ruq.getConditions().add(condition);
 
             // Finally, append another add view to the conditions container.
-            appendAddView();
+            appendAddPartView();
         } else {
             // This was a card-mode card already, ruq already had a condition for it.
             // Update card text.
@@ -578,7 +675,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                         // Remove from RUQ.
                         ruq.getConditions().remove(index);
                         // Remove from conditions container.
-                        conditionsCont.removeViewAt(index);
+                        partsCont.removeViewAt(index);
                     }
                 })
                 .show();
@@ -605,9 +702,9 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                 if (args == null) return;
 
                 // Get card.
-                RQVCard2 card = (RQVCard2) conditionsCont.getChildAt(currPartIdx);
+                RQVCard2 card = (RQVCard2) partsCont.getChildAt(currPartIdx);
                 // Create or get condition.
-                Condition condition = currPartIdx == conditionsCont.getChildCount() - 1 ? new Condition()
+                Condition condition = currPartIdx == partsCont.getChildCount() - 1 ? new Condition()
                         : ruq.getConditions().get(currPartIdx);
                 // Fill in/update the condition.
                 if (condition.getRealmClass() == null) condition.setRealmClass(currClassName);
@@ -616,6 +713,9 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                 condition.setArgs(args);
                 // Get the visible condition string.
                 String visCondString = condition.toString();
+                // Set the card's text (and its tag).
+                card.setTag(R.id.curr_val, visCondString);
+                card.setCardText(visCondString);
 
                 // If the card is still in OUTLINES mode, we know this is a new Condition, and that we need to do a bit
                 // more setup for the card prior to adding the Condition to the query and switching back to MAIN mode.
@@ -635,9 +735,6 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                             return true;
                         }
                     });
-                    // Set the card's text (and its tag).
-                    card.setTag(R.id.curr_val, visCondString);
-                    card.setCardText(visCondString);
                     // Set the card's mode to CARD.
                     card.setMode(RQVCard2.Mode.CARD);
 
@@ -645,7 +742,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     ruq.getConditions().add(condition);
 
                     // Finally, append another add view to the conditions container.
-                    appendAddView();
+                    appendAddPartView();
                 }
                 break;
             }
@@ -654,10 +751,13 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                 ArrayList<Sort> sortDirs = new ArrayList<>();
 
                 // Get sort fields.
-                for (Spinner spinner : spinners)
-                    sortFields.add(Ruqus.fieldFromVisibleField(currClassName, (String) spinner.getSelectedItem()));
-                for (RadioGroup radioGroup : sortDirOptions)
-                    sortDirs.add(radioGroup.getCheckedRadioButtonId() == R.id.asc ? Sort.ASCENDING : Sort.DESCENDING);
+                for (Integer sortSpinnerId : sortSpinnerIds)
+                    sortFields.add(Ruqus.fieldFromVisibleField(currClassName,
+                            (String) ((Spinner) builderParts.findViewById(sortSpinnerId)).getSelectedItem()));
+                // Get sort dirs.
+                for (Integer sortDirRgId : sortDirRgIds)
+                    sortDirs.add(((RadioGroup) builderParts.findViewById(sortDirRgId))
+                            .getCheckedRadioButtonId() == R.id.asc ? Sort.ASCENDING : Sort.DESCENDING);
 
                 // Set ruq sort fields.
                 ruq.setSorts(sortFields, sortDirs);
@@ -686,7 +786,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         builderHeader.setText(R.string.edit_condition_title);
         fieldChooser.setVisibility(VISIBLE);
 
-        // Set up instance vars.
+        // Set up vars.
         argViewIds = new ArrayList<>();
 
         // Set up from condition.
@@ -860,7 +960,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
      */
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        int index = view.getArguments().getInt("IDX", -1);
+        int index = view.getArguments().getInt("ID", -1);
         if (index == -1) throw new IllegalArgumentException("Bad index!");
         ((TextView) builderCont.findViewById(argViewIds.get(index)).findViewById(R.id.tv_date)).setText(
                 Util.stringFromDateInts(year, monthOfYear, dayOfMonth));
@@ -869,19 +969,20 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
     /**
      * Attempts to validates the values that the user has provided to the condition builder, and returns them if they
      * pass.
-     * @return Array of Obkect
+     * @return Array of input values as Objects, or null if any input values are invalid.
      */
     private Object[] getArgsIfValid() {
         Object[] args = new Object[argViewIds.size()];
         for (int i = 0; i < argViewIds.size(); i++) {
+            View argView = builderParts.findViewById(argViewIds.get(i));
             switch (currFieldType) {
                 case BOOLEAN:
                     // There's no way that neither of the radio buttons are checked :)
-                    RadioGroup rgFalseTrue = (RadioGroup) argViewIds.get(i);
+                    RadioGroup rgFalseTrue = (RadioGroup) argView;
                     args[i] = rgFalseTrue.getCheckedRadioButtonId() != R.id.rb_false;
                     continue;
                 case DATE:
-                    TextView tvDate = (TextView) argViewIds.get(i).findViewById(R.id.tv_date);
+                    TextView tvDate = (TextView) argView.findViewById(R.id.tv_date);
                     if (tvDate.length() == 0) {
                         tvDate.setError(getContext().getString(R.string.error_empty_input));
                         return null;
@@ -889,7 +990,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     args[i] = Util.calFromString(tvDate.getText().toString()).getTime();
                     continue;
                 case DOUBLE:
-                    EditText etDouble = (EditText) argViewIds.get(i);
+                    EditText etDouble = (EditText) argView;
                     if (etDouble.length() == 0) {
                         etDouble.setError(getContext().getString(R.string.error_empty_input));
                         return null;
@@ -901,7 +1002,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     }
                     continue;
                 case FLOAT:
-                    EditText etFloat = (EditText) argViewIds.get(i);
+                    EditText etFloat = (EditText) argView;
                     if (etFloat.length() == 0) {
                         etFloat.setError(getContext().getString(R.string.error_empty_input));
                         return null;
@@ -913,7 +1014,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     }
                     continue;
                 case INTEGER:
-                    EditText etInteger = (EditText) argViewIds.get(i);
+                    EditText etInteger = (EditText) argView;
                     if (etInteger.length() == 0) {
                         etInteger.setError(getContext().getString(R.string.error_empty_input));
                         return null;
@@ -925,7 +1026,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     }
                     continue;
                 case LONG:
-                    EditText etLong = (EditText) argViewIds.get(i);
+                    EditText etLong = (EditText) argView;
                     if (etLong.length() == 0) {
                         etLong.setError(getContext().getString(R.string.error_empty_input));
                         return null;
@@ -937,7 +1038,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     }
                     continue;
                 case SHORT:
-                    EditText etShort = (EditText) argViewIds.get(i);
+                    EditText etShort = (EditText) argView;
                     if (etShort.length() == 0) {
                         etShort.setError(getContext().getString(R.string.error_empty_input));
                         return null;
@@ -949,7 +1050,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     }
                     continue;
                 case STRING:
-                    EditText etString = (EditText) argViewIds.get(i);
+                    EditText etString = (EditText) argView;
                     args[i] = etString.getText().toString();
                     if (((String) args[i]).isEmpty()) {
                         etString.setError(getContext().getString(R.string.error_empty_input));
@@ -968,159 +1069,161 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
      * @param sortDirs   Current sort directions.
      */
     private void initSortBuilderMode(ArrayList<String> sortFields, ArrayList<Sort> sortDirs) {
+        // Set up views.
+        builderHeader.setText(R.string.choose_sort_fields_title);
+        addSortField.setVisibility(VISIBLE);
 
+        // Set up vars.
+        sortSpinnerIds = new ArrayList<>();
+        removeSortBtnIds = new ArrayList<>();
+        sortDirRgIds = new ArrayList<>();
+
+        // If present, add current sort fields.
+        for (int i = 0; i < sortFields.size(); i++)
+            addSortFieldView(currVisibleFlatFieldNames.indexOf(Ruqus.visibleFieldFromField(currClassName,
+                    sortFields.get(i))), sortDirs.get(i));
     }
 
     /**
      * Called to clean up the builder views when finishing sort builder mode.
      */
     private void tearDownSortBuilderMode() {
-        // TODO
+        // Clean up views.
+        addSortField.setVisibility(GONE);
+        builderParts.removeAllViews();
+
+        // Clean up vars.
+        sortSpinnerIds = null;
+        removeSortBtnIds = null;
+        sortDirRgIds = null;
     }
 
     /**
-     * Helps handle views while in sort builder mode.
-     * <p/>
-     * TODO make sure all views get a custom ID.
+     * Called to add a sort field view to {@link #builderParts} (and optionally pre-fill it).
+     * @param selectedFieldPos Position in spinner to pre-select, or -1.
+     * @param sortDir          Sort direction to pre-select, or null.
      */
-    private class SortBuilderHelper extends BuilderHelper {
-        public ArrayList<Spinner> spinners;
-        public ArrayList<ImageButton> removeButtons;
-        public ArrayList<RadioGroup> sortDirOptions;
-        public Button addSortField;
+    private void addSortFieldView(int selectedFieldPos, Sort sortDir) {
+        final int idx = sortSpinnerIds.size();
+        RelativeLayout sortPart = (RelativeLayout) View.inflate(getContext(), R.layout.sort_part, null);
 
-        /**
-         * Create a new {@link SortBuilderHelper}. This will set everything up for the sort builder view, but won't
-         * switch to it.
-         */
-        SortBuilderHelper(ArrayList<String> sortFields, ArrayList<Sort> sortDirs) {
-            super();
-            // Set header text.
-            header.setText(R.string.choose_sort_fields_title);
+        // Set label text.
+        ((TextView) sortPart.findViewById(R.id.sort_field_label)).setText(
+                getContext().getString(R.string.sort_field_label, idx));
 
-            // Create arrays.
-            spinners = new ArrayList<>();
-            removeButtons = new ArrayList<>();
-            sortDirOptions = new ArrayList<>();
-
-            // Inflate add sort field button.
-            addSortField = (Button) View.inflate(getContext(), R.layout.add_sort_field_button, null);
-
-            // Set up button click handlers.
-            addSortField.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    addSortField();
-                }
-            });
-            saveButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    saveClicked();
-                }
-            });
-
-            // If present, add current sort fields.
-            for (int i = 0; i < sortFields.size(); i++) {
-                // Add the sort field layout.
-                addSortField();
-                // Select the correct item in the spinner. TODO do we need to manually update the radio buttons' text?
-                spinners.get(i).setSelection(currVisibleFlatFieldNames.indexOf(
-                        Ruqus.visibleFieldFromField(currClassName, sortFields.get(i))));
-                // Select the correct radio button.
-                sortDirOptions.get(i).check(sortDirs.get(i) == Sort.ASCENDING ? R.id.asc : R.id.desc);
+        // Set up spinner.
+        Spinner fieldSpinner = (Spinner) sortPart.findViewById(R.id.sort_field);
+        fieldSpinner.setAdapter(makeFieldAdapter());
+        fieldSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Make sure the user didn't select nothing.
+                String selStr = (String) parent.getItemAtPosition(position);
+                if (Ruqus.CHOOSE_FIELD.equals(selStr))
+                    builderParts.findViewById(sortDirRgIds.get(idx)).setVisibility(GONE);
+                else setSortDirOptions(idx, selStr);
             }
-        }
 
-        /**
-         * Called to add a sort field layout.
-         */
-        private void addSortField() {
-            final int idx = spinners.size();
-            RelativeLayout sortPart = (RelativeLayout) View.inflate(getContext(), R.layout.sort_part, null);
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                builderParts.findViewById(sortDirRgIds.get(idx)).setVisibility(GONE);
+            }
+        });
 
-            // Set label text.
-            ((TextView) sortPart.findViewById(R.id.sort_field_label)).setText(
-                    getContext().getString(R.string.sort_field_label, idx + 1));
+        // Set up remove button.
+        ImageButton removeButton = (ImageButton) sortPart.findViewById(R.id.remove_field);
+        DrawableCompat.setTint(removeButton.getDrawable(), theme == RuqusTheme.LIGHT ? Ruqus.DARK_TEXT_COLOR :
+                Ruqus.LIGHT_TEXT_COLOR);
+        removeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeSortField(idx);
+            }
+        });
 
-            // Set up spinner.
-            Spinner spinner = (Spinner) sortPart.findViewById(R.id.sort_field);
-            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(),
-                    android.R.layout.simple_spinner_dropdown_item, currVisibleFlatFieldNames);
-            spinner.setAdapter(spinnerAdapter);
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    setSortDirOptions(idx, (String) parent.getItemAtPosition(position));
-                }
+        // Set up radio group.
+        RadioGroup sortDirRg = (RadioGroup) sortPart.findViewById(R.id.rg_sort_dir);
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                    sortDirOptions.get(idx).setVisibility(GONE);
-                }
-            });
+        // Generate unique view IDs for the spinner, button, and radio group and set them.
+        int fieldSpinnerId = Util.getUniqueViewId();
+        int removeButtonId = Util.getUniqueViewId();
+        int sortDirRgId = Util.getUniqueViewId();
+        fieldSpinner.setId(fieldSpinnerId);
+        removeButton.setId(removeButtonId);
+        sortDirRg.setId(sortDirRgId);
 
-            // Set up remove button.
-            ImageButton remove = (ImageButton) sortPart.findViewById(R.id.remove_field);
-            DrawableCompat.setTint(remove.getDrawable(), theme == RuqusTheme.LIGHT ? Ruqus.DARK_TEXT_COLOR :
-                    Ruqus.LIGHT_TEXT_COLOR);
-            remove.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    removeSortField(idx);
-                }
-            });
+        // Add IDs to lists.
+        sortSpinnerIds.add(fieldSpinnerId);
+        removeSortBtnIds.add(removeButtonId);
+        sortDirRgIds.add(sortDirRgId);
 
-            // Set up radio group.
-            RadioGroup sortDir = (RadioGroup) sortPart.findViewById(R.id.rg_sort_dir);
+        // If that was our third sort field, we disable the button that adds them.
+        if (sortSpinnerIds.size() == 3) addSortField.setEnabled(false);
 
-            // Add views to lists.
-            spinners.add(spinner);
-            removeButtons.add(remove);
-            sortDirOptions.add(sortDir);
+        // Add this to the builder container (Add one, since we want it added after the header view).
+        builderParts.addView(sortPart);
 
-            // If that was our third sort field, we disable the button to add more of them.
-            if (spinners.size() == 3) addSortField.setEnabled(false);
-
-            // Finally, add this to the builder container (Add one, since we want it added after the header view).
-            builderParts.addView(sortPart, idx + 1);
-        }
-
-        /**
-         * Called when a remove button is clicked.
-         */
-        private void removeSortField(int index) {
-            // Remove from holder.
-            spinners.remove(index);
-            removeButtons.remove(index);
-            sortDirOptions.remove(index);
-
-            // Remove from builder container (Add one to the index, since the header view is there).
-            builderParts.removeViewAt(index + 1);
-
-            // Enable add button.
-            addSortField.setEnabled(true);
-        }
-
-        /**
-         * Called when the selected spinner item is changed.
-         */
-        private void setSortDirOptions(int index, String visibleFieldName) {
-            String[] pretty = Ruqus.typeEnumForField(currClassName, Ruqus.fieldFromVisibleField(
-                    currClassName, visibleFieldName)).getPrettySortStrings();
-            RadioGroup rg = sortDirOptions.get(index);
-            ((RadioButton) rg.findViewById(R.id.asc)).setText(pretty[0]);
-            ((RadioButton) rg.findViewById(R.id.desc)).setText(pretty[1]);
-            rg.setVisibility(VISIBLE);
+        // Fill this sort field layout's views in if necessary.
+        if (selectedFieldPos != -1) {
+            // Select the correct item in the spinner. TODO do we need to manually update the radio buttons' text?
+            fieldSpinner.setSelection(selectedFieldPos);
+            // Select the correct radio button.
+            sortDirRg.check(sortDir == Sort.ASCENDING ? R.id.asc : R.id.desc);
         }
     }
 
     /**
-     * Helps us easily save and restore our view's state. TODO need to move builder helper methods out of their helper
-     * classes to use this.
+     * Called when a remove sort field button is clicked.
+     */
+    private void removeSortField(int index) {
+        // Remove IDs from lists.
+        sortSpinnerIds.remove(index);
+        removeSortBtnIds.remove(index);
+        sortDirRgIds.remove(index);
+
+        // Remove from builder container (Add one to the index, since the header view is there).
+        builderParts.removeViewAt(index);
+
+        // Enable add button.
+        addSortField.setEnabled(true);
+    }
+
+    /**
+     * Called when the selection on a sort field spinner is changed.
+     */
+    private void setSortDirOptions(int index, String visibleFieldName) {
+        String[] pretty = Ruqus.typeEnumForField(currClassName, Ruqus.fieldFromVisibleField(
+                currClassName, visibleFieldName)).getPrettySortStrings();
+        RadioGroup rg = (RadioGroup) builderParts.findViewById(sortDirRgIds.get(index));
+        ((RadioButton) rg.findViewById(R.id.asc)).setText(pretty[0]);
+        ((RadioButton) rg.findViewById(R.id.desc)).setText(pretty[1]);
+        rg.setVisibility(VISIBLE);
+    }
+
+    /* State persistence. */
+
+    /**
+     * Helps us easily save and restore our view's state.
      */
     static class SavedState extends BaseSavedState {
+        // General variables. Will always be written/read.
+        RuqusTheme theme;
+        RealmUserQuery ruq;
+        Mode mode;
+        String currClassName;
+        ArrayList<String> currVisibleFlatFieldNames;
 
+        // Condition builder variables. Will only be written/read if we're in condition builder mode.
+        int currPartIdx;
+        String currFieldName;
+        FieldType currFieldType;
+        String currTransName;
+        ArrayList<Integer> argViewIds;
+
+        // Sort builder variables. Will only be written/read if we're in sort builder mode.
+        ArrayList<Integer> sortSpinnerIds;
+        ArrayList<Integer> removeSortBtnIds;
+        ArrayList<Integer> sortDirRgIds;
 
         public SavedState(Parcelable superState) {
             super(superState);
@@ -1128,23 +1231,67 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
 
         private SavedState(Parcel in) {
             super(in);
-            // TODO
+            // Read general variables' values back.
+            int tmpTheme = in.readInt();
+            this.theme = tmpTheme == -1 ? null : RuqusTheme.values()[tmpTheme];
+            this.ruq = in.readParcelable(RealmUserQuery.class.getClassLoader());
+            int tmpMode = in.readInt();
+            this.mode = tmpMode == -1 ? null : Mode.values()[tmpMode];
+            this.currClassName = in.readString();
+            this.currVisibleFlatFieldNames = in.createStringArrayList();
+            if (this.mode == Mode.C_BUILD) {
+                // If we were in condition builder mode, read those variables' values back.
+                this.currPartIdx = in.readInt();
+                this.currFieldName = in.readString();
+                int tmpCurrFieldType = in.readInt();
+                this.currFieldType = tmpCurrFieldType == -1 ? null : FieldType.values()[tmpCurrFieldType];
+                this.currTransName = in.readString();
+                this.argViewIds = new ArrayList<>();
+                in.readList(this.argViewIds, Integer.class.getClassLoader());
+            } else if (this.mode == Mode.S_BUILD) {
+                // If we were in sort builder mode, read those variables' values back.
+                this.sortSpinnerIds = new ArrayList<>();
+                in.readList(this.sortSpinnerIds, Integer.class.getClassLoader());
+                this.removeSortBtnIds = new ArrayList<>();
+                in.readList(this.removeSortBtnIds, Integer.class.getClassLoader());
+                this.sortDirRgIds = new ArrayList<>();
+                in.readList(this.sortDirRgIds, Integer.class.getClassLoader());
+            }
         }
+
+        @Override
+        public int describeContents() { return 0; }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            // TODO
+            // Write general variables' values.
+            out.writeInt(this.theme == null ? -1 : this.theme.ordinal());
+            out.writeParcelable(this.ruq, flags);
+            out.writeInt(this.mode == null ? -1 : this.mode.ordinal());
+            out.writeString(this.currClassName);
+            out.writeStringList(this.currVisibleFlatFieldNames);
+            if (this.mode == Mode.C_BUILD) {
+                // If we're in condition builder mode, write those variables' values.
+                out.writeInt(this.currPartIdx);
+                out.writeString(this.currFieldName);
+                out.writeInt(this.currFieldType == null ? -1 : this.currFieldType.ordinal());
+                out.writeString(this.currTransName);
+                out.writeList(this.argViewIds);
+            } else if (this.mode == Mode.S_BUILD) {
+                // If we're in sort builder mode, write those variables' values.
+                out.writeList(this.sortSpinnerIds);
+                out.writeList(this.removeSortBtnIds);
+                out.writeList(this.sortDirRgIds);
+            }
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
+            @Override
+            public SavedState createFromParcel(Parcel in) {return new SavedState(in);}
 
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
+            @Override
+            public SavedState[] newArray(int size) {return new SavedState[size];}
         };
     }
 }

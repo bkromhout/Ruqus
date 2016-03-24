@@ -9,7 +9,7 @@ import java.util.HashSet;
 /**
  * Holds information about all classes which extend {@link io.realm.RealmObject}.
  */
-public abstract class ClassData {
+abstract class ClassData {
     /**
      * Set of real names of classes which extend {@link RealmObject}.
      */
@@ -29,7 +29,7 @@ public abstract class ClassData {
     /**
      * Maps real class names to FieldData objects.
      */
-    protected static HashMap<String, FieldData> fieldDatas = new HashMap<>();
+    protected static HashMap<String, FieldData> fieldData = new HashMap<>();
 
     /**
      * Get a list of real class names.
@@ -129,6 +129,6 @@ public abstract class ClassData {
      * @return Class's field data.
      */
     FieldData getFieldData(String realName) {
-        return fieldDatas.get(realName);
+        return fieldData.get(realName);
     }
 }
