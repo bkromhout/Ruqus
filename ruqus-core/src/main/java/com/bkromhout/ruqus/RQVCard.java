@@ -2,6 +2,8 @@ package com.bkromhout.ruqus;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.CardView;
@@ -29,6 +31,10 @@ class RQVCard extends FrameLayout {
      * Current mode.
      */
     private Mode mode;
+    /**
+     * Current theme.
+     */
+    private RuqusTheme theme;
 
     public RQVCard(Context context) {
         this(context, null, 0, RuqusTheme.LIGHT);
@@ -73,6 +79,34 @@ class RQVCard extends FrameLayout {
         typedArray.recycle();
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        // Allow parent classes to save state.
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+
+        // Save our state.
+        ss.mode = this.mode;
+        ss.theme = this.theme;
+
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        //Allow parent classes to restore state.
+        if (!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+
+        // Restore our state.
+        setTheme(ss.theme);
+        setMode(ss.mode);
+    }
+
     /**
      * Change the view based on the mode.
      */
@@ -87,9 +121,9 @@ class RQVCard extends FrameLayout {
      * @param theme Theme.
      */
     void setTheme(RuqusTheme theme) {
+        this.theme = theme;
         // Set card background color.
         cardView.setCardBackgroundColor(theme == RuqusTheme.LIGHT ? Ruqus.LIGHT_CARD_COLOR : Ruqus.DARK_CARD_COLOR);
-
         // Set text view text color.
         cardTextView.setTextColor(theme == RuqusTheme.LIGHT ? Ruqus.DARK_TEXT_COLOR : Ruqus.LIGHT_TEXT_COLOR);
     }
@@ -181,5 +215,39 @@ class RQVCard extends FrameLayout {
         // Also set the tags on the other views this holds that can be assigned click listeners.
         cardView.setTag(key, tag);
         outlineTextView.setTag(key, tag);
+    }
+
+    static class SavedState extends BaseSavedState {
+        Mode mode;
+        RuqusTheme theme;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            int tmpMode = in.readInt();
+            this.mode = tmpMode == -1 ? null : Mode.values()[tmpMode];
+            int tmpTheme = in.readInt();
+            this.theme = tmpTheme == -1 ? null : RuqusTheme.values()[tmpTheme];
+        }
+
+        @Override
+        public int describeContents() { return 0; }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(this.mode == null ? -1 : this.mode.ordinal());
+            dest.writeInt(this.theme == null ? -1 : this.theme.ordinal());
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {return new SavedState(in);}
+
+            @Override
+            public SavedState[] newArray(int size) {return new SavedState[size];}
+        };
     }
 }

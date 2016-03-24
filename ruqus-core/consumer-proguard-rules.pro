@@ -6,3 +6,4 @@
 -keepclasseswithmembers class * {
     @com.bkromhout.ruqus.* <methods>;
 }
+# TODO Keep Parcelable CREATOR objects (or, make sure we don't need to)
