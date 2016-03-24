@@ -1,7 +1,7 @@
 package com.bkromhout.ruqus;
 
 import android.content.Context;
-import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import io.realm.RealmObject;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class Ruqus {
     private static final String FLAT_SEP = ".";
     private static final String VIS_FLAT_SEP = "VIS_FLAT_SEP";
 
-    static int LIGHT_TEXT_COLOR, DARK_TEXT_COLOR;
+    static int LIGHT_TEXT_COLOR, DARK_TEXT_COLOR, LIGHT_CARD_COLOR, DARK_CARD_COLOR;
     static String CHOOSE_FIELD, CHOOSE_CONDITIONAL;
     /**
      * Whether or not Ruqus.init() has already been called.
@@ -86,15 +86,10 @@ public class Ruqus {
         if (INSTANCE == null) {
             INSTANCE = new Ruqus();
 
-            if (Build.VERSION.SDK_INT < 23) {
-                //noinspection deprecation
-                LIGHT_TEXT_COLOR = context.getResources().getColor(R.color.textColorPrimaryLight);
-                //noinspection deprecation
-                DARK_TEXT_COLOR = context.getResources().getColor(R.color.textColorPrimaryDark);
-            } else {
-                LIGHT_TEXT_COLOR = context.getColor(R.color.textColorPrimaryLight);
-                DARK_TEXT_COLOR = context.getColor(R.color.textColorPrimaryDark);
-            }
+            LIGHT_TEXT_COLOR = ContextCompat.getColor(context, R.color.textColorPrimaryLight);
+            DARK_TEXT_COLOR = ContextCompat.getColor(context, R.color.textColorPrimaryDark);
+            LIGHT_CARD_COLOR = ContextCompat.getColor(context, R.color.cardview_light_background);
+            DARK_CARD_COLOR = ContextCompat.getColor(context, R.color.cardview_dark_background);
 
             CHOOSE_FIELD = context.getString(R.string.choose_field);
             CHOOSE_CONDITIONAL = context.getString(R.string.choose_conditional);

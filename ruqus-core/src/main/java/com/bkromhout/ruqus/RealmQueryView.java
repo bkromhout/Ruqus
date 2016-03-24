@@ -52,7 +52,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
     /**
      * Current theme type.
      */
-    private RuqusTheme theme = null;
+    private RuqusTheme theme;
     /**
      * Current user query.
      */
