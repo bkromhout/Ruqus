@@ -42,7 +42,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/dotted"
                 android:textSize="@dimen/ruqus_card_text_size"
-                android:textColor="@color/textColorSecondary"/>
+                android:textColor="@color/ruqus_textColorSecondary"/>
 
         <TextView
                 android:id="@+id/outline2_text"
@@ -54,6 +54,6 @@
                 android:layout_weight="1"
                 android:background="@drawable/dotted"
                 android:textSize="@dimen/ruqus_card_text_size"
-                android:textColor="@color/textColorSecondary"/>
+                android:textColor="@color/ruqus_textColorSecondary"/>
     </LinearLayout>
 </merge>

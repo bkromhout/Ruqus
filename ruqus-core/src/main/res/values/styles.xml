@@ -3,11 +3,11 @@
 
     <style name="RuqusLightCard" parent="CardView.Light">
         <item name="cardBackgroundColor">@color/cardview_light_background</item>
-        <item name="android:textColorPrimary">@color/textColorPrimaryDark</item>
+        <item name="android:textColorPrimary">@color/ruqus_textColorPrimaryDark</item>
     </style>
 
     <style name="RuqusDarkCard" parent="CardView.Dark">
         <item name="cardBackgroundColor">@color/cardview_dark_background</item>
-        <item name="android:textColorPrimary">@color/textColorPrimaryLight</item>
+        <item name="android:textColorPrimary">@color/ruqus_textColorPrimaryLight</item>
     </style>
 </resources>

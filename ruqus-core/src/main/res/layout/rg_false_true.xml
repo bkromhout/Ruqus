@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:text="@string/false_string"/>
+            android:text="@string/ruqus_false"/>
 
     <RadioButton
             android:id="@+id/rb_true"
@@ -20,5 +20,5 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:text="@string/true_string"/>
+            android:text="@string/ruqus_true"/>
 </RadioGroup>

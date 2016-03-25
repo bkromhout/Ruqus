@@ -38,6 +38,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textSize="@dimen/ruqus_card_text_size"
-                android:textColor="@color/textColorSecondary"/>
+                android:textColor="@color/ruqus_textColorSecondary"/>
     </FrameLayout>
 </merge>

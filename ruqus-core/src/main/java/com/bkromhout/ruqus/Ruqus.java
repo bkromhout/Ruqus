@@ -86,13 +86,13 @@ public class Ruqus {
         if (INSTANCE == null) {
             INSTANCE = new Ruqus();
 
-            LIGHT_TEXT_COLOR = ContextCompat.getColor(context, R.color.textColorPrimaryLight);
-            DARK_TEXT_COLOR = ContextCompat.getColor(context, R.color.textColorPrimaryDark);
+            LIGHT_TEXT_COLOR = ContextCompat.getColor(context, R.color.ruqus_textColorPrimaryLight);
+            DARK_TEXT_COLOR = ContextCompat.getColor(context, R.color.ruqus_textColorPrimaryDark);
             LIGHT_CARD_COLOR = ContextCompat.getColor(context, R.color.cardview_light_background);
             DARK_CARD_COLOR = ContextCompat.getColor(context, R.color.cardview_dark_background);
 
-            CHOOSE_FIELD = context.getString(R.string.choose_field);
-            CHOOSE_CONDITIONAL = context.getString(R.string.choose_conditional);
+            CHOOSE_FIELD = context.getString(R.string.ruqus_choose_field);
+            CHOOSE_CONDITIONAL = context.getString(R.string.ruqus_choose_conditional);
         }
     }
 

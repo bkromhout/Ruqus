@@ -15,7 +15,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 app:rqv_card_mode="Outline"
-                app:rqv_outline_text="@string/choose_queryable_prompt"/>
+                app:rqv_outline_text="@string/ruqus_choose_queryable_prompt"/>
 
         <ScrollView
                 android:id="@+id/main_scroll_view"
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 app:rqv_card_mode="Outline"
-                app:rqv_outline_text="@string/choose_sort_fields_prompt"/>
+                app:rqv_outline_text="@string/ruqus_choose_sort_fields_prompt"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -54,7 +54,7 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="center_horizontal"
                 style="?android:textAppearanceMedium"
-                tools:text="@string/edit_condition_title"/>
+                tools:text="@string/ruqus_edit_condition_title"/>
 
         <Spinner
                 android:id="@+id/field_chooser"
@@ -99,7 +99,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_above="@+id/buttons"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/add_sort_field"
+                android:text="@string/ruqus_add_sort_field"
                 android:visibility="gone"/>
 
         <LinearLayout
@@ -115,7 +115,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/Cancel"
+                    android:text="@string/ruqus_cancel"
                     style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
@@ -123,7 +123,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/Save"
+                    android:text="@string/ruqus_save"
                     style="?android:attr/buttonBarButtonStyle"/>
         </LinearLayout>
     </RelativeLayout>

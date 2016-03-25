@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="Save">Save</string>
-    <string name="Cancel">Cancel</string>
+    <string name="ruqus_yes">Yes</string>
+    <string name="ruqus_no">No</string>
+    <string name="ruqus_save">Save</string>
+    <string name="ruqus_cancel">Cancel</string>
 
-    <string name="choose_queryable_title">Choose Type</string>
-    <string name="choose_queryable_prompt">Choose Type To Search For</string>
-    <string name="choose_queryable_warning">(Changing the type will reset your query!)</string>
+    <string name="ruqus_choose_queryable_title">Choose Type</string>
+    <string name="ruqus_choose_queryable_prompt">Choose Type To Search For</string>
+    <string name="ruqus_choose_queryable_warning">(Changing the type will reset your query!)</string>
 
-    <string name="add_operator">Add Operator</string>
-    <string name="add_operator_nl">Add\nOperator</string>
-    <string name="change_operator">Change Operator</string>
-    <string name="remove_operator">Remove Operator?</string>
+    <string name="ruqus_add_operator">Add Operator</string>
+    <string name="ruqus_add_operator_nl">Add\nOperator</string>
+    <string name="ruqus_change_operator">Change Operator</string>
+    <string name="ruqus_remove_operator">Remove Operator?</string>
 
-    <string name="add_condition">Add Condition</string>
-    <string name="add_condition_nl">Add\nCondition</string>
-    <string name="remove_condition">Remove Condition?</string>
-    <string name="edit_condition_title">Edit Condition</string>
-    <string name="choose_field">Choose a Field</string>
-    <string name="choose_conditional">Choose a Conditional</string>
-    <string name="true_string">True</string>
-    <string name="false_string">False</string>
-    <string name="choose_date_hint">Choose a date</string>
-    <string name="enter_number_hint">Enter a number</string>
-    <string name="enter_whole_number_hint">Enter a whole number</string>
-    <string name="enter_string_hint">Enter a string</string>
+    <string name="ruqus_add_condition">Add Condition</string>
+    <string name="ruqus_add_condition_nl">Add\nCondition</string>
+    <string name="ruqus_remove_condition">Remove Condition?</string>
+    <string name="ruqus_edit_condition_title">Edit Condition</string>
+    <string name="ruqus_choose_field">Choose a Field</string>
+    <string name="ruqus_choose_conditional">Choose a Conditional</string>
+    <string name="ruqus_true">True</string>
+    <string name="ruqus_false">False</string>
+    <string name="ruqus_choose_date_hint">Choose a date</string>
+    <string name="ruqus_enter_number_hint">Enter a number</string>
+    <string name="ruqus_enter_whole_number_hint">Enter a whole number</string>
+    <string name="ruqus_enter_string_hint">Enter a string</string>
 
-    <string name="error_must_set_field">A field must be chosen.</string>
-    <string name="error_must_set_conditional">A conditional must be chosen.</string>
-    <string name="error_empty_input">Please enter a value.</string>
-    <string name="error_empty_date">Please choose a date.</string>
-    <string name="error_out_of_range_double">Value must be between 4.9*10^-324 and 1.79*10^308.</string>
-    <string name="error_out_of_range_float">Value must be between 1.4*10^-45 and 3.4*10^38.</string>
-    <string name="error_out_of_range_integer">Value must be a whole number between –2^31 and 2^31 – 1.</string>
-    <string name="error_out_of_range_long">Value must be a whole number between –2^63 and 2^63 – 1.</string>
-    <string name="error_out_of_range_short">Value must be a whole number between –2^15 and 2^15 – 1.</string>
+    <string name="ruqus_error_must_set_field">A field must be chosen.</string>
+    <string name="ruqus_error_must_set_conditional">A conditional must be chosen.</string>
+    <string name="ruqus_error_empty_input">Please enter a value.</string>
+    <string name="ruqus_error_empty_date">Please choose a date.</string>
+    <string name="ruqus_error_out_of_range_double">Value must be between 4.9*10^-324 and 1.79*10^308.</string>
+    <string name="ruqus_error_out_of_range_float">Value must be between 1.4*10^-45 and 3.4*10^38.</string>
+    <string name="ruqus_error_out_of_range_integer">Value must be a whole number between –2^31 and 2^31 – 1.</string>
+    <string name="ruqus_error_out_of_range_long">Value must be a whole number between –2^63 and 2^63 – 1.</string>
+    <string name="ruqus_error_out_of_range_short">Value must be a whole number between –2^15 and 2^15 – 1.</string>
 
-    <string name="choose_sort_fields_title">Choose Sort Fields</string>
-    <string name="choose_sort_fields_prompt">Choose Sort Fields (Currently None)</string>
-    <string name="sort_field_label">Sort field $1%d: </string>
-    <string name="add_sort_field">Add Sort Field</string>
-    <string name="remove_sort_field">Remove Sort Field</string>
+    <string name="ruqus_choose_sort_fields_title">Choose Sort Fields</string>
+    <string name="ruqus_choose_sort_fields_prompt">Choose Sort Fields (Currently None)</string>
+    <string name="ruqus_sort_field_label">Sort field %1$d: </string>
+    <string name="ruqus_add_sort_field">Add Sort Field</string>
+    <string name="ruqus_remove_sort_field">Remove Sort Field</string>
 </resources>

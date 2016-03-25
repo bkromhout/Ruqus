@@ -7,7 +7,7 @@
     <corners android:radius="@dimen/ruqus_card_corner_radius"/>
 
     <stroke
-            android:color="@color/textColorSecondary"
+            android:color="@color/ruqus_textColorSecondary"
             android:dashWidth="10px"
             android:dashGap="10px"
             android:width="2dp"/>

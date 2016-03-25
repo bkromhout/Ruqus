@@ -484,8 +484,8 @@ public class RealmQueryView extends FrameLayout {
         cond.setMode(RQVCard2.Mode.CARD);
         // Set index tag to the current child count of the conditions container, since that will be this item's index
         // once it is added to the end of it. Also set content tag to the same as the current content.
-        cond.setTag(R.id.index, partsCont.getChildCount());
-        cond.setTag(R.id.curr_val, visCondString);
+        cond.setTag(R.id.ruqus_index, partsCont.getChildCount());
+        cond.setTag(R.id.ruqus_curr_val, visCondString);
         // Set the card's text to the visible condition string.
         cond.setCardText(visCondString);
         // Set the card's click listener based on the type of condition.
@@ -494,7 +494,7 @@ public class RealmQueryView extends FrameLayout {
             cond.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onConditionClicked((Integer) v.getTag(R.id.index));
+                    onConditionClicked((Integer) v.getTag(R.id.ruqus_index));
                 }
             });
         } else {
@@ -502,7 +502,7 @@ public class RealmQueryView extends FrameLayout {
             cond.setCardClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onOperatorClicked((Integer) v.getTag(R.id.index), (String) v.getTag(R.id.curr_val));
+                    onOperatorClicked((Integer) v.getTag(R.id.ruqus_index), (String) v.getTag(R.id.ruqus_curr_val));
                 }
             });
         }
@@ -510,7 +510,7 @@ public class RealmQueryView extends FrameLayout {
         cond.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onPartLongClicked((Integer) v.getTag(R.id.index));
+                onPartLongClicked((Integer) v.getTag(R.id.ruqus_index));
                 return true;
             }
         });
@@ -530,21 +530,21 @@ public class RealmQueryView extends FrameLayout {
         if (ruq != null && partsCont.getChildCount() == ruq.conditionCount()) {
             RQVCard2 add = new RQVCard2(getContext(), theme);
             add.setMode(RQVCard2.Mode.OUTLINES);
-            add.setOutlineText(R.string.add_operator_nl, R.string.add_condition_nl);
+            add.setOutlineText(R.string.ruqus_add_operator_nl, R.string.ruqus_add_condition_nl);
             // Set tag to the current child count of the conditions container, since that will be this item's index
             // once it is added to the end of it.
-            add.setTag(R.id.index, partsCont.getChildCount());
+            add.setTag(R.id.ruqus_index, partsCont.getChildCount());
             // Set the outline text views' OnClickListeners.
             add.setOutline1ClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onOperatorClicked((Integer) v.getTag(R.id.index), null);
+                    onOperatorClicked((Integer) v.getTag(R.id.ruqus_index), null);
                 }
             });
             add.setOutline2ClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onConditionClicked((Integer) v.getTag(R.id.index));
+                    onConditionClicked((Integer) v.getTag(R.id.ruqus_index));
                 }
             });
             // Set a unique view ID.
@@ -579,7 +579,7 @@ public class RealmQueryView extends FrameLayout {
      */
     private void onQueryableChooserClicked() {
         new MaterialDialog.Builder(getContext())
-                .title(R.string.choose_queryable_title)
+                .title(R.string.ruqus_choose_queryable_title)
                 .items(Ruqus.getClassData().getVisibleNames(true))
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
@@ -629,7 +629,8 @@ public class RealmQueryView extends FrameLayout {
      */
     private void onOperatorClicked(final int index, final String currVal) {
         new MaterialDialog.Builder(getContext())
-                .title(index == partsCont.getChildCount() - 1 ? R.string.add_operator : R.string.change_operator)
+                .title(index == partsCont.getChildCount() - 1 ? R.string.ruqus_add_operator :
+                        R.string.ruqus_change_operator)
                 .items(Ruqus.getTransformerData().getVisibleNoArgNames())
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
@@ -648,20 +649,20 @@ public class RealmQueryView extends FrameLayout {
     private void setOperator(int index, String visibleName) {
         String realName = Ruqus.transformerNameFromVisibleName(visibleName, true);
         RQVCard2 card = (RQVCard2) partsCont.getChildAt(index);
-        card.setTag(R.id.curr_val, visibleName);
+        card.setTag(R.id.ruqus_curr_val, visibleName);
         if (card.getMode() == RQVCard2.Mode.OUTLINES) {
             // This was an outline-mode card before this, and ruq doesn't have a condition for it.
             // Set the card's card listener and long click listener.
             card.setCardClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onOperatorClicked((Integer) v.getTag(R.id.index), (String) v.getTag(R.id.curr_val));
+                    onOperatorClicked((Integer) v.getTag(R.id.ruqus_index), (String) v.getTag(R.id.ruqus_curr_val));
                 }
             });
             card.setCardLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    onPartLongClicked((Integer) v.getTag(R.id.index));
+                    onPartLongClicked((Integer) v.getTag(R.id.ruqus_index));
                     return true;
                 }
             });
@@ -716,9 +717,9 @@ public class RealmQueryView extends FrameLayout {
      */
     private void onPartLongClicked(final int index) {
         new MaterialDialog.Builder(getContext())
-                .title(R.string.remove_operator)
-                .negativeText(R.string.no)
-                .positiveText(R.string.yes)
+                .title(R.string.ruqus_remove_operator)
+                .negativeText(R.string.ruqus_no)
+                .positiveText(R.string.ruqus_yes)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -739,12 +740,12 @@ public class RealmQueryView extends FrameLayout {
             case C_BUILD: {
                 // Validate field.
                 if (currFieldName == null || currFieldType == null) {
-                    Toast.makeText(getContext(), R.string.error_must_set_field, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.ruqus_error_must_set_field, Toast.LENGTH_LONG).show();
                     return;
                 }
                 // Validate conditional.
                 if (currTransName == null) {
-                    Toast.makeText(getContext(), R.string.error_must_set_conditional, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.ruqus_error_must_set_conditional, Toast.LENGTH_LONG).show();
                     return;
                 }
                 // Validate and get args.
@@ -764,7 +765,7 @@ public class RealmQueryView extends FrameLayout {
                 // Get the visible condition string.
                 String visCondString = condition.toString();
                 // Set the card's text (and its tag).
-                card.setTag(R.id.curr_val, visCondString);
+                card.setTag(R.id.ruqus_curr_val, visCondString);
                 card.setCardText(visCondString);
 
                 // If the card is still in OUTLINES mode, we know this is a new Condition, and that we need to do a bit
@@ -775,13 +776,13 @@ public class RealmQueryView extends FrameLayout {
                     card.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            onConditionClicked((Integer) v.getTag(R.id.index));
+                            onConditionClicked((Integer) v.getTag(R.id.ruqus_index));
                         }
                     });
                     card.setCardLongClickListener(new OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            onPartLongClicked((Integer) v.getTag(R.id.index));
+                            onPartLongClicked((Integer) v.getTag(R.id.ruqus_index));
                             return true;
                         }
                     });
@@ -835,7 +836,7 @@ public class RealmQueryView extends FrameLayout {
         if (currPartIdx == -1) throw new IllegalArgumentException("Must set currPartIdx for C_BUILD mode.");
 
         // Set up views.
-        builderHeader.setText(R.string.edit_condition_title);
+        builderHeader.setText(R.string.ruqus_edit_condition_title);
         fieldChooser.setVisibility(VISIBLE);
 
         // Set up vars.
@@ -1002,7 +1003,7 @@ public class RealmQueryView extends FrameLayout {
                 case DATE:
                     DateInputView dateInputView = (DateInputView) argView;
                     if (dateInputView.hasDate()) {
-                        dateInputView.setError(getContext().getString(R.string.error_empty_date));
+                        dateInputView.setError(getContext().getString(R.string.ruqus_error_empty_date));
                         return null;
                     }
                     args[i] = dateInputView.getDate();
@@ -1010,60 +1011,60 @@ public class RealmQueryView extends FrameLayout {
                 case DOUBLE:
                     EditText etDouble = (EditText) argView;
                     if (etDouble.length() == 0) {
-                        etDouble.setError(getContext().getString(R.string.error_empty_input));
+                        etDouble.setError(getContext().getString(R.string.ruqus_error_empty_input));
                         return null;
                     }
                     args[i] = FieldType.parseNumberIfPossible(currFieldType, etDouble.getText().toString());
                     if (args[i] == null) {
-                        etDouble.setError(getContext().getString(R.string.error_out_of_range_double));
+                        etDouble.setError(getContext().getString(R.string.ruqus_error_out_of_range_double));
                         return null;
                     }
                     continue;
                 case FLOAT:
                     EditText etFloat = (EditText) argView;
                     if (etFloat.length() == 0) {
-                        etFloat.setError(getContext().getString(R.string.error_empty_input));
+                        etFloat.setError(getContext().getString(R.string.ruqus_error_empty_input));
                         return null;
                     }
                     args[i] = FieldType.parseNumberIfPossible(currFieldType, etFloat.getText().toString());
                     if (args[i] == null) {
-                        etFloat.setError(getContext().getString(R.string.error_out_of_range_float));
+                        etFloat.setError(getContext().getString(R.string.ruqus_error_out_of_range_float));
                         return null;
                     }
                     continue;
                 case INTEGER:
                     EditText etInteger = (EditText) argView;
                     if (etInteger.length() == 0) {
-                        etInteger.setError(getContext().getString(R.string.error_empty_input));
+                        etInteger.setError(getContext().getString(R.string.ruqus_error_empty_input));
                         return null;
                     }
                     args[i] = FieldType.parseNumberIfPossible(currFieldType, etInteger.getText().toString());
                     if (args[i] == null) {
-                        etInteger.setError(getContext().getString(R.string.error_out_of_range_integer));
+                        etInteger.setError(getContext().getString(R.string.ruqus_error_out_of_range_integer));
                         return null;
                     }
                     continue;
                 case LONG:
                     EditText etLong = (EditText) argView;
                     if (etLong.length() == 0) {
-                        etLong.setError(getContext().getString(R.string.error_empty_input));
+                        etLong.setError(getContext().getString(R.string.ruqus_error_empty_input));
                         return null;
                     }
                     args[i] = FieldType.parseNumberIfPossible(currFieldType, etLong.getText().toString());
                     if (args[i] == null) {
-                        etLong.setError(getContext().getString(R.string.error_out_of_range_long));
+                        etLong.setError(getContext().getString(R.string.ruqus_error_out_of_range_long));
                         return null;
                     }
                     continue;
                 case SHORT:
                     EditText etShort = (EditText) argView;
                     if (etShort.length() == 0) {
-                        etShort.setError(getContext().getString(R.string.error_empty_input));
+                        etShort.setError(getContext().getString(R.string.ruqus_error_empty_input));
                         return null;
                     }
                     args[i] = FieldType.parseNumberIfPossible(currFieldType, etShort.getText().toString());
                     if (args[i] == null) {
-                        etShort.setError(getContext().getString(R.string.error_out_of_range_short));
+                        etShort.setError(getContext().getString(R.string.ruqus_error_out_of_range_short));
                         return null;
                     }
                     continue;
@@ -1071,7 +1072,7 @@ public class RealmQueryView extends FrameLayout {
                     EditText etString = (EditText) argView;
                     args[i] = etString.getText().toString();
                     if (((String) args[i]).isEmpty()) {
-                        etString.setError(getContext().getString(R.string.error_empty_input));
+                        etString.setError(getContext().getString(R.string.ruqus_error_empty_input));
                         return null;
                     }
             }
@@ -1088,7 +1089,7 @@ public class RealmQueryView extends FrameLayout {
      */
     private void initSortBuilderMode(ArrayList<String> sortFields, ArrayList<Sort> sortDirs) {
         // Set up views.
-        builderHeader.setText(R.string.choose_sort_fields_title);
+        builderHeader.setText(R.string.ruqus_choose_sort_fields_title);
         addSortField.setVisibility(VISIBLE);
 
         // Set up vars.
@@ -1128,7 +1129,7 @@ public class RealmQueryView extends FrameLayout {
 
         // Set label text.
         ((TextView) sortPart.findViewById(R.id.sort_field_label)).setText(
-                getContext().getString(R.string.sort_field_label, idx));
+                getContext().getString(R.string.ruqus_sort_field_label, idx));
 
         // Set up spinner.
         Spinner fieldSpinner = (Spinner) sortPart.findViewById(R.id.sort_field);
