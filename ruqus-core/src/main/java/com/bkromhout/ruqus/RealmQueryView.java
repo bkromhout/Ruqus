@@ -15,12 +15,16 @@ import io.realm.Sort;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * RealmQueryView
  * @author bkromhout
  */
 public class RealmQueryView extends FrameLayout {
+    private static final String ARG_STR_SEP = ";";
+    private static final Pattern ARG_STR_SEP_PATTERN = Pattern.compile("\\Q" + ARG_STR_SEP + "\\E");
+
     private enum Mode {
         MAIN, C_BUILD, S_BUILD
     }
@@ -368,12 +372,11 @@ public class RealmQueryView extends FrameLayout {
             ss.currFieldName = this.currFieldName;
             ss.currFieldType = this.currFieldType;
             ss.currTransName = this.currTransName;
-            ss.argViewIds = this.argViewIds;
+            ss.currArgsString = stashableArgsString();
         } else if (this.mode == Mode.S_BUILD) {
             // Only save sort builder variables if we're in that mode.
-            ss.sortSpinnerIds = this.sortSpinnerIds;
-            ss.removeSortBtnIds = this.removeSortBtnIds;
-            ss.sortDirRgIds = this.sortDirRgIds;
+            ss.currSortFields = stashableSortFields();
+            ss.currSortDirs = stashableSortDirections();
         }
 
         return ss;
@@ -395,17 +398,15 @@ public class RealmQueryView extends FrameLayout {
         this.mode = ss.mode;
         setupUsingRUQ();
         if (this.mode == Mode.C_BUILD) {
-            // Only try to restore condition builder variables if we were in that mode.
+            // Only try to restore condition builder if we were in that mode.
             this.currPartIdx = ss.currPartIdx;
             this.currFieldName = ss.currFieldName;
-            this.currFieldType = ss.currFieldType;
+            this.currFieldType = ss.currFieldType; // TODO is this even needed? Perhaps not.
             this.currTransName = ss.currTransName;
-            this.argViewIds = ss.argViewIds;
+            restoreConditionBuilderMode(ss.currArgsString);
         } else if (this.mode == Mode.S_BUILD) {
-            // Only try to restore sort builder variables if we were in that mode.
-            this.sortSpinnerIds = ss.sortSpinnerIds;
-            this.removeSortBtnIds = ss.removeSortBtnIds;
-            this.sortDirRgIds = ss.sortDirRgIds;
+            // Only try to restore sort builder if we were in that mode.
+            restoreSortBuilderMode(ss.currSortFields, ss.currSortDirs);
         }
     }
 
@@ -805,6 +806,14 @@ public class RealmQueryView extends FrameLayout {
                 for (Integer sortSpinnerId : sortSpinnerIds)
                     sortFields.add(Ruqus.fieldFromVisibleField(currClassName,
                             (String) ((Spinner) builderParts.findViewById(sortSpinnerId)).getSelectedItem()));
+
+                // Ensure none of the sort fields are the default "Choose Field" string.
+                if (sortFields.contains(Ruqus.CHOOSE_FIELD)) {
+                    Toast.makeText(getContext(), R.string.ruqus_error_some_sort_fields_not_chosen, Toast.LENGTH_LONG)
+                         .show();
+                    return;
+                }
+
                 // Get sort dirs.
                 for (Integer sortDirRgId : sortDirRgIds)
                     sortDirs.add(((RadioGroup) builderParts.findViewById(sortDirRgId))
@@ -855,6 +864,38 @@ public class RealmQueryView extends FrameLayout {
             // Fill in argument views.
             fillArgViews(condition.getArgs());
         }
+    }
+
+    /**
+     * Called to restore the view hierarchy state if we were in condition builder mode prior to a configuration change.
+     * @param argsString String containing values to put in arg views.
+     */
+    private void restoreConditionBuilderMode(String argsString) {
+        // Make sure currPartIdx is set.
+        if (currClassName == null) throw new IllegalArgumentException("Cannot restore without currClassName");
+        if (currPartIdx == -1) throw new IllegalArgumentException("Must set currPartIdx for C_BUILD mode.");
+
+        // Set up views.
+        builderHeader.setText(R.string.ruqus_edit_condition_title);
+        fieldChooser.setVisibility(VISIBLE);
+
+        // Set up vars.
+        argViewIds = new ArrayList<>();
+
+        // Try to restore chosen field.
+        if (currFieldName != null) fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(
+                Ruqus.visibleFieldFromField(currClassName, currFieldName)));
+
+        // Try to restore chosen transformer.
+        if (currTransName != null) conditionalChooser.setSelection(Ruqus.getTransformerData().getVisibleNames().indexOf(
+                Ruqus.getTransformerData().visibleNameOf(currTransName)));
+
+        // Try to restore inputs.
+        restoreArgViews(argsString);
+
+        // Hide main view and show builder view.
+        mainCont.setVisibility(GONE);
+        builderScrollView.setVisibility(VISIBLE);
     }
 
     /**
@@ -961,7 +1002,8 @@ public class RealmQueryView extends FrameLayout {
      * @param args Values retrieved using {@link Condition#getArgs()}.
      */
     private void fillArgViews(Object[] args) {
-        for (int i = 0; i < argViewIds.size(); i++) {
+        if (args == null) return;
+        for (int i = 0; i < args.length && i < argViewIds.size(); i++) {
             View view = builderParts.findViewById(argViewIds.get(i));
 
             switch (currFieldType) {
@@ -985,6 +1027,34 @@ public class RealmQueryView extends FrameLayout {
         }
     }
 
+    /**
+     * Restore the condition builder arg views's contents.
+     * @param argsString String containing values to put in arg views.
+     * @see #stashableArgsString()
+     */
+    private void restoreArgViews(String argsString) {
+        if (argsString == null || argsString.isEmpty()) return;
+        String[] args = ARG_STR_SEP_PATTERN.split(argsString);
+        for (int i = 0; i < args.length && i < argViewIds.size(); i++) {
+            View view = builderParts.findViewById(argViewIds.get(i));
+            switch (currFieldType) {
+                case BOOLEAN:
+                    ((RadioGroup) view).check("true".equals(args[i]) ? R.id.rb_true : R.id.rb_false);
+                    break;
+                case DATE:
+                    ((DateInputView) view).setText(args[i]);
+                    break;
+                case DOUBLE:
+                case FLOAT:
+                case INTEGER:
+                case LONG:
+                case SHORT:
+                case STRING:
+                    ((TextView) view).setText(args[i]);
+                    break;
+            }
+        }
+    }
 
     /**
      * Attempts to validates the values that the user has provided to the condition builder, and returns them if they
@@ -1003,7 +1073,7 @@ public class RealmQueryView extends FrameLayout {
                     continue;
                 case DATE:
                     DateInputView dateInputView = (DateInputView) argView;
-                    if (dateInputView.hasDate()) {
+                    if (!dateInputView.hasDate()) {
                         dateInputView.setError(getContext().getString(R.string.ruqus_error_empty_date));
                         return null;
                     }
@@ -1071,14 +1141,45 @@ public class RealmQueryView extends FrameLayout {
                     continue;
                 case STRING:
                     EditText etString = (EditText) argView;
-                    args[i] = etString.getText().toString();
                     if (((String) args[i]).isEmpty()) {
                         etString.setError(getContext().getString(R.string.ruqus_error_empty_input));
                         return null;
                     }
+                    args[i] = etString.getText().toString();
             }
         }
         return args;
+    }
+
+    /**
+     * Get the condition builder arg views' contents as a string so that we can restore them later.
+     * @return String which we have stashed our arg views' contents in.
+     * @see #restoreArgViews(String)
+     */
+    private String stashableArgsString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < argViewIds.size(); i++) {
+            View argView = builderParts.findViewById(argViewIds.get(i));
+            switch (currFieldType) {
+                case BOOLEAN:
+                    builder.append(((RadioGroup) argView).getCheckedRadioButtonId() == R.id.rb_false
+                            ? "false" : "true");
+                    continue;
+                case DATE:
+                    builder.append(((DateInputView) argView).getText());
+                    continue;
+                case DOUBLE:
+                case FLOAT:
+                case INTEGER:
+                case LONG:
+                case SHORT:
+                case STRING:
+                    builder.append(((EditText) argView).getText().toString());
+            }
+            builder.append(ARG_STR_SEP);
+        }
+        if (builder.length() > 0) builder.delete(builder.lastIndexOf(ARG_STR_SEP), builder.length());
+        return builder.toString();
     }
 
     /* Methods for sort builder mode. */
@@ -1091,6 +1192,7 @@ public class RealmQueryView extends FrameLayout {
     private void initSortBuilderMode(ArrayList<String> sortFields, ArrayList<Sort> sortDirs) {
         // Set up views.
         builderHeader.setText(R.string.ruqus_choose_sort_fields_title);
+        addSortField.setEnabled(true);
         addSortField.setVisibility(VISIBLE);
 
         // Set up vars.
@@ -1102,6 +1204,19 @@ public class RealmQueryView extends FrameLayout {
         for (int i = 0; i < sortFields.size(); i++)
             addSortFieldView(currVisibleFlatFieldNames.indexOf(Ruqus.visibleFieldFromField(currClassName,
                     sortFields.get(i))), sortDirs.get(i));
+    }
+
+    /**
+     * Called to restore the view hierarchy state if we were in sort builder mode prior to a configuration change.
+     * @param sortFields Sort fields to restore.
+     * @param sortDirs   Sort directions to restore.
+     */
+    private void restoreSortBuilderMode(ArrayList<String> sortFields, ArrayList<Sort> sortDirs) {
+        initSortBuilderMode(sortFields, sortDirs);
+
+        // Hide main view and show builder view.
+        mainCont.setVisibility(GONE);
+        builderScrollView.setVisibility(VISIBLE);
     }
 
     /**
@@ -1221,6 +1336,30 @@ public class RealmQueryView extends FrameLayout {
         rg.setVisibility(VISIBLE);
     }
 
+    /**
+     * Get a list of sort fields which are currently chosen so we can restore them later.
+     * @return List of currently selected sort fields.
+     */
+    private ArrayList<String> stashableSortFields() {
+        ArrayList<String> sortFields = new ArrayList<>();
+        for (Integer sortSpinnerId : sortSpinnerIds)
+            sortFields.add(Ruqus.fieldFromVisibleField(currClassName,
+                    (String) ((Spinner) builderParts.findViewById(sortSpinnerId)).getSelectedItem()));
+        return sortFields;
+    }
+
+    /**
+     * Get a list of sort directions which are currently chosen so we can restore them later.
+     * @return List of currently selected sort directions.
+     */
+    private ArrayList<Sort> stashableSortDirections() {
+        ArrayList<Sort> sortDirs = new ArrayList<>();
+        for (Integer sortDirRgId : sortDirRgIds)
+            sortDirs.add(((RadioGroup) builderParts.findViewById(sortDirRgId))
+                    .getCheckedRadioButtonId() == R.id.asc ? Sort.ASCENDING : Sort.DESCENDING);
+        return sortDirs;
+    }
+
     /* State persistence. */
 
     /**
@@ -1237,12 +1376,11 @@ public class RealmQueryView extends FrameLayout {
         String currFieldName;
         FieldType currFieldType;
         String currTransName;
-        ArrayList<Integer> argViewIds;
+        String currArgsString;
 
         // Sort builder variables. Will only be written/read if we're in sort builder mode.
-        ArrayList<Integer> sortSpinnerIds;
-        ArrayList<Integer> removeSortBtnIds;
-        ArrayList<Integer> sortDirRgIds;
+        ArrayList<String> currSortFields;
+        ArrayList<Sort> currSortDirs;
 
         public SavedState(Parcelable superState) {
             super(superState);
@@ -1263,16 +1401,14 @@ public class RealmQueryView extends FrameLayout {
                 int tmpCurrFieldType = in.readInt();
                 this.currFieldType = tmpCurrFieldType == -1 ? null : FieldType.values()[tmpCurrFieldType];
                 this.currTransName = in.readString();
-                this.argViewIds = new ArrayList<>();
-                in.readList(this.argViewIds, Integer.class.getClassLoader());
+                this.currArgsString = in.readString();
             } else if (this.mode == Mode.S_BUILD) {
                 // If we were in sort builder mode, read those variables' values back.
-                this.sortSpinnerIds = new ArrayList<>();
-                in.readList(this.sortSpinnerIds, Integer.class.getClassLoader());
-                this.removeSortBtnIds = new ArrayList<>();
-                in.readList(this.removeSortBtnIds, Integer.class.getClassLoader());
-                this.sortDirRgIds = new ArrayList<>();
-                in.readList(this.sortDirRgIds, Integer.class.getClassLoader());
+                this.currSortFields = in.createStringArrayList();
+                this.currSortDirs = new ArrayList<>();
+                ArrayList<Integer> temp = new ArrayList<>();
+                in.readList(temp, null);
+                for (Integer sortOrdinal : temp) this.currSortDirs.add(Sort.values()[sortOrdinal]);
             }
         }
 
@@ -1292,12 +1428,13 @@ public class RealmQueryView extends FrameLayout {
                 out.writeString(this.currFieldName);
                 out.writeInt(this.currFieldType == null ? -1 : this.currFieldType.ordinal());
                 out.writeString(this.currTransName);
-                out.writeList(this.argViewIds);
+                out.writeString(this.currArgsString);
             } else if (this.mode == Mode.S_BUILD) {
                 // If we're in sort builder mode, write those variables' values.
-                out.writeList(this.sortSpinnerIds);
-                out.writeList(this.removeSortBtnIds);
-                out.writeList(this.sortDirRgIds);
+                out.writeStringList(this.currSortFields);
+                ArrayList<Integer> temp = new ArrayList<>();
+                for (Sort sortDir : this.currSortDirs) temp.add(sortDir.ordinal());
+                out.writeList(temp);
             }
         }
 

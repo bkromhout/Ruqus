@@ -233,15 +233,6 @@ public class Condition implements Parcelable {
         return type;
     }
 
-//    void setType(Type type) {
-//        if (this.type == type) return;
-//        // If this is a different type, clear our vars.
-//        resetState();
-//        this.type = type;
-//        // Do some special stuff based on the new type.
-//        handleSpecialTypes();
-//    }
-
     public String getRealmClass() {
         return realmClass;
     }
@@ -329,10 +320,10 @@ public class Condition implements Parcelable {
             case NORMAL:
                 FieldData fieldData = Ruqus.getFieldData(realmClass);
                 StringBuilder builder = new StringBuilder();
-                builder.append(Phrase.from("{field} {transformerVName}")
+                builder.append(Phrase.from("{field} {transformer_v_name}")
                                      .put("field", fieldData.visibleNameOf(field))
-                                     .put("transformerVName", transformerData.visibleNameOf(transformer))
-                                     .toString());
+                                     .put("transformer_v_name", transformerData.visibleNameOf(transformer))
+                                     .format());
 
                 int numArgs = transformerData.numArgsOf(transformer);
                 if (numArgs == 0)
@@ -374,7 +365,7 @@ public class Condition implements Parcelable {
             case NORMAL:
                 builder.append(field) // Write out real field name.
                        .append(C_SEP)
-                       .append(argsToString()) // Write out args.
+                       .append(argsToString(args)) // Write out args.
                        .append(C_SEP);
             case NO_ARGS:
             case BEGIN_GROUP:
@@ -386,7 +377,7 @@ public class Condition implements Parcelable {
         return builder.toString();
     }
 
-    private String argsToString() {
+    private static String argsToString(Object[] args) {
         if (args == null || args.length == 0) return "";
         StringBuilder argsStr = new StringBuilder();
         for (Object arg : args)
@@ -396,7 +387,7 @@ public class Condition implements Parcelable {
         return argsStr.toString();
     }
 
-    private Object[] argsFromString(String argsString) {
+    private static Object[] argsFromString(String argsString) {
         if (argsString == null || argsString.isEmpty()) return null;
         String[] argParts = ARG_SEP_PATTERN.split(argsString);
         Object[] args = new Object[argParts.length];
@@ -415,7 +406,7 @@ public class Condition implements Parcelable {
         dest.writeString(this.realmClass);
         dest.writeString(this.field);
         dest.writeInt(this.fieldType == null ? -1 : this.fieldType.ordinal());
-        dest.writeString(argsToString());
+        dest.writeString(argsToString(this.args));
         dest.writeString(this.transformer);
     }
 

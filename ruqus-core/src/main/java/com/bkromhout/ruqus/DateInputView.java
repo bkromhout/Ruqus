@@ -145,11 +145,19 @@ class DateInputView extends LinearLayout implements DatePickerDialog.OnDateSetLi
     }
 
     Date getDate() {
-        return Util.calFromString(tvDate.getText().toString()).getTime();
+        return tvDate.length() == 0 ? null : Util.calFromString(tvDate.getText().toString()).getTime();
     }
 
     void setDate(Date date) {
         tvDate.setText(Util.dateFormat.format(date));
+    }
+
+    String getText() {
+        return tvDate.getText().toString();
+    }
+
+    void setText(String text) {
+        tvDate.setText(text);
     }
 
     void setError(String error) {
