@@ -23,7 +23,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        if (savedInstanceState != null && savedInstanceState.containsKey("RUQ"))
+            realmUserQuery = savedInstanceState.getParcelable("RUQ");
         updateUi();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (realmUserQuery != null) outState.putParcelable("RUQ", realmUserQuery);
     }
 
     private void updateUi() {
