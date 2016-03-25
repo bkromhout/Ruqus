@@ -391,8 +391,9 @@ public class RealmQueryView extends FrameLayout {
         this.theme = ss.theme;
         this.ruq = ss.ruq;
         this.mode = ss.mode;
-        this.currClassName = ss.currClassName;
-        this.currVisibleFlatFieldNames = ss.currVisibleFlatFieldNames;
+        setupUsingRUQ();
+        //this.currClassName = ss.currClassName;
+        //this.currVisibleFlatFieldNames = ss.currVisibleFlatFieldNames;
         if (this.mode == Mode.C_BUILD) {
             // Only try to restore condition builder variables if we were in that mode.
             this.currPartIdx = ss.currPartIdx;
@@ -446,8 +447,10 @@ public class RealmQueryView extends FrameLayout {
         setQueryable(realName, Ruqus.getClassData().visibleNameOf(realName));
 
         // Set sort fields (if present).
-        sortChooser.setMode(ruq.getSortFields().size() > 0 ? RQVCard.Mode.CARD : RQVCard.Mode.OUTLINE);
-        sortChooser.setCardText("Sorted by " + ruq.getSortString());
+        if (ruq.getSortFields().size() > 0) {
+            sortChooser.setMode(RQVCard.Mode.CARD);
+            sortChooser.setCardText("Sorted by " + ruq.getSortString());
+        } else sortChooser.setMode(RQVCard.Mode.OUTLINE);
 
         // Add part cards.
         partsCont.removeAllViews(); // Make sure parts container is empty first!
@@ -794,8 +797,10 @@ public class RealmQueryView extends FrameLayout {
                 ruq.setSorts(sortFields, sortDirs);
 
                 // Set sort chooser mode and/or card text.
-                sortChooser.setMode(sortFields.size() > 0 ? RQVCard.Mode.CARD : RQVCard.Mode.OUTLINE);
-                sortChooser.setCardText("Sorted by " + ruq.getSortString());
+                if (sortFields.size() > 0) {
+                    sortChooser.setMode(RQVCard.Mode.CARD);
+                    sortChooser.setCardText("Sorted by " + ruq.getSortString());
+                } else sortChooser.setMode(RQVCard.Mode.OUTLINE);
                 break;
             }
         }

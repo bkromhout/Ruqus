@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  * Used to let end-users build Realm Queries by wrapping {@link io.realm.RealmQuery}.
- * <p>
+ * <p/>
  * TODO make this Parcelable!
  */
 public class RealmUserQuery implements Parcelable {
@@ -184,7 +184,7 @@ public class RealmUserQuery implements Parcelable {
 
     /**
      * Get a human-readable version of this query, suitable for displaying for the user.
-     * <p>
+     * <p/>
      * This will return null if the query isn't currently valid.
      * @return Human-readable query string.
      */
@@ -227,9 +227,10 @@ public class RealmUserQuery implements Parcelable {
 
     /**
      * Return a human-readable sort string.
-     * @return Human-readable sort string.
+     * @return Human-readable sort string, or null if there are no sort fields.
      */
     String getSortString() {
+        if (sortStrings().isEmpty()) return null;
         return ListPhrase.from(" and ", ", ", ", and ").join(sortStrings()).toString() + ".";
     }
 
@@ -238,6 +239,7 @@ public class RealmUserQuery implements Parcelable {
      * @return List of human-readable sort strings.
      */
     private ArrayList<String> sortStrings() {
+        if (sortFields.isEmpty()) return new ArrayList<>();
         FieldData fieldData = Ruqus.getFieldData(queryClass.getSimpleName());
         ArrayList<String> sorts = new ArrayList<>();
         for (int i = 0; i < sortFields.size(); i++) {
@@ -256,7 +258,7 @@ public class RealmUserQuery implements Parcelable {
      * Get a string which holds all of the information needed to create a {@link RealmUserQuery} identical to this one.
      * This string is not something which should be shown to users, it is intended to be stored somewhere so that it can
      * be used to recreate this query again later.
-     * <p>
+     * <p/>
      * This will return null if the query isn't currently in a valid state.
      * @return Internal string representation of this query.
      */
