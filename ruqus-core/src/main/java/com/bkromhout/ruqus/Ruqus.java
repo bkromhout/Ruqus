@@ -7,6 +7,7 @@ import io.realm.RealmObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Access to Ruqus information. This class mostly serves as a convenience class, using the instances of {@link
@@ -17,6 +18,9 @@ public class Ruqus {
     private static final String KEY_SEP = "$";
     private static final String FLAT_SEP = ".";
     private static final String VIS_FLAT_SEP = ">";
+    private static final Pattern KEY_SEP_PATTERN = Pattern.compile("\\Q" + KEY_SEP + "\\E");
+    private static final Pattern FLAT_SEP_PATTERN = Pattern.compile("\\Q" + FLAT_SEP + "\\E");
+    private static final Pattern VIS_SEP_PATTERN = Pattern.compile("\\Q" + VIS_FLAT_SEP + "\\E");
 
     static int LIGHT_TEXT_COLOR, DARK_TEXT_COLOR, LIGHT_CARD_COLOR, DARK_CARD_COLOR;
     static String CHOOSE_FIELD, CHOOSE_CONDITIONAL;
@@ -189,7 +193,7 @@ public class Ruqus {
         if (fieldData == null) throw ex("\"%s\" is not a valid realm object class name.", realmClass);
 
         // Split field name up so that we can drill down to the end of any linked fields.
-        String[] fieldParts = field.split("\\Q" + FLAT_SEP + "\\E");
+        String[] fieldParts = FLAT_SEP_PATTERN.split(field);
         for (String fieldPart : fieldParts) {
             // Make sure we have this field part.
             if (!fieldData.hasField(fieldPart)) return false;
@@ -236,7 +240,7 @@ public class Ruqus {
             FieldData fieldData = classData.getFieldData(realmClass);
             if (fieldData == null) throw ex("\"%s\" is not a valid realm object class name.", realmClass);
             // Split field name up so that we can drill down to the end of any linked fields.
-            String[] fieldParts = field.split("\\Q" + FLAT_SEP + "\\E");
+            String[] fieldParts = FLAT_SEP_PATTERN.split(field);
             Class fieldTypeClazz = null;
             for (String fieldPart : fieldParts) {
                 // Try to get it as a realm list type.
@@ -309,12 +313,13 @@ public class Ruqus {
         ensureInit();
         String key = realmClass + KEY_SEP + visibleFieldName;
         // Try to get cached value first.
-        if (INSTANCE.flatVisFieldToFlatField.containsKey(key)) return INSTANCE.flatVisFieldToFlatField.get(key);
+        if (INSTANCE.flatVisFieldToFlatField.containsKey(key))
+            return stripKey(INSTANCE.flatVisFieldToFlatField.get(key));
 
         // If not cached, must go figure it out.
         ClassData classData = getClassData();
         FieldData fieldData = classData.getFieldData(realmClass);
-        String[] parts = visibleFieldName.split("\\Q" + VIS_FLAT_SEP + "\\E");
+        String[] parts = VIS_SEP_PATTERN.split(visibleFieldName);
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < parts.length; i++) {
@@ -352,14 +357,14 @@ public class Ruqus {
         // Try to get cached key first.
         if (INSTANCE.flatVisFieldToFlatField.containsValue(value)) {
             for (Map.Entry<String, String> entry : INSTANCE.flatVisFieldToFlatField.entrySet()) {
-                if (entry.getValue().equals(value)) return entry.getKey();
+                if (entry.getValue().equals(value)) return stripKey(entry.getKey());
             }
         }
 
         // If not cached, must go figure it out.
         StringBuilder builder = new StringBuilder();
         String className = realmClass;
-        String[] parts = field.split("\\Q" + FLAT_SEP + "\\E");
+        String[] parts = FLAT_SEP_PATTERN.split(field);
         for (int i = 0; i < parts.length; i++) {
             if (i != parts.length - 1) {
                 // Not at the end of the link yet.
@@ -434,6 +439,15 @@ public class Ruqus {
      */
     static RUQTransformer getTransformer(String transformerName) {
         return getTransformerData().getTransformer(transformerName);
+    }
+
+    /**
+     * Strip the leading "[string]$" off of a string, if it contains a "$".
+     * @param keyedString String to strip.
+     * @return Stripped string.
+     */
+    private static String stripKey(String keyedString) {
+        return keyedString.contains(KEY_SEP) ? KEY_SEP_PATTERN.split(keyedString)[1] : keyedString;
     }
 
     /**
