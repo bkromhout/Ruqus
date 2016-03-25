@@ -6,6 +6,7 @@ import com.squareup.phrase.ListPhrase;
 import com.squareup.phrase.Phrase;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * This class is responsible for holding a condition.
@@ -13,6 +14,8 @@ import java.util.Arrays;
 public class Condition implements Parcelable {
     private static final String C_SEP = "|||";
     private static final String ARG_SEP = ";,;";
+    private static final Pattern C_SEP_PATTERN = Pattern.compile("\\Q" + C_SEP + "\\E");
+    private static final Pattern ARG_SEP_PATTERN = Pattern.compile("\\Q" + ARG_SEP + "\\E");
     private static final String BEGIN_GROUP_TNAME = "com.bkromhout.ruqus.transformers.BeginGroup";
     private static final String END_GROUP_TNAME = "com.bkromhout.ruqus.transformers.EndGroup";
     private static final String OR_TNAME = "com.bkromhout.ruqus.transformers.Or";
@@ -97,7 +100,7 @@ public class Condition implements Parcelable {
      */
     Condition(String conditionString) {
         // Split into parts.
-        String[] parts = conditionString.split("\\Q" + C_SEP + "\\E");
+        String[] parts = C_SEP_PATTERN.split(conditionString);
 
         // Figure out type.
         type = Type.getForName(parts[0]);
@@ -395,7 +398,7 @@ public class Condition implements Parcelable {
 
     private Object[] argsFromString(String argsString) {
         if (argsString == null || argsString.isEmpty()) return null;
-        String[] argParts = argsString.split("\\Q" + ARG_SEP + "\\E");
+        String[] argParts = ARG_SEP_PATTERN.split(argsString);
         Object[] args = new Object[argParts.length];
         for (int i = 0; i < argParts.length; i++) args[i] = FieldType.parseDataString(argParts[i]);
         return args;

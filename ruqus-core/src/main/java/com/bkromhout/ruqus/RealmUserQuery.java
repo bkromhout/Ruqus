@@ -8,6 +8,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * Used to let end-users build Realm Queries by wrapping {@link io.realm.RealmQuery}.
@@ -19,6 +20,10 @@ public class RealmUserQuery implements Parcelable {
     private static final String COND_SEP = "#$_Condition_$#";
     private static final String SORT_SEP = "#$_Sort_$#";
     private static final String SORT_SUB_SEP = "<<>>";
+    private static final Pattern PART_SEP_PATTERN = Pattern.compile("\\Q" + PART_SEP + "\\E");
+    private static final Pattern COND_SEP_PATTERN = Pattern.compile("\\Q" + COND_SEP + "\\E");
+    private static final Pattern SORT_SEP_PATTERN = Pattern.compile("\\Q" + SORT_SEP + "\\E");
+    private static final Pattern SORT_SUB_SEP_PATTERN = Pattern.compile("\\Q" + SORT_SUB_SEP + "\\E");
 
     /**
      * Type of object which will be returned by the query.
@@ -56,7 +61,7 @@ public class RealmUserQuery implements Parcelable {
             throw new IllegalArgumentException("ruqString must ne non-null and non-empty");
 
         // Split RUQ string into parts, make sure we have all of them.
-        String[] parts = ruqString.split("\\Q" + PART_SEP + "\\E");
+        String[] parts = PART_SEP_PATTERN.split(ruqString);
         if (parts.length != 3) throw new IllegalArgumentException("ruqString is missing parts.");
 
         // Figure out query class.
@@ -66,7 +71,7 @@ public class RealmUserQuery implements Parcelable {
         // Figure out Conditions.
         conditions = new ArrayList<>();
         if (!parts[1].isEmpty()) {
-            String[] condStrings = parts[1].split("\\Q" + COND_SEP + "\\E");
+            String[] condStrings = COND_SEP_PATTERN.split(parts[1]);
             for (String condString : condStrings) conditions.add(new Condition(condString));
         }
 
@@ -74,9 +79,9 @@ public class RealmUserQuery implements Parcelable {
         sortFields = new ArrayList<>();
         sortDirs = new ArrayList<>();
         if (!parts[2].isEmpty()) {
-            String[] sortStrings = parts[2].split("\\Q" + SORT_SEP + "\\E");
+            String[] sortStrings = SORT_SEP_PATTERN.split(parts[2]);
             for (String sortString : sortStrings) {
-                String[] sortStringParts = sortString.split("\\Q" + SORT_SUB_SEP + "\\E");
+                String[] sortStringParts = SORT_SUB_SEP_PATTERN.split(sortString);
                 if (sortStringParts.length != 2)
                     throw new IllegalArgumentException(String.format("Invalid sort string \"%s\".", sortString));
                 sortFields.add(sortStringParts[0]);

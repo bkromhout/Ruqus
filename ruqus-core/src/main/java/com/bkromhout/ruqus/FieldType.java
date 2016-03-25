@@ -5,6 +5,7 @@ import io.realm.RealmObject;
 import io.realm.Sort;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * Represents field data types so that we don't have to compare Class objects as much.
@@ -120,7 +121,7 @@ public enum FieldType {
     }
 
     static Object parseDataString(String data) {
-        String[] parts = data.split("\\Q" + S.SEP + "\\E");
+        String[] parts = S.SEP_PATTERN.split(data);
         switch (fromName(parts[1])) {
             case BOOLEAN:
                 return Boolean.valueOf(parts[0]);
@@ -166,6 +167,7 @@ public enum FieldType {
 
     private static class S {
         static final String SEP = "::";
+        static final Pattern SEP_PATTERN = Pattern.compile("\\Q" + SEP + "\\E");
         static final String BOOLEAN_NAME = "BOOLEAN";
         static final String DATE_NAME = "DATE";
         static final String DOUBLE_NAME = "DOUBLE";
