@@ -507,7 +507,7 @@ public class RealmQueryView extends FrameLayout {
             });
         }
         // Set the card's long click listener.
-        cond.setOnLongClickListener(new OnLongClickListener() {
+        cond.setCardLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 onPartLongClicked((Integer) v.getTag(R.id.ruqus_index));
