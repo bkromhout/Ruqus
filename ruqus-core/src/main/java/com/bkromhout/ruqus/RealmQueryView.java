@@ -176,9 +176,11 @@ public class RealmQueryView extends FrameLayout {
 
     /**
      * Set up this {@link RealmQueryView} using the given {@link RealmUserQuery}.
-     * @param ruq Realm user query to use to set up this {@link RealmQueryView}. Must be fully-formed.
+     * @param ruq Realm user query to use to set up this {@link RealmQueryView}. Must be fully-formed or this method
+     *            will do nothing.
      */
     public void setRealmUserQuery(RealmUserQuery ruq) {
+        if (!ruq.isQueryValid()) return;
         this.ruq = ruq;
         setupUsingRUQ();
     }
@@ -342,10 +344,13 @@ public class RealmQueryView extends FrameLayout {
             // sort choosers.
             setConditionsAndSortEnabled(false);
             return;
+        } else {
+            // If we have a RUQ already, we need to draw our view accordingly. Unless it's invalid, in which case we
+            // want to get rid of it.
+            if (ruq.isQueryValid()) setupUsingRUQ();
+            else ruq = null;
         }
 
-        // If we have a RUQ already, we need to draw our view accordingly.
-        setupUsingRUQ();
     }
 
     @Override
@@ -441,7 +446,7 @@ public class RealmQueryView extends FrameLayout {
      * Set up the view using the current value of {@link #ruq}.
      */
     private void setupUsingRUQ() {
-        if (ruq == null || !ruq.isQueryValid()) return;
+        if (ruq == null) return;
         // Set queryable class.
         String realName = ruq.getQueryClass().getSimpleName();
         setQueryable(realName, Ruqus.getClassData().visibleNameOf(realName));
@@ -484,13 +489,27 @@ public class RealmQueryView extends FrameLayout {
         // once it is added to the end of it. Also set content tag to the same as the current content.
         cond.setTag(R.id.index, partsCont.getChildCount());
         cond.setTag(R.id.curr_val, visCondString);
-        // Set the card's listener and long click listener.
-        cond.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onConditionClicked((Integer) v.getTag(R.id.index));
-            }
-        });
+        // Set the card's text to the visible condition string.
+        cond.setCardText(visCondString);
+        // Set the card's click listener based on the type of condition.
+        if (condition.getType() == Condition.Type.NORMAL) {
+            // Normal condition listener.
+            cond.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onConditionClicked((Integer) v.getTag(R.id.index));
+                }
+            });
+        } else {
+            // Operator listener.
+            cond.setCardClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onOperatorClicked((Integer) v.getTag(R.id.index), (String) v.getTag(R.id.curr_val));
+                }
+            });
+        }
+        // Set the card's long click listener.
         cond.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
