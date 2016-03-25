@@ -6,7 +6,7 @@
     <string name="Cancel">Cancel</string>
 
     <string name="choose_queryable_title">Choose Type</string>
-    <string name="choose_queryable_prompt">Choose the type to search for</string>
+    <string name="choose_queryable_prompt">Choose Type To Search For</string>
     <string name="choose_queryable_warning">(Changing the type will reset your query!)</string>
 
     <string name="add_operator">Add Operator</string>
