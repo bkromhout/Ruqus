@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        updateUi();
     }
 
     private void updateUi() {
@@ -40,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.edit_query)
     void onEditQClick() {
-        Bundle b = new Bundle();
-        b.putParcelable("RUQ", realmUserQuery);
-        startActivityForResult(new Intent(this, EditQueryActivity.class), 1, b);
+        if (realmUserQuery != null)
+            startActivityForResult(new Intent(this, EditQueryActivity.class).putExtra("RUQ", realmUserQuery), 1);
+        else startActivityForResult(new Intent(this, EditQueryActivity.class), 1);
     }
 }

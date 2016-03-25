@@ -12,13 +12,5 @@
     <com.bkromhout.ruqus.RealmQueryView
             android:id="@+id/rqv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/save"/>
-
-    <Button
-            android:id="@id/save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="@string/save"/>
+            android:layout_height="match_parent"/>
 </RelativeLayout>

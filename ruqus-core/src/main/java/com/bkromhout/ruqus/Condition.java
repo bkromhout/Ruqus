@@ -384,6 +384,7 @@ public class Condition implements Parcelable {
     }
 
     private String argsToString() {
+        if (args == null || args.length == 0) return "";
         StringBuilder argsStr = new StringBuilder();
         for (Object arg : args)
             argsStr.append(FieldType.makeDataString(arg))
@@ -393,6 +394,7 @@ public class Condition implements Parcelable {
     }
 
     private Object[] argsFromString(String argsString) {
+        if (argsString == null || argsString.isEmpty()) return null;
         String[] argParts = argsString.split("\\Q" + ARG_SEP + "\\E");
         Object[] args = new Object[argParts.length];
         for (int i = 0; i < argParts.length; i++) args[i] = FieldType.parseDataString(argParts[i]);

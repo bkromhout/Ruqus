@@ -16,7 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.bkromhout.ruqus.sample.EditQueryActivity">
+        <activity
+                android:name="com.bkromhout.ruqus.sample.EditQueryActivity"
+                android:label="@string/edit_query">
         </activity>
     </application>
 
