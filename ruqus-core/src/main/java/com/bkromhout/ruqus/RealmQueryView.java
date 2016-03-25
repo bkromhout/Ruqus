@@ -1141,11 +1141,11 @@ public class RealmQueryView extends FrameLayout {
                     continue;
                 case STRING:
                     EditText etString = (EditText) argView;
+                    args[i] = etString.getText().toString();
                     if (((String) args[i]).isEmpty()) {
                         etString.setError(getContext().getString(R.string.ruqus_error_empty_input));
                         return null;
                     }
-                    args[i] = etString.getText().toString();
             }
         }
         return args;
