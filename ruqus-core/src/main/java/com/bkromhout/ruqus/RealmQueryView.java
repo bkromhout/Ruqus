@@ -134,6 +134,8 @@ public class RealmQueryView extends FrameLayout {
         init(context, attrs);
     }
 
+    /* Public methods. */
+
     /**
      * Sets the theme of the view and any child views.
      * @param theme Theme to switch to.
@@ -180,6 +182,8 @@ public class RealmQueryView extends FrameLayout {
         this.ruq = ruq;
         setupUsingRUQ();
     }
+
+    /* Non-public methods. */
 
     /**
      * Initialize our view.
