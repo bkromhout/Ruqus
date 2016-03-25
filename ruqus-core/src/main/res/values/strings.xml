@@ -42,5 +42,5 @@
     <string name="ruqus_sort_field_label">Sort field %1$d: </string>
     <string name="ruqus_add_sort_field">Add Sort Field</string>
     <string name="ruqus_remove_sort_field">Remove Sort Field</string>
-    <string name="ruqus_error_some_sort_fields_not_chosen">All sort fields haven't been chosen.</string>
+    <string name="ruqus_error_some_sort_fields_not_chosen">All sort fields haven\'t been chosen.</string>
 </resources>
