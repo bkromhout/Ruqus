@@ -282,16 +282,18 @@ public class Ruqus {
             if (fieldData.isRealmListType(name)) {
                 // Field type is RealmList, recurse and get its visible names as well.
                 vNames.addAll(_visibleFlatFieldsForClass(classData,
-                        classData.getFieldData(fieldData.realmListType(name)), prepend + VIS_FLAT_SEP + visibleName));
+                        classData.getFieldData(fieldData.realmListType(name)),
+                        prepend.isEmpty() ? visibleName : prepend + VIS_FLAT_SEP + visibleName));
             } else if (fieldData.isRealmObjectType(name)) {
                 // Field type is RealmObject, recurse and get its visible names as well.
                 //noinspection unchecked
                 vNames.addAll(_visibleFlatFieldsForClass(classData,
                         classData.getFieldData((Class<? extends RealmObject>) fieldData.fieldType(name)),
-                        prepend + VIS_FLAT_SEP + visibleName));
+                        prepend.isEmpty() ? visibleName : prepend + VIS_FLAT_SEP + visibleName));
             } else {
-                // Normal field, just add its visible name.
-                vNames.add(visibleName);
+                // Normal field, just add its visible name (preceded by our current prepend string and the separator,
+                // if the prepend string isn't empty.
+                vNames.add(prepend.isEmpty() ? visibleName : prepend + VIS_FLAT_SEP + visibleName);
             }
         }
         return vNames;
