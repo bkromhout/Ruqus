@@ -491,7 +491,7 @@ public class RealmQueryView extends FrameLayout {
         // Set the card's click listener based on the type of condition.
         if (condition.getType() == Condition.Type.NORMAL) {
             // Normal condition listener.
-            cond.setOnClickListener(new OnClickListener() {
+            cond.setCardClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onConditionClicked((Integer) v.getTag(R.id.ruqus_index));
@@ -773,7 +773,7 @@ public class RealmQueryView extends FrameLayout {
                 if (card.getMode() == RQVCard2.Mode.OUTLINES) {
                     // New condition, we need to set the card up a bit more too.
                     // Set the card's listener and long click listener.
-                    card.setOnClickListener(new OnClickListener() {
+                    card.setCardClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             onConditionClicked((Integer) v.getTag(R.id.ruqus_index));
