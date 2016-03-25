@@ -862,6 +862,7 @@ public class RealmQueryView extends FrameLayout {
      */
     private void tearDownConditionBuilderMode() {
         // Clean up views.
+        fieldChooser.setSelection(0);
         fieldChooser.setVisibility(GONE);
         conditionalChooser.setVisibility(GONE);
         builderParts.removeAllViews();
