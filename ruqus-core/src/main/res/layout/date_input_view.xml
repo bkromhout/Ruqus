@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginBottom="8dp"
-              android:orientation="horizontal"
-              android:gravity="center_vertical">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       xmlns:tools="http://schemas.android.com/tools">
 
     <ImageButton
             android:id="@+id/choose_date"
@@ -14,6 +9,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
             android:contentDescription="@string/choose_date_hint"
             app:srcCompat="@drawable/ic_pick_date"
             tools:src="@drawable/ic_pick_date"/>
@@ -24,4 +20,4 @@
             android:layout_height="wrap_content"
             style="@android:style/Widget.EditText"
             android:hint="@string/choose_date_hint"/>
-</LinearLayout>
+</merge>

@@ -1,9 +1,7 @@
 package com.bkromhout.ruqus;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -13,17 +11,16 @@ import android.view.View;
 import android.widget.*;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import io.realm.Sort;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 
 /**
  * RealmQueryView
  * @author bkromhout
  */
-public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDateSetListener {
+public class RealmQueryView extends FrameLayout {
     private enum Mode {
         MAIN, C_BUILD, S_BUILD
     }
@@ -904,18 +901,10 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     builderParts.addView(rgFalseTrue);
                     break;
                 case DATE:
-                    LinearLayout tvDateCont = (LinearLayout) View.inflate(getContext(), R.layout.tv_date, null);
+                    DateInputView dateInputView = new DateInputView(getContext(), theme);
                     // Set up date button to open date picker dialog.
-                    tvDateCont.findViewById(R.id.choose_date).setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            TextView tvDate = (TextView) builderParts.findViewById(id).findViewById(R.id.tv_date);
-                            makeDatePickerDialog(Util.calFromString(tvDate.getText().toString()), id)
-                                    .show(((Activity) getContext()).getFragmentManager(), "RuqusDPD");
-                        }
-                    });
-                    tvDateCont.setId(id);
-                    builderParts.addView(tvDateCont);
+                    dateInputView.setId(id);
+                    builderParts.addView(dateInputView);
                     break;
                 case DOUBLE:
                 case FLOAT:
@@ -941,23 +930,6 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
     }
 
     /**
-     * Make the date picker dialog to show for date inputs.
-     * @param c  Calendar instance to use to set initially selected date.
-     * @param id ID of view to modify upon callback.
-     * @return The newly-created date picker dialog.
-     */
-    private DatePickerDialog makeDatePickerDialog(Calendar c, int id) {
-        DatePickerDialog dpd = DatePickerDialog.newInstance(RealmQueryView.this,
-                c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-        dpd.setThemeDark(theme == RuqusTheme.DARK);
-        Bundle b = new Bundle();
-        b.putInt("ID", id);
-        dpd.setArguments(b);
-        dpd.autoDismiss(true);
-        return dpd;
-    }
-
-    /**
      * Fill in argument views in condition builder using the values passed in {@code args}.
      * @param args Values retrieved using {@link Condition#getArgs()}.
      */
@@ -970,7 +942,7 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     ((RadioGroup) view).check((Boolean) args[i] ? R.id.rb_true : R.id.rb_false);
                     break;
                 case DATE:
-                    ((TextView) view.findViewById(R.id.tv_date)).setText(Util.dateFormat.format(args[i]));
+                    ((DateInputView) view).setDate((Date) args[i]);
                     break;
                 case DOUBLE:
                 case FLOAT:
@@ -986,16 +958,6 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
         }
     }
 
-    /**
-     * Called when a date was picked in the date picker dialog.
-     */
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        int index = view.getArguments().getInt("ID", -1);
-        if (index == -1) throw new IllegalArgumentException("Bad index!");
-        ((TextView) builderCont.findViewById(argViewIds.get(index)).findViewById(R.id.tv_date)).setText(
-                Util.stringFromDateInts(year, monthOfYear, dayOfMonth));
-    }
 
     /**
      * Attempts to validates the values that the user has provided to the condition builder, and returns them if they
@@ -1013,12 +975,12 @@ public class RealmQueryView extends FrameLayout implements DatePickerDialog.OnDa
                     args[i] = rgFalseTrue.getCheckedRadioButtonId() != R.id.rb_false;
                     continue;
                 case DATE:
-                    TextView tvDate = (TextView) argView.findViewById(R.id.tv_date);
-                    if (tvDate.length() == 0) {
-                        tvDate.setError(getContext().getString(R.string.error_empty_input));
+                    DateInputView dateInputView = (DateInputView) argView;
+                    if (dateInputView.hasDate()) {
+                        dateInputView.setError(getContext().getString(R.string.error_empty_date));
                         return null;
                     }
-                    args[i] = Util.calFromString(tvDate.getText().toString()).getTime();
+                    args[i] = dateInputView.getDate();
                     continue;
                 case DOUBLE:
                     EditText etDouble = (EditText) argView;

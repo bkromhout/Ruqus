@@ -6,8 +6,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.os.ParcelableCompat;
+import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -96,6 +99,9 @@ public class RQVCard2 extends FrameLayout {
         // Save our state.
         ss.mode = this.mode;
         ss.theme = this.theme;
+        ss.childStates = new SparseArray<>();
+        for (int i = 0; i < getChildCount(); i++) //noinspection unchecked
+            getChildAt(i).saveHierarchyState(ss.childStates);
 
         return ss;
     }
@@ -113,6 +119,18 @@ public class RQVCard2 extends FrameLayout {
         // Restore our state.
         setTheme(ss.theme);
         setMode(ss.mode);
+        for (int i = 0; i < getChildCount(); i++) //noinspection unchecked
+            getChildAt(i).restoreHierarchyState(ss.childStates);
+    }
+
+    @Override
+    protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
+        dispatchFreezeSelfOnly(container);
+    }
+
+    @Override
+    protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
+        dispatchThawSelfOnly(container);
     }
 
     /**
@@ -239,20 +257,25 @@ public class RQVCard2 extends FrameLayout {
         outline2TextView.setTag(key, tag);
     }
 
+    /**
+     * Helps us easily save and restore our view's state.
+     */
     static class SavedState extends BaseSavedState {
         Mode mode;
         RuqusTheme theme;
+        SparseArray childStates;
 
         public SavedState(Parcelable superState) {
             super(superState);
         }
 
-        private SavedState(Parcel in) {
+        private SavedState(Parcel in, ClassLoader loader) {
             super(in);
             int tmpMode = in.readInt();
             this.mode = tmpMode == -1 ? null : Mode.values()[tmpMode];
             int tmpTheme = in.readInt();
             this.theme = tmpTheme == -1 ? null : RuqusTheme.values()[tmpTheme];
+            this.childStates = in.readSparseArray(loader);
         }
 
         @Override
@@ -262,14 +285,21 @@ public class RQVCard2 extends FrameLayout {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(this.mode == null ? -1 : this.mode.ordinal());
             dest.writeInt(this.theme == null ? -1 : this.theme.ordinal());
+            //noinspection unchecked
+            dest.writeSparseArray(childStates);
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel in) {return new SavedState(in);}
+        public static final Parcelable.Creator<SavedState> CREATOR = ParcelableCompat
+                .newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
+                    @Override
+                    public SavedState createFromParcel(Parcel in, ClassLoader loader) {
+                        return new SavedState(in, loader);
+                    }
 
-            @Override
-            public SavedState[] newArray(int size) {return new SavedState[size];}
-        };
+                    @Override
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                });
     }
 }
