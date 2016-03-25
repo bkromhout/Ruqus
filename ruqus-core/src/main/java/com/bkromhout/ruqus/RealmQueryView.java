@@ -33,7 +33,7 @@ public class RealmQueryView extends FrameLayout {
     private RQVCard sortChooser;
 
     /* Views for either builder mode. */
-    private RelativeLayout builderCont;
+    private ScrollView builderScrollView;
     private TextView builderHeader;
     private LinearLayout builderParts;
     private Button cancelButton;
@@ -203,7 +203,7 @@ public class RealmQueryView extends FrameLayout {
         sortChooser = (RQVCard) findViewById(R.id.sort_type);
 
         // Find common builder mode views.
-        builderCont = (RelativeLayout) findViewById(R.id.builder);
+        builderScrollView = (ScrollView) findViewById(R.id.builder_scroll_view);
         builderHeader = (TextView) findViewById(R.id.builder_header);
         builderParts = (LinearLayout) findViewById(R.id.builder_parts);
         cancelButton = (Button) findViewById(R.id.cancel);
@@ -426,12 +426,12 @@ public class RealmQueryView extends FrameLayout {
             case C_BUILD: {
                 initConditionBuilderMode(currPartIdx >= partsCont.getChildCount() - 1 ? null
                         : ruq.getConditions().get(currPartIdx));
-                builderCont.setVisibility(VISIBLE);
+                builderScrollView.setVisibility(VISIBLE);
                 break;
             }
             case S_BUILD:
                 initSortBuilderMode(ruq.getSortFields(), ruq.getSortDirs());
-                builderCont.setVisibility(VISIBLE);
+                builderScrollView.setVisibility(VISIBLE);
                 break;
         }
         this.mode = mode;
@@ -865,7 +865,7 @@ public class RealmQueryView extends FrameLayout {
         fieldChooser.setVisibility(GONE);
         conditionalChooser.setVisibility(GONE);
         builderParts.removeAllViews();
-        builderCont.setVisibility(GONE);
+        builderScrollView.setVisibility(GONE);
 
         // Clean up vars.
         currPartIdx = -1;
@@ -961,7 +961,7 @@ public class RealmQueryView extends FrameLayout {
      */
     private void fillArgViews(Object[] args) {
         for (int i = 0; i < argViewIds.size(); i++) {
-            View view = builderCont.findViewById(argViewIds.get(i));
+            View view = builderParts.findViewById(argViewIds.get(i));
 
             switch (currFieldType) {
                 case BOOLEAN:
@@ -1110,7 +1110,7 @@ public class RealmQueryView extends FrameLayout {
         // Clean up views.
         addSortField.setVisibility(GONE);
         builderParts.removeAllViews();
-        builderCont.setVisibility(GONE);
+        builderScrollView.setVisibility(GONE);
 
         // Clean up vars.
         sortSpinnerIds = null;
