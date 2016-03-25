@@ -343,7 +343,6 @@ public class RealmQueryView extends FrameLayout {
             // If we don't have a realm user query already, setup is very minimal, we just disable the scrollview and
             // sort choosers.
             setConditionsAndSortEnabled(false);
-            return;
         } else {
             // If we have a RUQ already, we need to draw our view accordingly. Unless it's invalid, in which case we
             // want to get rid of it.
@@ -363,8 +362,6 @@ public class RealmQueryView extends FrameLayout {
         ss.theme = this.theme;
         ss.ruq = this.ruq;
         ss.mode = this.mode;
-        ss.currClassName = this.currClassName;
-        ss.currVisibleFlatFieldNames = this.currVisibleFlatFieldNames;
         if (this.mode == Mode.C_BUILD) {
             // Only save condition builder variables if we're in that mode.
             ss.currPartIdx = this.currPartIdx;
@@ -397,8 +394,6 @@ public class RealmQueryView extends FrameLayout {
         this.ruq = ss.ruq;
         this.mode = ss.mode;
         setupUsingRUQ();
-        //this.currClassName = ss.currClassName;
-        //this.currVisibleFlatFieldNames = ss.currVisibleFlatFieldNames;
         if (this.mode == Mode.C_BUILD) {
             // Only try to restore condition builder variables if we were in that mode.
             this.currPartIdx = ss.currPartIdx;
@@ -446,7 +441,7 @@ public class RealmQueryView extends FrameLayout {
      * Set up the view using the current value of {@link #ruq}.
      */
     private void setupUsingRUQ() {
-        if (ruq == null) return;
+        if (ruq == null || ruq.getQueryClass() == null) return;
         // Set queryable class.
         String realName = ruq.getQueryClass().getSimpleName();
         setQueryable(realName, Ruqus.getClassData().visibleNameOf(realName));
@@ -475,7 +470,9 @@ public class RealmQueryView extends FrameLayout {
     }
 
     /**
-     * Creates an {@link RQVCard2} and sets it to card mode, filling it in using the given {@code condition}.
+     * Creates an {@link RQVCard2} and sets it to card mode, filling it in using the given {@code condition}. The
+     * condition doesn't need to be valid, this method is used when restoring the view's state after a configuration
+     * change.
      * @param condition Condition to use to fill the card's text.
      */
     private void appendPartView(Condition condition) {
@@ -1232,8 +1229,6 @@ public class RealmQueryView extends FrameLayout {
         RuqusTheme theme;
         RealmUserQuery ruq;
         Mode mode;
-        String currClassName;
-        ArrayList<String> currVisibleFlatFieldNames;
 
         // Condition builder variables. Will only be written/read if we're in condition builder mode.
         int currPartIdx;
@@ -1259,8 +1254,6 @@ public class RealmQueryView extends FrameLayout {
             this.ruq = in.readParcelable(RealmUserQuery.class.getClassLoader());
             int tmpMode = in.readInt();
             this.mode = tmpMode == -1 ? null : Mode.values()[tmpMode];
-            this.currClassName = in.readString();
-            this.currVisibleFlatFieldNames = in.createStringArrayList();
             if (this.mode == Mode.C_BUILD) {
                 // If we were in condition builder mode, read those variables' values back.
                 this.currPartIdx = in.readInt();
@@ -1291,8 +1284,6 @@ public class RealmQueryView extends FrameLayout {
             out.writeInt(this.theme == null ? -1 : this.theme.ordinal());
             out.writeParcelable(this.ruq, flags);
             out.writeInt(this.mode == null ? -1 : this.mode.ordinal());
-            out.writeString(this.currClassName);
-            out.writeStringList(this.currVisibleFlatFieldNames);
             if (this.mode == Mode.C_BUILD) {
                 // If we're in condition builder mode, write those variables' values.
                 out.writeInt(this.currPartIdx);

@@ -13,9 +13,9 @@ import java.util.Arrays;
 public class Condition implements Parcelable {
     private static final String C_SEP = "|||";
     private static final String ARG_SEP = ";,;";
-    private static final String BEGIN_GROUP_TNAME = "BeginGroup";
-    private static final String END_GROUP_TNAME = "EndGroup";
-    private static final String OR_TNAME = "Or";
+    private static final String BEGIN_GROUP_TNAME = "com.bkromhout.ruqus.transformers.BeginGroup";
+    private static final String END_GROUP_TNAME = "com.bkromhout.ruqus.transformers.EndGroup";
+    private static final String OR_TNAME = "com.bkromhout.ruqus.transformers.Or";
 
     /**
      * Types of conditions.
@@ -230,14 +230,14 @@ public class Condition implements Parcelable {
         return type;
     }
 
-    void setType(Type type) {
-        if (this.type == type) return;
-        // If this is a different type, clear our vars.
-        resetState();
-        this.type = type;
-        // Do some special stuff based on the new type.
-        handleSpecialTypes();
-    }
+//    void setType(Type type) {
+//        if (this.type == type) return;
+//        // If this is a different type, clear our vars.
+//        resetState();
+//        this.type = type;
+//        // Do some special stuff based on the new type.
+//        handleSpecialTypes();
+//    }
 
     public String getRealmClass() {
         return realmClass;
@@ -299,6 +299,7 @@ public class Condition implements Parcelable {
                 break;
             default:
                 this.transformer = transformer;
+                type = Ruqus.getTransformerData().isNoArgs(transformer) ? Type.NO_ARGS : Type.NORMAL;
         }
     }
 
