@@ -14,8 +14,9 @@ import java.util.Map;
  * of the library to make on-liner calls as much as possible.
  */
 public class Ruqus {
+    private static final String KEY_SEP = "$";
     private static final String FLAT_SEP = ".";
-    private static final String VIS_FLAT_SEP = "VIS_FLAT_SEP";
+    private static final String VIS_FLAT_SEP = ">";
 
     static int LIGHT_TEXT_COLOR, DARK_TEXT_COLOR, LIGHT_CARD_COLOR, DARK_CARD_COLOR;
     static String CHOOSE_FIELD, CHOOSE_CONDITIONAL;
@@ -228,7 +229,7 @@ public class Ruqus {
     static FieldType typeEnumForField(String realmClass, String field) {
         if (field == null || field.isEmpty()) throw ex("field cannot be non-null or empty.");
         ensureInit();
-        String key = realmClass + "$" + field;
+        String key = realmClass + KEY_SEP + field;
         if (INSTANCE.flatFieldToFieldType.containsKey(key)) return INSTANCE.flatFieldToFieldType.get(key);
         else {
             ClassData classData = getClassData();
@@ -304,7 +305,7 @@ public class Ruqus {
      */
     static String fieldFromVisibleField(String realmClass, String visibleFieldName) {
         ensureInit();
-        String key = realmClass + "$" + visibleFieldName;
+        String key = realmClass + KEY_SEP + visibleFieldName;
         // Try to get cached value first.
         if (INSTANCE.flatVisFieldToFlatField.containsKey(key)) return INSTANCE.flatVisFieldToFlatField.get(key);
 
@@ -333,7 +334,7 @@ public class Ruqus {
         }
         // Cache this before returning it.
         String value = builder.toString();
-        INSTANCE.flatVisFieldToFlatField.put(key, realmClass + "$" + value);
+        INSTANCE.flatVisFieldToFlatField.put(key, realmClass + KEY_SEP + value);
         return value;
     }
 
@@ -370,7 +371,7 @@ public class Ruqus {
         }
         // Cache this before returning it.
         String key = builder.toString();
-        INSTANCE.flatVisFieldToFlatField.put(realmClass + "$" + key, value);
+        INSTANCE.flatVisFieldToFlatField.put(realmClass + KEY_SEP + key, value);
         return key;
     }
 
