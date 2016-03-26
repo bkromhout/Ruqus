@@ -21,13 +21,18 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 /**
- * RealmQueryView
+ * RealmQueryView.
+ * <p>
+ * Allow users to create their own queries against your Realm data.
  * @author bkromhout
  */
 public class RealmQueryView extends FrameLayout {
     private static final String ARG_STR_SEP = ";";
     private static final Pattern ARG_STR_SEP_PATTERN = Pattern.compile("\\Q" + ARG_STR_SEP + "\\E");
 
+    /**
+     * Modes this view can be in.
+     */
     private enum Mode {
         MAIN, C_BUILD, S_BUILD
     }
