@@ -72,6 +72,10 @@ public class RealmQueryView extends FrameLayout {
      * List of current visible flat field names; changes when {@link #currClassName} changes.
      */
     private ArrayList<String> currVisibleFlatFieldNames;
+    /**
+     * List of View IDs for views in {@link #partsCont}.
+     */
+    private ArrayList<Integer> partIds;
 
     /* Variables for the condition builder. */
 
@@ -285,31 +289,8 @@ public class RealmQueryView extends FrameLayout {
         });
 
         // Set up condition builder views.
-        /*fieldChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                onFieldChooserItemSelected((String) parent.getItemAtPosition(position), false);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                onFieldChooserItemSelected(Ruqus.CHOOSE_FIELD, false);
-            }
-        });*/
         fieldChooser.setOnTouchListener(fieldChooserListener);
         fieldChooser.setOnItemSelectedListener(fieldChooserListener);
-        /*conditionalChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                onConditionalChooserItemSelected((String) parent.getItemAtPosition(position), false);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                currTransName = null;
-                updateArgViews();
-            }
-        });*/
         conditionalChooser.setOnTouchListener(conditionalChooserListener);
         conditionalChooser.setOnItemSelectedListener(conditionalChooserListener);
 
@@ -432,6 +413,7 @@ public class RealmQueryView extends FrameLayout {
 
         // Add part cards.
         partsCont.removeAllViews(); // Make sure parts container is empty first!
+        partIds = new ArrayList<>();
         for (Condition condition : ruq.getConditions()) appendPartView(condition);
 
         // Append an add part view.
@@ -444,7 +426,7 @@ public class RealmQueryView extends FrameLayout {
      * @return Index of view with {@code viewId}.
      */
     private int idxFromId(@IdRes int viewId) {
-        return builderParts.indexOfChild(builderParts.findViewById(viewId));
+        return partIds.indexOf(viewId);
     }
 
     /**
@@ -506,8 +488,9 @@ public class RealmQueryView extends FrameLayout {
         });
         // Set a unique view ID.
         cond.setId(vid);
-        // Add to the parts container.
+        // Add to the parts container and add the ID.
         partsCont.addView(cond);
+        partIds.add(vid);
     }
 
     /**
@@ -542,6 +525,7 @@ public class RealmQueryView extends FrameLayout {
             add.setId(vid);
             // Add to the parts container.
             partsCont.addView(add);
+            partIds.add(vid);
         }
     }
 
@@ -561,6 +545,7 @@ public class RealmQueryView extends FrameLayout {
         sortChooser.setMode(RQVCard.Mode.OUTLINE);
         // Clear all children from condition container.
         partsCont.removeAllViews();
+        partIds = new ArrayList<>();
         // Disable conditions container and sort chooser.
         setConditionsAndSortEnabled(false);
     }
@@ -590,6 +575,7 @@ public class RealmQueryView extends FrameLayout {
      */
     private void setQueryable(String realName, String visibleName) {
         // Set instance vars.
+        partIds = new ArrayList<>();
         currClassName = realName;
         currVisibleFlatFieldNames = Ruqus.visibleFlatFieldsForClass(currClassName);
         currVisibleFlatFieldNames.add(0, Ruqus.CHOOSE_FIELD);
@@ -719,6 +705,7 @@ public class RealmQueryView extends FrameLayout {
                         ruq.getConditions().remove(index);
                         // Remove from conditions container.
                         partsCont.removeViewAt(index);
+                        partIds.remove(index);
                     }
                 })
                 .show();
