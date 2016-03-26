@@ -318,10 +318,9 @@ public class Condition implements Parcelable {
         switch (type) {
             // Normal transformers have arguments which we need to factor into our string.
             case NORMAL:
-                FieldData fieldData = Ruqus.getFieldData(realmClass);
                 StringBuilder builder = new StringBuilder();
                 builder.append(Phrase.from("{field} {transformer_v_name}")
-                                     .put("field", fieldData.visibleNameOf(field))
+                                     .put("field", Ruqus.visibleFieldFromField(realmClass, field))
                                      .put("transformer_v_name", transformerData.visibleNameOf(transformer))
                                      .format());
 
