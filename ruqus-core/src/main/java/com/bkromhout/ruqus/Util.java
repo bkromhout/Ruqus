@@ -75,6 +75,6 @@ class Util {
      */
     static void tintImageButtonIcon(ImageButton imageButton, RuqusTheme theme) {
         imageButton.getDrawable().setColorFilter(
-                theme == RuqusTheme.LIGHT ? Ruqus.LIGHT_TEXT_COLOR : Ruqus.DARK_TEXT_COLOR, PorterDuff.Mode.SRC_IN);
+                theme == RuqusTheme.LIGHT ? Ruqus.DARK_TEXT_COLOR : Ruqus.LIGHT_TEXT_COLOR, PorterDuff.Mode.SRC_IN);
     }
 }
