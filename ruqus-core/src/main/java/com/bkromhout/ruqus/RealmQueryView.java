@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 import com.afollestad.materialdialogs.DialogAction;
@@ -283,7 +284,7 @@ public class RealmQueryView extends FrameLayout {
         });
 
         // Set up condition builder views.
-        fieldChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*fieldChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 onFieldChooserItemSelected((String) parent.getItemAtPosition(position), false);
@@ -293,8 +294,10 @@ public class RealmQueryView extends FrameLayout {
             public void onNothingSelected(AdapterView<?> parent) {
                 onFieldChooserItemSelected(Ruqus.CHOOSE_FIELD, false);
             }
-        });
-        conditionalChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        });*/
+        fieldChooser.setOnTouchListener(fieldChooserListener);
+        fieldChooser.setOnItemSelectedListener(fieldChooserListener);
+        /*conditionalChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 onConditionalChooserItemSelected((String) parent.getItemAtPosition(position), false);
@@ -305,7 +308,9 @@ public class RealmQueryView extends FrameLayout {
                 currTransName = null;
                 updateArgViews();
             }
-        });
+        });*/
+        conditionalChooser.setOnTouchListener(conditionalChooserListener);
+        conditionalChooser.setOnItemSelectedListener(conditionalChooserListener);
 
         // Set up sort builder views.
         addSortField.setOnClickListener(new OnClickListener() {
@@ -903,6 +908,59 @@ public class RealmQueryView extends FrameLayout {
         argViewIds = null;
     }
 
+    private SpinnerInteractionListener fieldChooserListener = new SpinnerInteractionListener() {
+        boolean isTouching = false;
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (isTouching) {
+                onFieldChooserItemSelected((String) parent.getItemAtPosition(position), false);
+                isTouching = false;
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            if (isTouching) {
+                onFieldChooserItemSelected(Ruqus.CHOOSE_FIELD, false);
+                isTouching = false;
+            }
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            isTouching = true;
+            return false;
+        }
+    };
+
+    private SpinnerInteractionListener conditionalChooserListener = new SpinnerInteractionListener() {
+        boolean isTouching = false;
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (isTouching) {
+                onConditionalChooserItemSelected((String) parent.getItemAtPosition(position), false);
+                isTouching = false;
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            if (isTouching) {
+                currTransName = null;
+                updateArgViews();
+                isTouching = false;
+            }
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            isTouching = true;
+            return false;
+        }
+    };
+
     /**
      * Called when an item is selected in the condition builder field chooser.
      * @param selStr Selected item string.
@@ -938,6 +996,7 @@ public class RealmQueryView extends FrameLayout {
             conditionalChooser.setVisibility(VISIBLE);
         }
     }
+
 
     /**
      * Called when an item is selected in the condition builder conditional chooser.
@@ -1219,6 +1278,8 @@ public class RealmQueryView extends FrameLayout {
 
     /**
      * Called to restore the view hierarchy state if we were in sort builder mode prior to a configuration change.
+     * <p/>
+     * TODO doesn't correctly restore sort dirs, but does get the fields right...
      * @param sortFields Sort fields to restore.
      * @param sortDirs   Sort directions to restore.
      */
