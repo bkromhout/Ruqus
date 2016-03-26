@@ -222,7 +222,7 @@ public class RealmUserQuery implements Parcelable {
                                 nextCondition.getType() == Condition.Type.NO_ARGS ||
                                 nextCondition.getType() == Condition.Type.BEGIN_GROUP)) builder.append("and ");
             }
-        }
+        } else builder.append("."); // If there aren't any conditions, append a period.
 
         // Finally, state any sort fields we'll use to sort the results (and the directions of each).
         if (!sortFields.isEmpty()) builder.append(" Sort the results by ")
