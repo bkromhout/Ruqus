@@ -838,8 +838,9 @@ public class RealmQueryView extends FrameLayout {
 
             // Select correct transformer.
             //currTransName = condition.getTransformer();
-            conditionalChooser.setSelection(Ruqus.getTransformerData().getVisibleNames().indexOf(
-                    Ruqus.getTransformerData().visibleNameOf(condition.getTransformer())));
+            conditionalChooser.setSelection(1 + Ruqus.getTransformerData().getVisibleNames(
+                    currFieldType.getClazz()).indexOf(Ruqus.getTransformerData().visibleNameOf(
+                    condition.getTransformer())));
             // Set up views based on it.
             onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(condition.getTransformer()),
                     false);
@@ -875,8 +876,8 @@ public class RealmQueryView extends FrameLayout {
 
         // Try to restore chosen transformer.
         if (currTransName != null) {
-            conditionalChooser.setSelection(Ruqus.getTransformerData().getVisibleNames().indexOf(
-                    Ruqus.getTransformerData().visibleNameOf(currTransName)));
+            conditionalChooser.setSelection(1 + Ruqus.getTransformerData().getVisibleNames(
+                    currFieldType.getClazz()).indexOf(Ruqus.getTransformerData().visibleNameOf(currTransName)));
             // Set up views based on it.
             onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(currTransName), true);
         }
