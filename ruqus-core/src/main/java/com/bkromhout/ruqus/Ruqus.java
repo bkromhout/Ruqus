@@ -392,12 +392,11 @@ public class Ruqus {
      * @return True if {@code type} is assignable to {@code field}'s actual type.
      */
     static boolean fieldIsOfType(String realmClass, String field, FieldType type) {
-        FieldData fieldData = getFieldData(realmClass);
-        if (fieldData == null) throw ex("\"%s\" is not a valid realm object class name.", realmClass);
-        Class<?> actualType = fieldData.fieldType(field);
+        ensureInit();
+        FieldType actualType = typeEnumForField(realmClass, field);
         if (actualType == null) throw ex("\"%s\" is not a valid field name for the class \"%s\".", field,
                 realmClass);
-        return actualType.isAssignableFrom(type.getClazz());
+        return actualType == type;
     }
 
     /**
