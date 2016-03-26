@@ -206,7 +206,7 @@ public class RealmUserQuery implements Parcelable {
             builder.append(" where ");
             for (int i = 0; i < conditions.size(); i++) {
                 Condition condition = conditions.get(i);
-                Condition nextCondition = i + 1 == conditions.size() ? null : conditions.get(i);
+                Condition nextCondition = i + 1 == conditions.size() ? null : conditions.get(i + 1);
                 // Append human-readable condition string.
                 builder.append(condition.toString());
                 // If we don't have any more conditions after this one, just append a period and continue.
@@ -214,12 +214,15 @@ public class RealmUserQuery implements Parcelable {
                     builder.append(".");
                     continue;
                 }
-                // As long as this condition wasn't a BEGIN_GROUP, append a space.
-                if (condition.getType() != Condition.Type.BEGIN_GROUP) builder.append(" ");
-                // As long as the next condition is NORMAL, NO_ARGS, or BEGIN_GROUP, append "and ".
-                if (nextCondition.getType() == Condition.Type.NORMAL ||
-                        nextCondition.getType() == Condition.Type.NO_ARGS ||
-                        nextCondition.getType() == Condition.Type.BEGIN_GROUP) builder.append("and ");
+                // As long as this condition wasn't a BEGIN_GROUP and next condition isn't END_GROUP, append a space.
+                if (condition.getType() != Condition.Type.BEGIN_GROUP &&
+                        nextCondition.getType() != Condition.Type.END_GROUP) builder.append(" ");
+                // As long as this condition wasn't OR or BEGIN_GROUP, and the next condition is NORMAL, NO_ARGS, or
+                // BEGIN_GROUP, append "and ".
+                if (!(condition.getType() == Condition.Type.OR || condition.getType() == Condition.Type.BEGIN_GROUP) &&
+                        (nextCondition.getType() == Condition.Type.NORMAL ||
+                                nextCondition.getType() == Condition.Type.NO_ARGS ||
+                                nextCondition.getType() == Condition.Type.BEGIN_GROUP)) builder.append("and ");
             }
         }
 
