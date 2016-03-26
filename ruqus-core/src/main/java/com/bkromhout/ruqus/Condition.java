@@ -383,7 +383,7 @@ public class Condition implements Parcelable {
         for (Object arg : args)
             argsStr.append(FieldType.makeDataString(arg))
                    .append(ARG_SEP);
-        if (argsStr.length() > 1) argsStr.deleteCharAt(argsStr.lastIndexOf(ARG_SEP));
+        if (argsStr.length() > 1) argsStr.delete(argsStr.lastIndexOf(ARG_SEP), argsStr.length());
         return argsStr.toString();
     }
 
