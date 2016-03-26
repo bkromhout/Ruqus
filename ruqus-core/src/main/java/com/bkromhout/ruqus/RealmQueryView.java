@@ -171,7 +171,16 @@ public class RealmQueryView extends FrameLayout {
         for (int i = 0; i < partsCont.getChildCount(); i++)
             ((RQVCard2) partsCont.getChildAt(i)).setTheme(theme);
 
-        // TODO Set for builder modes.
+        // Set colors on various dynamically added views for builder modes.
+        if (mode == Mode.C_BUILD && currFieldType != null && currFieldType == FieldType.DATE) {
+            // Tint the date pickers' buttons.
+            for (int i = 0; i < argViewIds.size(); i++)
+                ((DateInputView) builderParts.findViewById(argViewIds.get(i))).setTheme(theme);
+        } else if (mode == Mode.S_BUILD && removeSortBtnIds != null) {
+            // Tint the remove buttons on the sort field views.
+            for (int i = 0; i < removeSortBtnIds.size(); i++)
+                Util.tintImageButtonIcon((ImageButton) builderParts.findViewById(removeSortBtnIds.get(i)), theme);
+        }
     }
 
     /**

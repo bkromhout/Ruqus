@@ -9,6 +9,7 @@ import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -117,7 +118,7 @@ class DateInputView extends LinearLayout implements DatePickerDialog.OnDateSetLi
      */
     void setTheme(RuqusTheme theme) {
         this.theme = theme;
-        // TODO set button icon tint?
+        Util.tintImageButtonIcon((ImageButton) findViewById(R.id.choose_date), theme);
     }
 
     /**

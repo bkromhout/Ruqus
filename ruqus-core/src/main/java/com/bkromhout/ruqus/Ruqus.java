@@ -1,6 +1,7 @@
 package com.bkromhout.ruqus;
 
 import android.content.Context;
+import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import io.realm.RealmObject;
 
@@ -22,6 +23,7 @@ public class Ruqus {
     private static final Pattern FLAT_SEP_PATTERN = Pattern.compile("\\Q" + FLAT_SEP + "\\E");
     private static final Pattern VIS_SEP_PATTERN = Pattern.compile("\\Q" + VIS_FLAT_SEP + "\\E");
 
+    @ColorInt
     static int LIGHT_TEXT_COLOR, DARK_TEXT_COLOR, LIGHT_CARD_COLOR, DARK_CARD_COLOR;
     static String CHOOSE_FIELD, CHOOSE_CONDITIONAL;
     /**

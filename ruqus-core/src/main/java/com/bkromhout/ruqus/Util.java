@@ -1,7 +1,9 @@
 package com.bkromhout.ruqus;
 
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.view.View;
+import android.widget.ImageButton;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -64,5 +66,15 @@ class Util {
     static int getUniqueViewId() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) return generateViewId();
         else return View.generateViewId();
+    }
+
+    /**
+     * Tints the color of an image button's icon based on the given {@link RuqusTheme}.
+     * @param imageButton ImageButton whose icon should be tinted.
+     * @param theme       RuqusTheme.
+     */
+    static void tintImageButtonIcon(ImageButton imageButton, RuqusTheme theme) {
+        imageButton.getDrawable().setColorFilter(
+                theme == RuqusTheme.LIGHT ? Ruqus.LIGHT_TEXT_COLOR : Ruqus.DARK_TEXT_COLOR, PorterDuff.Mode.SRC_IN);
     }
 }
