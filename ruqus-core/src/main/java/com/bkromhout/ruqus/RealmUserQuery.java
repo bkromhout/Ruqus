@@ -54,6 +54,7 @@ public class RealmUserQuery implements Parcelable {
      * Create a new {@link RealmUserQuery} from a string version of a realm user query.
      * @param ruqString A string obtained from {@link #toRuqString()}.
      */
+    @SuppressWarnings("unused")
     public RealmUserQuery(String ruqString) {
         if (ruqString == null || ruqString.isEmpty())
             throw new IllegalArgumentException("ruqString must ne non-null and non-empty");
@@ -267,6 +268,7 @@ public class RealmUserQuery implements Parcelable {
      * This will return null if the query isn't currently in a valid state.
      * @return Internal string representation of this query.
      */
+    @SuppressWarnings("unused")
     public String toRuqString() {
         if (!isQueryValid()) return null;
         StringBuilder builder = new StringBuilder();
