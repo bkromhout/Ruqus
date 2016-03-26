@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import io.realm.Sort;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -92,6 +93,10 @@ public class RealmQueryView extends FrameLayout {
      * changes.
      */
     private FieldType currFieldType;
+    /**
+     * List of visible names of transformers which will accept {@link #currFieldType}.
+     */
+    private ArrayList<String> currVisibleTransNames;
     /**
      * Real name of the transformer/conditional currently selected in the condition builder.
      */
@@ -175,7 +180,7 @@ public class RealmQueryView extends FrameLayout {
     /**
      * Get the {@link RealmUserQuery} which this {@link RealmQueryView} currently has. Note that {@link RealmUserQuery}
      * implements {@link Parcelable}, which allows it to be passed around quickly and easily.
-     * <p/>
+     * <p>
      * This method does not guarantee that the returned query will be fully-formed and valid. Call {@link
      * RealmUserQuery#isQueryValid()} to check for validity before calling {@link RealmUserQuery#execute()}.
      * @return Realm user query object.
@@ -554,9 +559,11 @@ public class RealmQueryView extends FrameLayout {
      * Show a dialog with the visible names of all classes annotated with {@link Queryable}.
      */
     private void onQueryableChooserClicked() {
+        ArrayList<String> queryableClasses = Ruqus.getClassData().getVisibleNames(true);
+        Collections.sort(queryableClasses);
         new MaterialDialog.Builder(getContext())
                 .title(R.string.ruqus_choose_queryable_title)
-                .items(Ruqus.getClassData().getVisibleNames(true))
+                .items(queryableClasses)
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
@@ -578,6 +585,7 @@ public class RealmQueryView extends FrameLayout {
         partIds = new ArrayList<>();
         currClassName = realName;
         currVisibleFlatFieldNames = Ruqus.visibleFlatFieldsForClass(currClassName);
+        Collections.sort(currVisibleFlatFieldNames);
         currVisibleFlatFieldNames.add(0, Ruqus.CHOOSE_FIELD);
 
         // Set condition builder field chooser's adapter.
@@ -605,10 +613,12 @@ public class RealmQueryView extends FrameLayout {
      * @param currVal The text which is currently on the card, or null if the card is in outline mode.
      */
     private void onOperatorClicked(final int index, final String currVal) {
+        ArrayList<String> noArgTransformers = Ruqus.getTransformerData().getVisibleNoArgNames();
+        Collections.sort(noArgTransformers);
         new MaterialDialog.Builder(getContext())
                 .title(index == partsCont.getChildCount() - 1 ? R.string.ruqus_add_operator :
                         R.string.ruqus_change_operator)
-                .items(Ruqus.getTransformerData().getVisibleNoArgNames())
+                .items(noArgTransformers)
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
@@ -832,20 +842,16 @@ public class RealmQueryView extends FrameLayout {
         // Set up from condition.
         if (condition != null) {
             // Select correct value in field chooser.
-            //currFieldName = condition.getField();
-            fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(
-                    Ruqus.visibleFieldFromField(currClassName, condition.getField())));
+            String visFieldName = Ruqus.visibleFieldFromField(currClassName, condition.getField());
+            fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(visFieldName));
             // Set up views based on it.
-            onFieldChooserItemSelected(Ruqus.visibleFieldFromField(currClassName, condition.getField()), false);
+            onFieldChooserItemSelected(visFieldName, false);
 
             // Select correct transformer.
-            //currTransName = condition.getTransformer();
-            conditionalChooser.setSelection(1 + Ruqus.getTransformerData().getVisibleNames(
-                    currFieldType.getClazz()).indexOf(Ruqus.getTransformerData().visibleNameOf(
-                    condition.getTransformer())));
+            String visTransName = Ruqus.getTransformerData().visibleNameOf(condition.getTransformer());
+            conditionalChooser.setSelection(1 + currVisibleTransNames.indexOf(visTransName));
             // Set up views based on it.
-            onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(condition.getTransformer()),
-                    false);
+            onConditionalChooserItemSelected(visTransName, false);
 
             // Fill in argument views.
             fillArgViews(condition.getArgs());
@@ -870,18 +876,18 @@ public class RealmQueryView extends FrameLayout {
 
         // Try to restore chosen field.
         if (currFieldName != null) {
-            fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(
-                    Ruqus.visibleFieldFromField(currClassName, currFieldName)));
+            String visFieldName = Ruqus.visibleFieldFromField(currClassName, currFieldName);
+            fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(visFieldName));
             // Set up views based on it.
-            onFieldChooserItemSelected(Ruqus.visibleFieldFromField(currClassName, currFieldName), true);
+            onFieldChooserItemSelected(visFieldName, true);
         }
 
         // Try to restore chosen transformer.
         if (currTransName != null) {
-            conditionalChooser.setSelection(1 + Ruqus.getTransformerData().getVisibleNames(
-                    currFieldType.getClazz()).indexOf(Ruqus.getTransformerData().visibleNameOf(currTransName)));
+            String visTransName = Ruqus.getTransformerData().visibleNameOf(currTransName);
+            conditionalChooser.setSelection(1 + currVisibleTransNames.indexOf(visTransName));
             // Set up views based on it.
-            onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(currTransName), true);
+            onConditionalChooserItemSelected(visTransName, true);
         }
 
         // Try to restore inputs.
@@ -907,6 +913,7 @@ public class RealmQueryView extends FrameLayout {
         currPartIdx = -1;
         currFieldName = null;
         currFieldType = null;
+        currVisibleTransNames = null;
         currTransName = null;
         argViewIds = null;
     }
@@ -972,6 +979,7 @@ public class RealmQueryView extends FrameLayout {
         if (Ruqus.CHOOSE_FIELD.equals(selStr)) {
             currFieldName = null;
             currFieldType = null;
+            currVisibleTransNames = null;
             updateArgViews();
             conditionalChooser.setVisibility(GONE);
             return;
@@ -990,12 +998,13 @@ public class RealmQueryView extends FrameLayout {
             currFieldType = Ruqus.typeEnumForField(currClassName, currFieldName);
 
             // Get the list of visible names for all transformers which accept the given field type.
-            ArrayList<String> conditionals = Ruqus.getTransformerData().getVisibleNames(currFieldType.getClazz());
-            conditionals.add(0, Ruqus.CHOOSE_CONDITIONAL);
+            currVisibleTransNames = Ruqus.getTransformerData().getVisibleNames(currFieldType.getClazz());
+            Collections.sort(currVisibleTransNames);
+            currVisibleTransNames.add(0, Ruqus.CHOOSE_CONDITIONAL);
 
             // Create an array adapter from it.
             ArrayAdapter<String> conditionalAdapter = new ArrayAdapter<>(getContext(),
-                    android.R.layout.simple_spinner_dropdown_item, conditionals);
+                    android.R.layout.simple_spinner_dropdown_item, currVisibleTransNames);
 
             // Bind the adapter to the spinner.
             conditionalChooser.setAdapter(conditionalAdapter);
@@ -1287,7 +1296,7 @@ public class RealmQueryView extends FrameLayout {
 
     /**
      * Called to restore the view hierarchy state if we were in sort builder mode prior to a configuration change.
-     * <p/>
+     * <p>
      * TODO doesn't correctly restore sort dirs, but does get the fields right...
      * @param sortFields Sort fields to restore.
      * @param sortDirs   Sort directions to restore.
