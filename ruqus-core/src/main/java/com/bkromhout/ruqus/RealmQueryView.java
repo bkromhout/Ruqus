@@ -979,6 +979,11 @@ public class RealmQueryView extends FrameLayout {
         if (manual || currFieldName == null || !currFieldName.equals(realFieldName)) {
             // We only care if if was changed.
             currFieldName = realFieldName;
+
+            // Reset arg views.
+            builderParts.removeAllViews();
+            argViewIds = new ArrayList<>();
+
             // Get field type from field.
             currFieldType = Ruqus.typeEnumForField(currClassName, currFieldName);
 
@@ -1024,6 +1029,7 @@ public class RealmQueryView extends FrameLayout {
      */
     private void updateArgViews() {
         builderParts.removeAllViews();
+        argViewIds = new ArrayList<>();
         if (currFieldName == null || currFieldType == null || currTransName == null) {
             currTransName = null;
             return;
