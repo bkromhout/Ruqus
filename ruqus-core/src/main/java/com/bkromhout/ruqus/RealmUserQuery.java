@@ -245,14 +245,13 @@ public class RealmUserQuery implements Parcelable {
      */
     private ArrayList<String> sortStrings() {
         if (sortFields.isEmpty()) return new ArrayList<>();
-        FieldData fieldData = Ruqus.getFieldData(queryClass.getSimpleName());
+        String className = queryClass.getSimpleName();
         ArrayList<String> sorts = new ArrayList<>();
         for (int i = 0; i < sortFields.size(); i++) {
             sorts.add(String.format(
                     "%s (%s)",
-                    fieldData.visibleNameOf(sortFields.get(i)),
-                    Ruqus.typeEnumForField(queryClass.getSimpleName(), sortFields.get(i))
-                         .getPrettySortString(sortDirs.get(i))
+                    Ruqus.visibleFieldFromField(className, sortFields.get(i)),
+                    Ruqus.typeEnumForField(className, sortFields.get(i)).getPrettySortString(sortDirs.get(i))
             ));
         }
         return sorts;
