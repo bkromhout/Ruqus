@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 /**
  * RealmQueryView.
- * <p>
+ * <p/>
  * Allow users to create their own queries against your Realm data.
  * @author bkromhout
  */
@@ -185,7 +185,7 @@ public class RealmQueryView extends FrameLayout {
     /**
      * Get the {@link RealmUserQuery} which this {@link RealmQueryView} currently has. Note that {@link RealmUserQuery}
      * implements {@link Parcelable}, which allows it to be passed around quickly and easily.
-     * <p>
+     * <p/>
      * This method does not guarantee that the returned query will be fully-formed and valid. Call {@link
      * RealmUserQuery#isQueryValid()} to check for validity before calling {@link RealmUserQuery#execute()}.
      * @return Realm user query object.
@@ -796,15 +796,15 @@ public class RealmQueryView extends FrameLayout {
                 ArrayList<Sort> sortDirs = new ArrayList<>();
 
                 // Get sort fields.
-                for (Integer sortSpinnerId : sortSpinnerIds)
-                    sortFields.add(Ruqus.fieldFromVisibleField(currClassName,
-                            (String) ((Spinner) builderParts.findViewById(sortSpinnerId)).getSelectedItem()));
-
-                // Ensure none of the sort fields are the default "Choose Field" string.
-                if (sortFields.contains(Ruqus.CHOOSE_FIELD)) {
-                    Toast.makeText(getContext(), R.string.ruqus_error_some_sort_fields_not_chosen, Toast.LENGTH_LONG)
-                         .show();
-                    return;
+                for (Integer sortSpinnerId : sortSpinnerIds) {
+                    String spinnerStr = (String) ((Spinner) builderParts.findViewById(sortSpinnerId)).getSelectedItem();
+                    // Ensure none of the sort fields are the default "Choose Field" string.
+                    if (Ruqus.CHOOSE_FIELD.equals(spinnerStr)) {
+                        Toast.makeText(getContext(), R.string.ruqus_error_some_sort_fields_not_chosen,
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    sortFields.add(Ruqus.fieldFromVisibleField(currClassName, spinnerStr));
                 }
 
                 // Get sort dirs.
@@ -1301,7 +1301,7 @@ public class RealmQueryView extends FrameLayout {
 
     /**
      * Called to restore the view hierarchy state if we were in sort builder mode prior to a configuration change.
-     * <p>
+     * <p/>
      * TODO doesn't correctly restore sort dirs, but does get the fields right...
      * @param sortFields Sort fields to restore.
      * @param sortDirs   Sort directions to restore.
