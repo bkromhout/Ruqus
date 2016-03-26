@@ -286,18 +286,18 @@ public class RealmQueryView extends FrameLayout {
         fieldChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                onFieldChooserItemSelected((String) parent.getItemAtPosition(position));
+                onFieldChooserItemSelected((String) parent.getItemAtPosition(position), false);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                onFieldChooserItemSelected(Ruqus.CHOOSE_FIELD);
+                onFieldChooserItemSelected(Ruqus.CHOOSE_FIELD, false);
             }
         });
         conditionalChooser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                onConditionalChooserItemSelected((String) parent.getItemAtPosition(position));
+                onConditionalChooserItemSelected((String) parent.getItemAtPosition(position), false);
             }
 
             @Override
@@ -825,18 +825,19 @@ public class RealmQueryView extends FrameLayout {
         // Set up from condition.
         if (condition != null) {
             // Select correct value in field chooser.
-            currFieldName = condition.getField();
+            //currFieldName = condition.getField();
             fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(
-                    Ruqus.visibleFieldFromField(currClassName, currFieldName)));
+                    Ruqus.visibleFieldFromField(currClassName, condition.getField())));
             // Set up views based on it.
-            onFieldChooserItemSelected(Ruqus.visibleFieldFromField(currClassName, currFieldName));
+            onFieldChooserItemSelected(Ruqus.visibleFieldFromField(currClassName, condition.getField()), false);
 
             // Select correct transformer.
-            currTransName = condition.getTransformer();
+            //currTransName = condition.getTransformer();
             conditionalChooser.setSelection(Ruqus.getTransformerData().getVisibleNames().indexOf(
-                    Ruqus.getTransformerData().visibleNameOf(currTransName)));
+                    Ruqus.getTransformerData().visibleNameOf(condition.getTransformer())));
             // Set up views based on it.
-            onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(currTransName));
+            onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(condition.getTransformer()),
+                    false);
 
             // Fill in argument views.
             fillArgViews(condition.getArgs());
@@ -864,7 +865,7 @@ public class RealmQueryView extends FrameLayout {
             fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(
                     Ruqus.visibleFieldFromField(currClassName, currFieldName)));
             // Set up views based on it.
-            onFieldChooserItemSelected(Ruqus.visibleFieldFromField(currClassName, currFieldName));
+            onFieldChooserItemSelected(Ruqus.visibleFieldFromField(currClassName, currFieldName), true);
         }
 
         // Try to restore chosen transformer.
@@ -872,7 +873,7 @@ public class RealmQueryView extends FrameLayout {
             conditionalChooser.setSelection(Ruqus.getTransformerData().getVisibleNames().indexOf(
                     Ruqus.getTransformerData().visibleNameOf(currTransName)));
             // Set up views based on it.
-            onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(currTransName));
+            onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(currTransName), true);
         }
 
         // Try to restore inputs.
@@ -906,7 +907,7 @@ public class RealmQueryView extends FrameLayout {
      * Called when an item is selected in the condition builder field chooser.
      * @param selStr Selected item string.
      */
-    private void onFieldChooserItemSelected(String selStr) {
+    private void onFieldChooserItemSelected(String selStr, boolean manual) {
         if (Ruqus.CHOOSE_FIELD.equals(selStr)) {
             currFieldName = null;
             currFieldType = null;
@@ -916,7 +917,7 @@ public class RealmQueryView extends FrameLayout {
         }
         // It's a real field.
         String realFieldName = Ruqus.fieldFromVisibleField(currClassName, selStr);
-        if (currFieldName == null || currFieldName.equals(realFieldName)) {
+        if (manual || currFieldName == null || !currFieldName.equals(realFieldName)) {
             // We only care if if was changed.
             currFieldName = realFieldName;
             // Get field type from field.
@@ -942,7 +943,7 @@ public class RealmQueryView extends FrameLayout {
      * Called when an item is selected in the condition builder conditional chooser.
      * @param selStr Selected item string.
      */
-    private void onConditionalChooserItemSelected(String selStr) {
+    private void onConditionalChooserItemSelected(String selStr, boolean manual) {
         if (Ruqus.CHOOSE_CONDITIONAL.equals(selStr)) {
             currTransName = null;
             updateArgViews();
@@ -950,7 +951,7 @@ public class RealmQueryView extends FrameLayout {
         }
         // It's a real transformer.
         String realTransName = Ruqus.transformerNameFromVisibleName(selStr, false);
-        if (currTransName == null || currTransName.equals(realTransName)) {
+        if (manual || currTransName == null || !currTransName.equals(realTransName)) {
             // We only care if it was changed.
             currTransName = realTransName;
             updateArgViews();
