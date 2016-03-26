@@ -1324,7 +1324,7 @@ public class RealmQueryView extends FrameLayout {
 
         // Set label text.
         ((TextView) sortPart.findViewById(R.id.sort_field_label)).setText(
-                getContext().getString(R.string.ruqus_sort_field_label, idx));
+                getContext().getString(R.string.ruqus_sort_field_label, idx + 1));
 
         // Set up spinner.
         Spinner fieldSpinner = (Spinner) sortPart.findViewById(R.id.sort_field);
