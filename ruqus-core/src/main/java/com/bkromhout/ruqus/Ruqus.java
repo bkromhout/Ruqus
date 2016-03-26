@@ -265,8 +265,6 @@ public class Ruqus {
     /**
      * Return a list of visible names for all fields on the given RealmObject subclass, but for any fields whose types
      * are either also RealmObject subclass or RealmList, add entries for their fields as well.
-     * <p/>
-     * TODO something is broke here.
      * @param realmClass Name of the RealmObject subclass.
      * @return List of visible flat field names.
      */

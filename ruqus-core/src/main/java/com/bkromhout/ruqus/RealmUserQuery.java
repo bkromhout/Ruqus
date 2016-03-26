@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
 
 /**
  * Used to let end-users build Realm Queries by wrapping {@link io.realm.RealmQuery}.
- * <p/>
- * TODO make this Parcelable!
  */
 public class RealmUserQuery implements Parcelable {
     private static final String PART_SEP = "#$_Ruqus_RUQ_$#";
