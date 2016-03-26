@@ -6,7 +6,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -113,17 +112,9 @@ public class RealmQueryView extends FrameLayout {
 
     /* Variables for the sort builder. */
     /**
-     * Holds IDs of sort field spinners.
+     * Holds IDs of sort field views.
      */
-    private ArrayList<Integer> sortSpinnerIds;
-    /**
-     * Holds IDs of buttons which remove sort fields.
-     */
-    private ArrayList<Integer> removeSortBtnIds;
-    /**
-     * Holds IDs of radio groups which set sort directions.
-     */
-    private ArrayList<Integer> sortDirRgIds;
+    private ArrayList<Integer> sortFieldViewIds;
 
     /* Constructors. */
 
@@ -176,10 +167,10 @@ public class RealmQueryView extends FrameLayout {
             // Tint the date pickers' buttons.
             for (int i = 0; i < argViewIds.size(); i++)
                 ((DateInputView) builderParts.findViewById(argViewIds.get(i))).setTheme(theme);
-        } else if (mode == Mode.S_BUILD && removeSortBtnIds != null) {
+        } else if (mode == Mode.S_BUILD) {
             // Tint the remove buttons on the sort field views.
-            for (int i = 0; i < removeSortBtnIds.size(); i++)
-                Util.tintImageButtonIcon((ImageButton) builderParts.findViewById(removeSortBtnIds.get(i)), theme);
+            for (int i = 0; i < sortFieldViewIds.size(); i++)
+                ((SortFieldView) builderParts.findViewById(sortFieldViewIds.get(i))).setTheme(theme);
         }
     }
 
@@ -805,28 +796,26 @@ public class RealmQueryView extends FrameLayout {
                 ArrayList<Sort> sortDirs = new ArrayList<>();
 
                 // Get sort fields.
-                for (Integer sortSpinnerId : sortSpinnerIds) {
-                    String spinnerStr = (String) ((Spinner) builderParts.findViewById(sortSpinnerId)).getSelectedItem();
+                for (Integer sortFieldViewId : sortFieldViewIds) {
+                    String field = ((SortFieldView) builderParts.findViewById(sortFieldViewId)).getRealField();
                     // Ensure none of the sort fields are the default "Choose Field" string.
-                    if (Ruqus.CHOOSE_FIELD.equals(spinnerStr)) {
+                    if (Ruqus.CHOOSE_FIELD.equals(field)) {
                         Toast.makeText(getContext(), R.string.ruqus_error_some_sort_fields_not_chosen,
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
                     // Ensure this field wasn't already used.
-                    String realFieldName = Ruqus.fieldFromVisibleField(currClassName, spinnerStr);
-                    if (sortFields.contains(realFieldName)) {
+                    if (sortFields.contains(field)) {
                         Toast.makeText(getContext(), R.string.ruqus_error_duplicated_sort_field, Toast.LENGTH_LONG)
                              .show();
                         return;
                     }
-                    sortFields.add(realFieldName);
+                    sortFields.add(field);
                 }
 
                 // Get sort dirs.
-                for (Integer sortDirRgId : sortDirRgIds)
-                    sortDirs.add(((RadioGroup) builderParts.findViewById(sortDirRgId))
-                            .getCheckedRadioButtonId() == R.id.asc ? Sort.ASCENDING : Sort.DESCENDING);
+                for (Integer sortFieldViewId : sortFieldViewIds)
+                    sortDirs.add(((SortFieldView) builderParts.findViewById(sortFieldViewId)).getSortDir());
 
                 // Set ruq sort fields.
                 ruq.setSorts(sortFields, sortDirs);
@@ -1305,9 +1294,7 @@ public class RealmQueryView extends FrameLayout {
         addSortField.setVisibility(VISIBLE);
 
         // Set up vars.
-        sortSpinnerIds = new ArrayList<>();
-        removeSortBtnIds = new ArrayList<>();
-        sortDirRgIds = new ArrayList<>();
+        sortFieldViewIds = new ArrayList<>();
 
         // If present, add current sort fields.
         for (int i = 0; i < sortFields.size(); i++)
@@ -1317,8 +1304,6 @@ public class RealmQueryView extends FrameLayout {
 
     /**
      * Called to restore the view hierarchy state if we were in sort builder mode prior to a configuration change.
-     * <p/>
-     * TODO doesn't correctly restore sort dirs, but does get the fields right...
      * @param sortFields Sort fields to restore.
      * @param sortDirs   Sort directions to restore.
      */
@@ -1340,9 +1325,7 @@ public class RealmQueryView extends FrameLayout {
         builderScrollView.setVisibility(GONE);
 
         // Clean up vars.
-        sortSpinnerIds = null;
-        removeSortBtnIds = null;
-        sortDirRgIds = null;
+        sortFieldViewIds = null;
     }
 
     /**
@@ -1351,104 +1334,49 @@ public class RealmQueryView extends FrameLayout {
      * @param sortDir          Sort direction to pre-select, or null.
      */
     private void addSortFieldView(int selectedFieldPos, Sort sortDir) {
-        final int idx = sortSpinnerIds.size();
-        RelativeLayout sortPart = (RelativeLayout) View.inflate(getContext(), R.layout.sort_part, null);
+        final int sortFieldViewId = Util.getUniqueViewId();
+        SortFieldView sortFieldView = new SortFieldView(getContext(), theme, currClassName);
 
-        // Set label text.
-        ((TextView) sortPart.findViewById(R.id.sort_field_label)).setText(
-                getContext().getString(R.string.ruqus_sort_field_label, idx + 1));
-
-        // Set up spinner.
-        Spinner fieldSpinner = (Spinner) sortPart.findViewById(R.id.sort_field);
-        fieldSpinner.setAdapter(makeFieldAdapter());
-        fieldSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Make sure the user didn't select nothing.
-                String selStr = (String) parent.getItemAtPosition(position);
-                if (Ruqus.CHOOSE_FIELD.equals(selStr))
-                    builderParts.findViewById(sortDirRgIds.get(idx)).setVisibility(GONE);
-                else setSortDirOptions(idx, selStr);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                builderParts.findViewById(sortDirRgIds.get(idx)).setVisibility(GONE);
-            }
-        });
-
-        // Set up remove button.
-        ImageButton removeButton = (ImageButton) sortPart.findViewById(R.id.remove_field);
-        DrawableCompat.setTint(removeButton.getDrawable(), theme == RuqusTheme.LIGHT ? Ruqus.DARK_TEXT_COLOR :
-                Ruqus.LIGHT_TEXT_COLOR);
-        removeButton.setOnClickListener(new OnClickListener() {
+        // Set up sort field view.
+        sortFieldView.setLabelText(getContext().getString(R.string.ruqus_sort_field_label,
+                sortFieldViewIds.size() + 1));
+        sortFieldView.setRemoveBtnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeSortField(idx);
+                removeSortField(sortFieldViewId);
             }
         });
+        sortFieldView.setSpinnerAdapter(makeFieldAdapter());
+        // Fill in existing sort field and direction (will do nothing if -1/null).
+        sortFieldView.setSelectedPos(selectedFieldPos);
+        sortFieldView.setSortDir(sortDir);
 
-        // Set up radio group.
-        RadioGroup sortDirRg = (RadioGroup) sortPart.findViewById(R.id.rg_sort_dir);
-
-        // Generate unique view IDs for the spinner, button, and radio group and set them.
-        int fieldSpinnerId = Util.getUniqueViewId();
-        int removeButtonId = Util.getUniqueViewId();
-        int sortDirRgId = Util.getUniqueViewId();
-        fieldSpinner.setId(fieldSpinnerId);
-        removeButton.setId(removeButtonId);
-        sortDirRg.setId(sortDirRgId);
-
-        // Add IDs to lists.
-        sortSpinnerIds.add(fieldSpinnerId);
-        removeSortBtnIds.add(removeButtonId);
-        sortDirRgIds.add(sortDirRgId);
+        // Set view ID and add to list.
+        sortFieldView.setId(sortFieldViewId);
+        sortFieldViewIds.add(sortFieldViewId);
 
         // If that was our third sort field, we disable the button that adds them.
-        if (sortSpinnerIds.size() == 3) addSortField.setEnabled(false);
+        if (sortFieldViewIds.size() == 3) addSortField.setEnabled(false);
 
         // Add this to the builder container (Add one, since we want it added after the header view).
-        builderParts.addView(sortPart);
-
-        // Fill this sort field layout's views in if necessary.
-        if (selectedFieldPos != -1) {
-            // Select the correct item in the spinner.
-            fieldSpinner.setSelection(selectedFieldPos);
-            // Manually update the radio buttons' text if need be.
-            String selStr = (String) fieldSpinner.getItemAtPosition(selectedFieldPos);
-            if (Ruqus.CHOOSE_FIELD.equals(selStr)) sortDirRg.setVisibility(GONE);
-            else setSortDirOptions(idx, selStr);
-            // Select the correct radio button.
-            sortDirRg.check(sortDir == Sort.ASCENDING ? R.id.asc : R.id.desc);
-        }
+        builderParts.addView(sortFieldView);
     }
 
     /**
      * Called when a remove sort field button is clicked.
      */
-    private void removeSortField(int index) {
+    private void removeSortField(int id) {
+        // Remove from builder container.
+        builderParts.removeViewAt(sortFieldViewIds.indexOf(id));
         // Remove IDs from lists.
-        sortSpinnerIds.remove(index);
-        removeSortBtnIds.remove(index);
-        sortDirRgIds.remove(index);
-
-        // Remove from builder container (Add one to the index, since the header view is there).
-        builderParts.removeViewAt(index);
-
+        sortFieldViewIds.remove((Integer) id);
+        // Re-label other sort field views.
+        for (int i = 0; i < sortFieldViewIds.size(); i++) {
+            SortFieldView sfv = (SortFieldView) builderParts.findViewById(sortFieldViewIds.get(i));
+            sfv.setLabelText(getContext().getString(R.string.ruqus_sort_field_label, i + 1));
+        }
         // Enable add button.
         addSortField.setEnabled(true);
-    }
-
-    /**
-     * Called when the selection on a sort field spinner is changed.
-     */
-    private void setSortDirOptions(int index, String visibleFieldName) {
-        String[] pretty = Ruqus.typeEnumForField(currClassName, Ruqus.fieldFromVisibleField(
-                currClassName, visibleFieldName)).getPrettySortStrings();
-        RadioGroup rg = (RadioGroup) builderParts.findViewById(sortDirRgIds.get(index));
-        ((RadioButton) rg.findViewById(R.id.asc)).setText(pretty[0]);
-        ((RadioButton) rg.findViewById(R.id.desc)).setText(pretty[1]);
-        rg.setVisibility(VISIBLE);
     }
 
     /**
@@ -1457,9 +1385,8 @@ public class RealmQueryView extends FrameLayout {
      */
     private ArrayList<String> stashableSortFields() {
         ArrayList<String> sortFields = new ArrayList<>();
-        for (Integer sortSpinnerId : sortSpinnerIds)
-            sortFields.add(Ruqus.fieldFromVisibleField(currClassName,
-                    (String) ((Spinner) builderParts.findViewById(sortSpinnerId)).getSelectedItem()));
+        for (Integer sortFieldViewId : sortFieldViewIds)
+            sortFields.add(((SortFieldView) builderParts.findViewById(sortFieldViewId)).getRealField());
         return sortFields;
     }
 
@@ -1469,9 +1396,8 @@ public class RealmQueryView extends FrameLayout {
      */
     private ArrayList<Sort> stashableSortDirections() {
         ArrayList<Sort> sortDirs = new ArrayList<>();
-        for (Integer sortDirRgId : sortDirRgIds)
-            sortDirs.add(((RadioGroup) builderParts.findViewById(sortDirRgId))
-                    .getCheckedRadioButtonId() == R.id.asc ? Sort.ASCENDING : Sort.DESCENDING);
+        for (Integer sortFieldViewId : sortFieldViewIds)
+            sortDirs.add(((SortFieldView) builderParts.findViewById(sortFieldViewId)).getSortDir());
         return sortDirs;
     }
 

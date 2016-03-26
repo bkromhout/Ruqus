@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
             android:id="@+id/sort_field_label"
@@ -16,7 +13,6 @@
             android:id="@+id/spin_and_remove"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/sort_field_label"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -43,7 +39,7 @@
             android:id="@+id/rg_sort_dir"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/spin_and_remove"
+            android:layout_marginBottom="8dp"
             android:orientation="horizontal"
             android:checkedButton="@+id/asc"
             android:visibility="gone"
@@ -63,5 +59,4 @@
                 android:layout_height="wrap_content"
                 tools:text="Latest to Earliest"/>
     </RadioGroup>
-
-</RelativeLayout>
+</merge>

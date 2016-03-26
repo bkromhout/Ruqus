@@ -69,7 +69,6 @@ class DateInputView extends LinearLayout implements DatePickerDialog.OnDateSetLi
         setTheme(theme);
     }
 
-
     @Override
     protected Parcelable onSaveInstanceState() {
         // Allow parent classes to save state.
@@ -110,7 +109,6 @@ class DateInputView extends LinearLayout implements DatePickerDialog.OnDateSetLi
     protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
         dispatchThawSelfOnly(container);
     }
-
 
     /**
      * Change the way the view looks based on the given {@link RuqusTheme} value.
