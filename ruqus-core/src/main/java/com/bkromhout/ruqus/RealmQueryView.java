@@ -804,7 +804,14 @@ public class RealmQueryView extends FrameLayout {
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
-                    sortFields.add(Ruqus.fieldFromVisibleField(currClassName, spinnerStr));
+                    // Ensure this field wasn't already used.
+                    String realFieldName = Ruqus.fieldFromVisibleField(currClassName, spinnerStr);
+                    if (sortFields.contains(realFieldName)) {
+                        Toast.makeText(getContext(), R.string.ruqus_error_duplicated_sort_field, Toast.LENGTH_LONG)
+                             .show();
+                        return;
+                    }
+                    sortFields.add(realFieldName);
                 }
 
                 // Get sort dirs.
