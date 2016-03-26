@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUi() {
         currQuery.setText(realmUserQuery == null ? "No query." : realmUserQuery.toString());
+        // TODO call toString on models to get query results.
     }
 
     @Override
