@@ -827,14 +827,14 @@ public class RealmQueryView extends FrameLayout {
             // Select correct value in field chooser.
             //currFieldName = condition.getField();
             fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(
-                    Ruqus.visibleFieldFromField(currClassName, condition.getField())));
+                    Ruqus.visibleFieldFromField(currClassName, condition.getField())), false);
             // Set up views based on it.
             onFieldChooserItemSelected(Ruqus.visibleFieldFromField(currClassName, condition.getField()), false);
 
             // Select correct transformer.
             //currTransName = condition.getTransformer();
             conditionalChooser.setSelection(Ruqus.getTransformerData().getVisibleNames().indexOf(
-                    Ruqus.getTransformerData().visibleNameOf(condition.getTransformer())));
+                    Ruqus.getTransformerData().visibleNameOf(condition.getTransformer())), false);
             // Set up views based on it.
             onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(condition.getTransformer()),
                     false);
@@ -863,7 +863,7 @@ public class RealmQueryView extends FrameLayout {
         // Try to restore chosen field.
         if (currFieldName != null) {
             fieldChooser.setSelection(currVisibleFlatFieldNames.indexOf(
-                    Ruqus.visibleFieldFromField(currClassName, currFieldName)));
+                    Ruqus.visibleFieldFromField(currClassName, currFieldName)), false);
             // Set up views based on it.
             onFieldChooserItemSelected(Ruqus.visibleFieldFromField(currClassName, currFieldName), true);
         }
@@ -871,7 +871,7 @@ public class RealmQueryView extends FrameLayout {
         // Try to restore chosen transformer.
         if (currTransName != null) {
             conditionalChooser.setSelection(Ruqus.getTransformerData().getVisibleNames().indexOf(
-                    Ruqus.getTransformerData().visibleNameOf(currTransName)));
+                    Ruqus.getTransformerData().visibleNameOf(currTransName)), false);
             // Set up views based on it.
             onConditionalChooserItemSelected(Ruqus.getTransformerData().visibleNameOf(currTransName), true);
         }
@@ -889,10 +889,10 @@ public class RealmQueryView extends FrameLayout {
      */
     private void tearDownConditionBuilderMode() {
         // Clean up views.
+        builderParts.removeAllViews();
         fieldChooser.setSelection(0);
         fieldChooser.setVisibility(GONE);
         conditionalChooser.setVisibility(GONE);
-        builderParts.removeAllViews();
         builderScrollView.setVisibility(GONE);
 
         // Clean up vars.
@@ -1313,7 +1313,7 @@ public class RealmQueryView extends FrameLayout {
         // Fill this sort field layout's views in if necessary.
         if (selectedFieldPos != -1) {
             // Select the correct item in the spinner.
-            fieldSpinner.setSelection(selectedFieldPos);
+            fieldSpinner.setSelection(selectedFieldPos, false);
             // Manually update the radio buttons' text if need be.
             String selStr = (String) fieldSpinner.getItemAtPosition(selectedFieldPos);
             if (Ruqus.CHOOSE_FIELD.equals(selStr)) sortDirRg.setVisibility(GONE);
