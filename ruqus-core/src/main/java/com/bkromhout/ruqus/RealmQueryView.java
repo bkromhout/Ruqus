@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
@@ -438,6 +439,15 @@ public class RealmQueryView extends FrameLayout {
     }
 
     /**
+     * Helps us convert part view IDs to their indices in {@link #partsCont}.
+     * @param viewId ID of an {@link RQVCard2} in the {@link #partsCont}.
+     * @return Index of view with {@code viewId}.
+     */
+    private int idxFromId(@IdRes int viewId) {
+        return builderParts.indexOfChild(builderParts.findViewById(viewId));
+    }
+
+    /**
      * Sets the "enabled" state of the query parts container and the sort chooser.
      * @param enabled If true, enable views. Otherwise disable them.
      */
@@ -459,9 +469,11 @@ public class RealmQueryView extends FrameLayout {
         // Create a new card.
         RQVCard2 cond = new RQVCard2(getContext(), theme);
         cond.setMode(RQVCard2.Mode.CARD);
+        // Get a unique view ID.
+        int vid = Util.getUniqueViewId();
         // Set index tag to the current child count of the conditions container, since that will be this item's index
         // once it is added to the end of it. Also set content tag to the same as the current content.
-        cond.setTag(R.id.ruqus_index, partsCont.getChildCount());
+        cond.setTag(R.id.ruqus_id, vid);
         cond.setTag(R.id.ruqus_curr_val, visCondString);
         // Set the card's text to the visible condition string.
         cond.setCardText(visCondString);
@@ -471,7 +483,7 @@ public class RealmQueryView extends FrameLayout {
             cond.setCardClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onConditionClicked((Integer) v.getTag(R.id.ruqus_index));
+                    onConditionClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)));
                 }
             });
         } else {
@@ -479,7 +491,8 @@ public class RealmQueryView extends FrameLayout {
             cond.setCardClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onOperatorClicked((Integer) v.getTag(R.id.ruqus_index), (String) v.getTag(R.id.ruqus_curr_val));
+                    onOperatorClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)),
+                            (String) v.getTag(R.id.ruqus_curr_val));
                 }
             });
         }
@@ -487,12 +500,12 @@ public class RealmQueryView extends FrameLayout {
         cond.setCardLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onPartLongClicked((Integer) v.getTag(R.id.ruqus_index));
+                onPartLongClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)));
                 return true;
             }
         });
         // Set a unique view ID.
-        cond.setId(Util.getUniqueViewId());
+        cond.setId(vid);
         // Add to the parts container.
         partsCont.addView(cond);
     }
@@ -507,25 +520,26 @@ public class RealmQueryView extends FrameLayout {
         if (ruq != null && partsCont.getChildCount() == ruq.conditionCount()) {
             RQVCard2 add = new RQVCard2(getContext(), theme);
             add.setMode(RQVCard2.Mode.OUTLINES);
+            int vid = Util.getUniqueViewId();
             add.setOutlineText(R.string.ruqus_add_operator_nl, R.string.ruqus_add_condition_nl);
             // Set tag to the current child count of the conditions container, since that will be this item's index
             // once it is added to the end of it.
-            add.setTag(R.id.ruqus_index, partsCont.getChildCount());
+            add.setTag(R.id.ruqus_id, vid);
             // Set the outline text views' OnClickListeners.
             add.setOutline1ClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onOperatorClicked((Integer) v.getTag(R.id.ruqus_index), null);
+                    onOperatorClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)), null);
                 }
             });
             add.setOutline2ClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onConditionClicked((Integer) v.getTag(R.id.ruqus_index));
+                    onConditionClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)));
                 }
             });
             // Set a unique view ID.
-            add.setId(Util.getUniqueViewId());
+            add.setId(vid);
             // Add to the parts container.
             partsCont.addView(add);
         }
@@ -633,13 +647,14 @@ public class RealmQueryView extends FrameLayout {
             card.setCardClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onOperatorClicked((Integer) v.getTag(R.id.ruqus_index), (String) v.getTag(R.id.ruqus_curr_val));
+                    onOperatorClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)),
+                            (String) v.getTag(R.id.ruqus_curr_val));
                 }
             });
             card.setCardLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    onPartLongClicked((Integer) v.getTag(R.id.ruqus_index));
+                    onPartLongClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)));
                     return true;
                 }
             });
@@ -753,13 +768,13 @@ public class RealmQueryView extends FrameLayout {
                     card.setCardClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            onConditionClicked((Integer) v.getTag(R.id.ruqus_index));
+                            onConditionClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)));
                         }
                     });
                     card.setCardLongClickListener(new OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            onPartLongClicked((Integer) v.getTag(R.id.ruqus_index));
+                            onPartLongClicked(idxFromId((Integer) v.getTag(R.id.ruqus_id)));
                             return true;
                         }
                     });
