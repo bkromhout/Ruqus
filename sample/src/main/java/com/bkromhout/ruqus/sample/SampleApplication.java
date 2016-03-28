@@ -89,11 +89,14 @@ public class SampleApplication extends Application {
         person5.getCats().add(cat2);
         person5.getCats().add(cat3);
 
-        realm.copyToRealm(person1);
-        realm.copyToRealm(person2);
-        realm.copyToRealm(person3);
-        realm.copyToRealm(person4);
-        realm.copyToRealm(person5);
+        ArrayList<Person> people = new ArrayList<>();
+        people.add(person1);
+        people.add(person2);
+        people.add(person3);
+        people.add(person4);
+        people.add(person5);
+
+        realm.copyToRealm(people);
     }
 
     public static Context getAppCtx() {

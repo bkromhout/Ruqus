@@ -25,7 +25,7 @@ public class Cat extends RealmObject {
 
     public String toString(String indent) {
         return indent + "Name: " + name + ",\n" +
-                indent + "Least Favorite Dog: {\n" +
-                (leastFavorite != null ? leastFavorite.toString(indent + "\t") + indent : "") + "}\n";
+                indent + "Least Favorite Dog: {" +
+                (leastFavorite != null ? "\n" + leastFavorite.toString(indent + "\t") + indent : "") + "}\n";
     }
 }

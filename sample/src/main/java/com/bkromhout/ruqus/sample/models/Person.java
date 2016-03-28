@@ -83,12 +83,14 @@ public class Person extends RealmObject {
     public String toString(String indent) {
         String s = indent + "Name: " + name + ",\n" +
                 indent + "Age: " + age + ",\n" +
-                indent + "Dog: {\n" + (dog != null ? dog.toString(indent + "\t") + indent : "") + "},\n" +
-                indent + "Cats: [\n";
-        for (Cat cat : cats) {
-            s += indent + "\t" + "{\n" + cat.toString(indent + "\t") + indent + "\t" + "},\n";
+                indent + "Dog: {" + (dog != null ? "\n" + dog.toString(indent + "\t") + indent : "") + "},\n" +
+                indent + "Cats: [";
+        if (!cats.isEmpty()) {
+            s += "\n";
+            for (Cat cat : cats) s += indent + "\t" + "{\n" + cat.toString(indent + "\t") + indent + "\t" + "},\n";
+            s += indent;
         }
-        s += indent + "]\n";
+        s += "]\n";
         return s;
     }
 }

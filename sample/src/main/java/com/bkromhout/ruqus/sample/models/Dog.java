@@ -35,12 +35,13 @@ public class Dog extends RealmObject {
     public String toString(String indent) {
         String s = indent + "Name: " + name + ",\n" +
                 indent + "Age: " + age + ",\n" +
-                indent + "Bones: [\n";
-        for (Bone bone : bones) {
-            s += indent + "\t" + "{\n" + bone.toString(indent + "\t") + indent + "\t" + "},\n";
+                indent + "Bones: [";
+        if (!bones.isEmpty()) {
+            s += "\n";
+            for (Bone bone : bones) s += indent + "\t" + "{\n" + bone.toString(indent + "\t") + indent + "\t" + "},\n";
+            s += indent;
         }
-        s += indent + "],\n" +
-                indent + "Is Doge: " + isDoge + "\n";
+        s += "],\n" + indent + "Is Doge: " + isDoge + "\n";
         return s;
     }
 }

@@ -3,6 +3,7 @@ package com.bkromhout.ruqus;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.squareup.phrase.ListPhrase;
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -177,13 +178,16 @@ public class RealmUserQuery implements Parcelable {
 
     /**
      * Execute this query and return the results.
+     * @param realm Instance of Realm to use to execute query.
      * @return RealmResults, or null if query is invalid.
      */
-    public <E extends RealmObject> RealmResults<E> execute() {
+    public <E extends RealmObject> RealmResults<E> execute(Realm realm) {
+        if (realm == null || realm.isClosed())
+            throw new IllegalArgumentException("realm must be non-null and not closed.");
         if (!isQueryValid()) return null;
         // TODO who knows if this is even legal...
         // noinspection unchecked
-        return (RealmResults<E>) RUQExecutor.get(queryClass, this).executeQuery();
+        return (RealmResults<E>) RUQExecutor.get(queryClass, this).executeQuery(realm);
     }
 
     /**

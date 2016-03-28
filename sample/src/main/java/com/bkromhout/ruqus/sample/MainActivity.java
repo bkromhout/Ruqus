@@ -12,6 +12,7 @@ import butterknife.OnClick;
 import com.bkromhout.ruqus.RealmUserQuery;
 import com.bkromhout.ruqus.sample.models.Cat;
 import com.bkromhout.ruqus.sample.models.Person;
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.results)
     LinearLayout resultsView;
 
+    Realm realm;
     RealmUserQuery realmUserQuery;
 
     @Override
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        realm = Realm.getDefaultInstance();
         if (savedInstanceState != null && savedInstanceState.containsKey("RUQ"))
             realmUserQuery = savedInstanceState.getParcelable("RUQ");
         updateUi();
@@ -41,31 +44,34 @@ public class MainActivity extends AppCompatActivity {
         if (realmUserQuery != null) outState.putParcelable("RUQ", realmUserQuery);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (realm != null) realm.close();
+    }
+
     private void updateUi() {
         currQuery.setText(realmUserQuery == null ? "No query." : realmUserQuery.toString());
         if (realmUserQuery != null) {
             resultsView.removeAllViews();
-            displayResults(realmUserQuery.execute(), realmUserQuery.getQueryClass());
+            displayResults(realmUserQuery.execute(realm), realmUserQuery.getQueryClass());
         }
     }
 
     private <E extends RealmObject> void displayResults(RealmResults<E> results, Class<? extends RealmObject> clazz) {
-        // TODO only adding one??
-        String displayStr = "";
-        if (Person.class.getCanonicalName().equals(clazz.getCanonicalName())) {
-            for (int i = results.size() - 1; i >= 0; i--) {
+        for (int i = results.size() - 1; i >= 0; i--) {
+            String displayStr = "";
+            if (Person.class.getCanonicalName().equals(clazz.getCanonicalName())) {
                 Person person = (Person) results.get(i);
                 displayStr = String.valueOf(i + 1) + ":\n" + person.toString("");
-            }
-        } else if (Cat.class.getCanonicalName().equals(clazz.getCanonicalName())) {
-            for (int i = results.size() - 1; i >= 0; i--) {
+            } else if (Cat.class.getCanonicalName().equals(clazz.getCanonicalName())) {
                 Cat person = (Cat) results.get(i);
                 displayStr = String.valueOf(i + 1) + ":\n" + person.toString("");
             }
+            TextView textView = new TextView(this);
+            textView.setText(displayStr);
+            resultsView.addView(textView, 0);
         }
-        TextView textView = new TextView(this);
-        textView.setText(displayStr);
-        resultsView.addView(textView, 0);
     }
 
     @Override
