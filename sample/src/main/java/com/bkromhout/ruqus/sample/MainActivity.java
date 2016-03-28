@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private <E extends RealmObject> void displayResults(RealmResults<E> results, Class<? extends RealmObject> clazz) {
+        // TODO only adding one??
         String displayStr = "";
         if (Person.class.getCanonicalName().equals(clazz.getCanonicalName())) {
             for (int i = results.size() - 1; i >= 0; i--) {
