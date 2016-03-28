@@ -2,23 +2,18 @@ package com.bkromhout.ruqus.sample.models;
 
 import com.bkromhout.ruqus.Hide;
 import com.bkromhout.ruqus.Queryable;
-import com.bkromhout.ruqus.VisibleAs;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 
 @Queryable(name = "Person")
 public class Person extends RealmObject {
-    @VisibleAs(string = "Name")
     private String name;
 
-    @VisibleAs(string = "Age")
     private int age;
 
-    @VisibleAs(string = "Dog")
     private Dog dog;
 
-    @VisibleAs(string = "Cat")
     private RealmList<Cat> cats;
 
     @Ignore

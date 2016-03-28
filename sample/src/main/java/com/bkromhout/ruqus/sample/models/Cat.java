@@ -6,7 +6,6 @@ import io.realm.RealmObject;
 
 @Queryable(name = "Cat")
 public class Cat extends RealmObject {
-    @VisibleAs(string = "Name")
     public String name;
 
     @VisibleAs(string = "Least Favorite Dog")

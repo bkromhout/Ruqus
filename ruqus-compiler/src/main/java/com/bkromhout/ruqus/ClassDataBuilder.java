@@ -90,8 +90,8 @@ class ClassDataBuilder {
                 visibleName = vaAnnot.string();
             }
             if (visibleName == null || visibleName.isEmpty()) {
-                // TODO have this generate a name from camel-case
-                visibleName = realName;
+                // Generate a name from TitleCase.
+                visibleName = Utils.makeVisName(realName);
             }
             // Check that visible name hasn't already been used.
             if (visibleNames.values().contains(visibleName)) {
@@ -134,7 +134,8 @@ class ClassDataBuilder {
                 VisibleAs vaAnnot = var.getAnnotation(VisibleAs.class);
                 visibleFieldName = vaAnnot.string();
             }
-            if (visibleFieldName == null || visibleFieldName.isEmpty()) visibleFieldName = realFieldName;
+            if (visibleFieldName == null || visibleFieldName.isEmpty()) // Generate a name from camelCase.
+                visibleFieldName = Utils.makeVisName(realFieldName);
             // Field type.
             TypeName fieldType = TypeName.get(varMirror);
             // If field is a RealmList, we need to get the parameter's type too.
