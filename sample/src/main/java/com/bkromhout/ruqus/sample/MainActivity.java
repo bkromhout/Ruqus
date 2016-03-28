@@ -4,17 +4,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bkromhout.ruqus.RealmUserQuery;
+import com.bkromhout.ruqus.sample.models.Cat;
+import com.bkromhout.ruqus.sample.models.Person;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
     @Bind(R.id.query)
     TextView currQuery;
     @Bind(R.id.edit_query)
     Button editQuery;
+    @Bind(R.id.results)
+    LinearLayout resultsView;
 
     RealmUserQuery realmUserQuery;
 
@@ -36,7 +43,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUi() {
         currQuery.setText(realmUserQuery == null ? "No query." : realmUserQuery.toString());
-        // TODO call toString on models to get query results.
+        if (realmUserQuery != null) {
+            resultsView.removeAllViews();
+            displayResults(realmUserQuery.execute(), realmUserQuery.getQueryClass());
+        }
+    }
+
+    private <E extends RealmObject> void displayResults(RealmResults<E> results, Class<? extends RealmObject> clazz) {
+        String displayStr = "";
+        if (Person.class.getCanonicalName().equals(clazz.getCanonicalName())) {
+            for (int i = results.size() - 1; i >= 0; i--) {
+                Person person = (Person) results.get(i);
+                displayStr = String.valueOf(i + 1) + ":\n" + person.toString("");
+            }
+        } else if (Cat.class.getCanonicalName().equals(clazz.getCanonicalName())) {
+            for (int i = results.size() - 1; i >= 0; i--) {
+                Cat person = (Cat) results.get(i);
+                displayStr = String.valueOf(i + 1) + ":\n" + person.toString("");
+            }
+        }
+        TextView textView = new TextView(this);
+        textView.setText(displayStr);
+        resultsView.addView(textView, 0);
     }
 
     @Override

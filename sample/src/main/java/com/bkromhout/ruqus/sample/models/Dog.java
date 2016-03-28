@@ -31,4 +31,16 @@ public class Dog extends RealmObject {
         if (bones != null) this.bones.addAll(bones);
         this.isDoge = isDoge;
     }
+
+    public String toString(String indent) {
+        String s = indent + "Name: " + name + ",\n" +
+                indent + "Age: " + age + ",\n" +
+                indent + "Bones: [\n";
+        for (Bone bone : bones) {
+            s += indent + "\t" + "{\n" + bone.toString(indent + "\t") + indent + "\t" + "},\n";
+        }
+        s += indent + "],\n" +
+                indent + "Is Doge: " + isDoge + "\n";
+        return s;
+    }
 }

@@ -93,7 +93,7 @@ public class RealmUserQuery implements Parcelable {
      * Get the class for the type of objects which this query will return.
      * @return Class of query result objects.
      */
-    Class<? extends RealmObject> getQueryClass() {
+    public Class<? extends RealmObject> getQueryClass() {
         return queryClass;
     }
 

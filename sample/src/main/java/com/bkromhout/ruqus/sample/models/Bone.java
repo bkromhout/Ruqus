@@ -16,4 +16,9 @@ public class Bone extends RealmObject {
         this.boneName = boneName;
         this.isFavorite = isFavorite;
     }
+
+    public String toString(String indent) {
+        return indent + "Bone Name: " + boneName + ",\n" +
+                indent + "Is Favorite: " + isFavorite + "\n";
+    }
 }
