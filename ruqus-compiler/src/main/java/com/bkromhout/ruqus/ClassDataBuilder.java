@@ -182,10 +182,10 @@ class ClassDataBuilder {
                     return true;
 
                 // Any of our classes annotated with @RealmClass are okay.
-                TypeName fieldTypeName = TypeName.get(fieldType);
-                if (isARealmObjClass(fieldTypeName)) return true;
+                if (Utils.isSubtypeOfType(fieldType, TypeNames.REALM_OBJ.toString())) return true;
 
                 // RealmLists are okay as well.
+                TypeName fieldTypeName = TypeName.get(fieldType);
                 if (isRealmList(fieldTypeName)) return true;
 
                 // Everything else is bad.
@@ -207,11 +207,6 @@ class ClassDataBuilder {
             default:
                 return false;
         }
-    }
-
-    private boolean isARealmObjClass(TypeName className) {
-        //noinspection SuspiciousMethodCalls
-        return classMap.values().contains(className);
     }
 
     private boolean isRealmList(TypeName className) {

@@ -11,9 +11,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.MirroredTypesException;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import java.util.*;
@@ -110,7 +108,7 @@ class TransformerDataBuilder {
     private boolean isValidTransformerClass(TypeElement element, ClassName className, String visibleName,
                                             List<ClassName> validTypes, Integer numArgs, Boolean isNoArgs) {
         // Must extend (directly or indirectly) RUQTransformer.
-        if (!isSubtypeOfType(element.asType(), TypeNames.RUQ_TRANS_CLASS.toString())) {
+        if (!Utils.isSubtypeOfType(element.asType(), TypeNames.RUQ_TRANS_CLASS.toString())) {
             error(element, "Failed while processing \"%s\" because transformer classes must extend (either directly " +
                             "or indirectly) %s, but instead it extends %s.", ClassName.get(element).toString(),
                     TypeNames.RUQ_TRANS_CLASS.toString(), element.getSuperclass().toString());
@@ -147,36 +145,6 @@ class TransformerDataBuilder {
 
         // Must be public and non-abstract.
         return element.getModifiers().contains(Modifier.PUBLIC) && !element.getModifiers().contains(Modifier.ABSTRACT);
-    }
-
-    private boolean isSubtypeOfType(TypeMirror typeMirror, String otherType) {
-        if (otherType.equals(typeMirror.toString())) return true;
-        if (typeMirror.getKind() != TypeKind.DECLARED) return false;
-
-        DeclaredType declaredType = (DeclaredType) typeMirror;
-        List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
-        if (typeArguments.size() > 0) {
-            StringBuilder typeString = new StringBuilder(declaredType.asElement().toString());
-            typeString.append('<');
-            for (int i = 0; i < typeArguments.size(); i++) {
-                if (i > 0) typeString.append(',');
-                typeString.append('?');
-            }
-            typeString.append('>');
-            if (typeString.toString().equals(otherType)) return true;
-        }
-
-        Element element = declaredType.asElement();
-        if (!(element instanceof TypeElement)) return false;
-
-        TypeElement typeElement = (TypeElement) element;
-        TypeMirror superType = typeElement.getSuperclass();
-        if (isSubtypeOfType(superType, otherType)) return true;
-        for (TypeMirror interfaceType : typeElement.getInterfaces()) {
-            if (isSubtypeOfType(interfaceType, otherType)) return true;
-        }
-
-        return false;
     }
 
     /**
