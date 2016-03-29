@@ -1,15 +1,16 @@
 apply plugin: 'com.android.library'
 apply plugin: 'realm-android'
+apply plugin: 'bintray-release'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    compileSdkVersion COMPILE_SDK
+    buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0.0"
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
         consumerProguardFiles 'consumer-proguard-rules.pro'
         vectorDrawables.useSupportLibrary = true
     }
@@ -30,4 +31,16 @@ dependencies {
         transitive = true
     }
     compile 'com.wdullaer:materialdatetimepicker:2.3.0'
+}
+
+publish {
+    userOrg = BINTRAY_USER
+    groupId = GROUP_NAME
+    artifactId = 'ruqus-core'
+    version = VERSION_NAME
+    description = DESCRIPTION
+    website = SITE_URL
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    licences = ['MIT']
 }

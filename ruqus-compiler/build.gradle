@@ -2,6 +2,7 @@ import com.android.build.gradle.internal.LoggerWrapper
 import com.android.build.gradle.internal.SdkHandler
 
 apply plugin: 'java'
+apply plugin: 'bintray-release'
 
 def logger = new LoggerWrapper(project.logger)
 def sdkHandler = new SdkHandler(project, logger)
@@ -22,4 +23,16 @@ dependencies {
     compile 'com.google.auto.service:auto-service:1.0-rc2'
     compile 'com.google.auto:auto-common:0.6'
     compile 'io.realm:realm-annotations:0.88.2' // Make Realm's annotations available to our processor.
+}
+
+publish {
+    userOrg = BINTRAY_USER
+    groupId = GROUP_NAME
+    artifactId = 'ruqus-compiler'
+    version = VERSION_NAME
+    description = DESCRIPTION
+    website = SITE_URL
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    licences = ['MIT']
 }
