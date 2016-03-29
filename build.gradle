@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0-alpha4'
-        classpath 'com.novoda:bintray-release:0.3.4'
+        classpath 'com.novoda:bintray-release:0.3.4' // clean build bintrayUpload -PdryRun={true|false}
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath "io.realm:realm-gradle-plugin:0.88.2"
     }
@@ -53,6 +53,11 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
     }
+
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption('encoding', 'UTF-8')
+    }
 }
 
 subprojects {
@@ -73,7 +78,7 @@ subprojects {
                     project {
                         name "$project.name"
                         artifactId "$project.name"
-                        packaging project.name in ['annotations', 'compiler'] ? 'jar' : 'aar'
+                        packaging project.name in ['ruqus-annotations', 'ruqus-compiler'] ? 'jar' : 'aar'
                         description DESCRIPTION
                         url SITE_URL
                         version VERSION_NAME

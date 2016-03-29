@@ -15,6 +15,10 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    lintOptions {
+        warning 'Instantiatable'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
