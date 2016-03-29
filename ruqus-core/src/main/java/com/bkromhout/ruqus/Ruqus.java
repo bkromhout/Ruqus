@@ -7,6 +7,7 @@ import io.realm.RealmObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -265,8 +266,27 @@ public class Ruqus {
     }
 
     /**
-     * Return a list of visible names for all fields on the given RealmObject subclass, but for any fields whose types
-     * are either also RealmObject subclass or RealmList, add entries for their fields as well.
+     * Return a list of visible names for all fields on the given RealmObject subclass, except those which are a
+     * RealmObject subclass or RealmList type.
+     * @param realmClass Name of the RealmObject subclass.
+     * @return List of visible field names.
+     */
+    static ArrayList<String> visibleNonRealmFieldsForClass(String realmClass) {
+        FieldData fieldData = getFieldData(realmClass);
+        ArrayList<String> fields = fieldData.getFieldNames();
+        Iterator<String> fieldIterator = fields.iterator();
+        while (fieldIterator.hasNext()) {
+            String field = fieldIterator.next();
+            if (fieldData.isRealmListType(field) || fieldData.isRealmObjectType(field)) fieldIterator.remove();
+        }
+        ArrayList<String> visFields = new ArrayList<>();
+        for (String field : fields) visFields.add(fieldData.visibleNameOf(field));
+        return visFields;
+    }
+
+    /**
+     * Return a list of visible names for all fields on the given RealmObject subclass, as well as any sub-fields (The
+     * fields from any of {@code realmClass}'s fields whose types are either RealmObject subclass or RealmList).
      * @param realmClass Name of the RealmObject subclass.
      * @return List of visible flat field names.
      */

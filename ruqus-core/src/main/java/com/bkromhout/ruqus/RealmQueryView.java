@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.*;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import io.realm.Realm;
 import io.realm.Sort;
 
 import java.util.ArrayList;
@@ -77,6 +78,11 @@ public class RealmQueryView extends FrameLayout {
      * List of current visible flat field names; changes when {@link #currClassName} changes.
      */
     private ArrayList<String> currVisibleFlatFieldNames;
+    /**
+     * List of current visible field names, excluding those whose types are RealmObject subclasses or RealmList. Changes
+     * when {@link #currClassName} changes.
+     */
+    private ArrayList<String> currVisibleNonRealmFieldNames;
     /**
      * List of View IDs for views in {@link #partsCont}.
      */
@@ -187,7 +193,7 @@ public class RealmQueryView extends FrameLayout {
      * implements {@link Parcelable}, which allows it to be passed around quickly and easily.
      * <p/>
      * This method does not guarantee that the returned query will be fully-formed and valid. Call {@link
-     * RealmUserQuery#isQueryValid()} to check for validity before calling {@link RealmUserQuery#execute()}.
+     * RealmUserQuery#isQueryValid()} to check for validity before calling {@link RealmUserQuery#execute(Realm)}.
      * @return Realm user query object.
      */
     public RealmUserQuery getRealmUserQuery() {
@@ -592,9 +598,13 @@ public class RealmQueryView extends FrameLayout {
         currVisibleFlatFieldNames = Ruqus.visibleFlatFieldsForClass(currClassName);
         Collections.sort(currVisibleFlatFieldNames);
         currVisibleFlatFieldNames.add(0, Ruqus.CHOOSE_FIELD);
+        currVisibleNonRealmFieldNames = Ruqus.visibleNonRealmFieldsForClass(currClassName);
+        Collections.sort(currVisibleNonRealmFieldNames);
+        currVisibleNonRealmFieldNames.add(0, Ruqus.CHOOSE_FIELD);
 
         // Set condition builder field chooser's adapter.
-        fieldChooser.setAdapter(makeFieldAdapter());
+        fieldChooser.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
+                currVisibleFlatFieldNames));
 
         // Set queryable chooser's card text and mode.
         queryableChooser.setCardText(visibleName);
@@ -603,11 +613,6 @@ public class RealmQueryView extends FrameLayout {
         // Append an add view to the conditions container, then enable the conditions container and sort chooser.
         appendAddPartView();
         setConditionsAndSortEnabled(true);
-    }
-
-    private ArrayAdapter<String> makeFieldAdapter() {
-        return new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
-                currVisibleFlatFieldNames);
     }
 
     /**
@@ -1298,7 +1303,7 @@ public class RealmQueryView extends FrameLayout {
 
         // If present, add current sort fields.
         for (int i = 0; i < sortFields.size(); i++)
-            addSortFieldView(currVisibleFlatFieldNames.indexOf(Ruqus.visibleFieldFromField(currClassName,
+            addSortFieldView(currVisibleNonRealmFieldNames.indexOf(Ruqus.visibleFieldFromField(currClassName,
                     sortFields.get(i))), sortDirs.get(i));
     }
 
@@ -1346,7 +1351,8 @@ public class RealmQueryView extends FrameLayout {
                 removeSortField(sortFieldViewId);
             }
         });
-        sortFieldView.setSpinnerAdapter(makeFieldAdapter());
+        sortFieldView.setSpinnerAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
+                currVisibleNonRealmFieldNames));
         // Fill in existing sort field and direction (will do nothing if -1/null).
         sortFieldView.setSelectedPos(selectedFieldPos);
         sortFieldView.setSortDir(sortDir);
@@ -1354,9 +1360,6 @@ public class RealmQueryView extends FrameLayout {
         // Set view ID and add to list.
         sortFieldView.setId(sortFieldViewId);
         sortFieldViewIds.add(sortFieldViewId);
-
-        // If that was our third sort field, we disable the button that adds them.
-        if (sortFieldViewIds.size() == 3) addSortField.setEnabled(false);
 
         // Add this to the builder container (Add one, since we want it added after the header view).
         builderParts.addView(sortFieldView);
