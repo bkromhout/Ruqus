@@ -61,8 +61,6 @@ allprojects {
 }
 
 subprojects {
-    //apply plugin: 'com.github.ben-manes.versions'   // ./gradlew dependencyUpdates -Drevision=release
-
     group = GROUP_NAME
     version = VERSION_NAME
 
