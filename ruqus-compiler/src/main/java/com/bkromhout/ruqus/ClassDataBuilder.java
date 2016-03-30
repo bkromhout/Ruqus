@@ -122,6 +122,8 @@ class ClassDataBuilder {
             // Ignore if it has Realm's @Ignore or our @Hide annotation.
             if (MoreElements.isAnnotationPresent(var, Ignore.class) ||
                     MoreElements.isAnnotationPresent(var, Hide.class)) continue;
+            // Ignore static fields.
+            if (typeElement.getModifiers().contains(Modifier.STATIC)) continue;
             // Ignore if not a valid field.
             TypeMirror varMirror = var.asType();
             if (!isValidFieldType(varMirror)) continue;
