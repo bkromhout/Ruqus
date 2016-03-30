@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible">
+
+        <com.bkromhout.ruqus.RQVCard
+                android:id="@+id/queryable_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                app:rqv_card_mode="Outline"
+                app:rqv_outline_text="@string/ruqus_choose_queryable_prompt"/>
+
+        <ScrollView
+                android:id="@+id/main_scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/queryable_type"
+                android:layout_above="@+id/sort_type"
+                android:scrollbars="vertical">
+
+            <LinearLayout
+                    android:id="@+id/query_parts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+        </ScrollView>
+
+        <com.bkromhout.ruqus.RQVCard
+                android:id="@id/sort_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                app:rqv_card_mode="Outline"
+                app:rqv_outline_text="@string/ruqus_choose_sort_fields_prompt"/>
+    </RelativeLayout>
+
+    <ScrollView
+            android:id="@+id/builder_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:visibility="gone">
+
+        <LinearLayout
+                android:id="@+id/builder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/builder_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_horizontal"
+                    style="?android:textAppearanceMedium"
+                    tools:text="@string/ruqus_edit_condition_title"/>
+
+            <Spinner
+                    android:id="@+id/field_chooser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:spinnerMode="dropdown"
+                    android:visibility="gone"
+                    tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
+
+            <Spinner
+                    android:id="@+id/conditional_chooser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:spinnerMode="dropdown"
+                    android:visibility="gone"
+                    tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
+
+            <LinearLayout
+                    android:id="@+id/builder_parts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical"/>
+
+            <Button
+                    android:id="@+id/add_sort_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/ruqus_add_sort_field"
+                    android:visibility="gone"/>
+
+            <LinearLayout
+                    android:id="@+id/buttons"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/buttonBarStyle">
+
+                <Button
+                        android:id="@+id/cancel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/ruqus_cancel"
+                        style="?android:attr/buttonBarButtonStyle"/>
+
+                <Button
+                        android:id="@+id/save"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/ruqus_save"
+                        style="?android:attr/buttonBarButtonStyle"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</merge>

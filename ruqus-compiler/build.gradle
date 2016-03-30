@@ -1,0 +1,38 @@
+import com.android.build.gradle.internal.LoggerWrapper
+import com.android.build.gradle.internal.SdkHandler
+
+apply plugin: 'java'
+apply plugin: 'bintray-release'
+
+def logger = new LoggerWrapper(project.logger)
+def sdkHandler = new SdkHandler(project, logger)
+for (File file : sdkHandler.sdkLoader.repositories) {
+    repositories.maven {
+        url = file.toURI()
+    }
+}
+
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':ruqus-annotations')
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'com.squareup:javapoet:1.5.1'
+    compile 'com.google.auto.service:auto-service:1.0-rc2'
+    compile 'com.google.auto:auto-common:0.6'
+    compile 'io.realm:realm-annotations:0.88.2' // Make Realm's annotations available to our processor.
+}
+
+publish {
+    userOrg = BINTRAY_USER
+    groupId = GROUP_NAME
+    artifactId = 'ruqus-compiler'
+    version = VERSION_NAME
+    description = DESCRIPTION
+    website = SITE_URL
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    licences = ['MIT']
+}

@@ -1,0 +1,33 @@
+import com.android.build.gradle.internal.LoggerWrapper
+import com.android.build.gradle.internal.SdkHandler
+
+apply plugin: 'java'
+apply plugin: 'bintray-release'
+
+def logger = new LoggerWrapper(project.logger)
+def sdkHandler = new SdkHandler(project, logger)
+for (File file : sdkHandler.sdkLoader.repositories) {
+    repositories.maven {
+        url = file.toURI()
+    }
+}
+
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-annotations:23.2.1'
+}
+
+publish {
+    userOrg = BINTRAY_USER
+    groupId = GROUP_NAME
+    artifactId = 'ruqus-annotations'
+    version = VERSION_NAME
+    description = DESCRIPTION
+    website = SITE_URL
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    licences = ['MIT']
+}

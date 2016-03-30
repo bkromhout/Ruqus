@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ruqus_grey200">#EEEEEE</color>
+    <color name="ruqus_grey300">#E0E0E0</color>
+    <color name="ruqus_grey400">#BDBDBD</color>
+    <color name="ruqus_grey500">#9E9E9E</color>
+    <color name="ruqus_grey600">#757575</color>
+    <color name="ruqus_grey700">#616161</color>
+    <color name="ruqus_grey800">#424242</color>
+    <color name="ruqus_grey900">#212121</color>
+
+    <color name="ruqus_backgroundColorLight">@android:color/white</color>
+    <color name="ruqus_backgroundColorDark">@color/ruqus_grey700</color>
+
+    <color name="ruqus_textColorPrimaryLight">@android:color/white</color>
+    <color name="ruqus_textColorPrimaryDark">#DE000000</color>
+    <color name="ruqus_textColorSecondary">@color/ruqus_grey500</color>
+    <color name="ruqus_textColorSecondaryInverse">@color/ruqus_grey500</color>
+</resources>

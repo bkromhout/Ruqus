@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RealmQueryView">
+        <attr name="ruqus_theme">
+            <enum name="Light" value="0"/>
+            <enum name="Dark" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="RQVCard">
+        <attr name="rqv_card_mode">
+            <enum name="Outline" value="0"/>
+            <enum name="Card" value="1"/>
+        </attr>
+        <attr name="rqv_outline_text" format="string"/>
+        <attr name="rqv_card_text" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="RQVCard2">
+        <attr name="rqv_card2_mode">
+            <enum name="Outlines" value="0"/>
+            <enum name="Card" value="1"/>
+        </attr>
+        <attr name="rqv_outline1_text" format="string"/>
+        <attr name="rqv_outline2_text" format="string"/>
+        <attr name="rqv_card2_text" format="string"/>
+    </declare-styleable>
+</resources>
