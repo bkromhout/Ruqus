@@ -13,9 +13,11 @@ import butterknife.ButterKnife;
 import com.bkromhout.ruqus.RealmQueryView;
 import com.bkromhout.ruqus.RealmUserQuery;
 
-public class EditQueryActivity extends AppCompatActivity {
+public class EditQueryActivity extends AppCompatActivity implements RealmQueryView.ModeListener {
     @Bind(R.id.rqv)
     RealmQueryView rqv;
+
+    RealmQueryView.Mode rqvMode = RealmQueryView.Mode.MAIN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class EditQueryActivity extends AppCompatActivity {
         for (int i = 0; i < menu.size(); i++)
             menu.getItem(i).getIcon().setColorFilter(ContextCompat.getColor(this, android.R.color.white),
                     PorterDuff.Mode.SRC_IN);
+        menu.findItem(R.id.action_save).setVisible(rqvMode == RealmQueryView.Mode.MAIN);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -55,5 +58,23 @@ public class EditQueryActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        rqv.setModeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        rqv.clearModeListener();
+    }
+
+    @Override
+    public void rqvModeChanged(RealmQueryView.Mode newMode) {
+        rqvMode = newMode;
+        invalidateOptionsMenu();
     }
 }
