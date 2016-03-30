@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 /**
  * RealmQueryView.
- * <p/>
+ * <p>
  * Allow users to create their own queries against your Realm data.
  * @author bkromhout
  */
@@ -31,9 +31,20 @@ public class RealmQueryView extends FrameLayout {
     private static final Pattern ARG_STR_SEP_PATTERN = Pattern.compile("\\Q" + ARG_STR_SEP + "\\E");
 
     /**
+     * Implementers will be notified if a {@link RealmQueryView} they register with changes modes.
+     */
+    public interface ModeListener {
+        /**
+         * Called when the mode of the {@link RealmQueryView} changes.
+         * @param newMode New mode of the {@link RealmQueryView}.
+         */
+        void rqvModeChanged(Mode newMode);
+    }
+
+    /**
      * Modes this view can be in.
      */
-    private enum Mode {
+    public enum Mode {
         MAIN, C_BUILD, S_BUILD
     }
 
@@ -70,6 +81,10 @@ public class RealmQueryView extends FrameLayout {
      * Current mode.
      */
     private Mode mode;
+    /**
+     * Listener which we will notify about modes changing.
+     */
+    private ModeListener modeListener;
     /**
      * Simple name of the current {@link Queryable} class.
      */
@@ -191,7 +206,7 @@ public class RealmQueryView extends FrameLayout {
     /**
      * Get the {@link RealmUserQuery} which this {@link RealmQueryView} currently has. Note that {@link RealmUserQuery}
      * implements {@link Parcelable}, which allows it to be passed around quickly and easily.
-     * <p/>
+     * <p>
      * This method does not guarantee that the returned query will be fully-formed and valid. Call {@link
      * RealmUserQuery#isQueryValid()} to check for validity before calling {@link RealmUserQuery#execute(Realm)}.
      * @return Realm user query object.
@@ -209,6 +224,24 @@ public class RealmQueryView extends FrameLayout {
         if (!ruq.isQueryValid()) return;
         this.ruq = ruq;
         setupUsingRUQ();
+    }
+
+    /**
+     * Set a {@link ModeListener} which will be notified when this {@link RealmQueryView}'s mode changes. When this is
+     * called with a non-null object, {@link ModeListener#rqvModeChanged(Mode)} will be called immediately with the
+     * current mode.
+     * @param modeListener Object to set as the mode listener.
+     */
+    public void setModeListener(ModeListener modeListener) {
+        this.modeListener = modeListener;
+        if (this.modeListener != null) this.modeListener.rqvModeChanged(mode);
+    }
+
+    /**
+     * Clear a previously set mode listener.
+     */
+    public void clearModeListener() {
+        this.modeListener = null;
     }
 
     /* Non-public methods. */
@@ -409,6 +442,7 @@ public class RealmQueryView extends FrameLayout {
                 builderScrollView.setVisibility(VISIBLE);
                 break;
         }
+        if (modeListener != null) modeListener.rqvModeChanged(mode);
         this.mode = mode;
     }
 
