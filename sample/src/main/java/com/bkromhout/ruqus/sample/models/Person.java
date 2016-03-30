@@ -8,17 +8,14 @@ import io.realm.annotations.Ignore;
 
 @Queryable(name = "Person")
 public class Person extends RealmObject {
+    private static final String TEST = "TEST";
+
     private String name;
-
     private int age;
-
     private Dog dog;
-
     private RealmList<Cat> cats;
-
     @Ignore
     private int tempReference;
-
     @Hide
     private long id;
 
