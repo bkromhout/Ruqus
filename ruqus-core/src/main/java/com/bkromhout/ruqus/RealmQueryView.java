@@ -898,7 +898,7 @@ public class RealmQueryView extends FrameLayout {
 
             // Select correct transformer.
             String visTransName = Ruqus.getTransformerData().visibleNameOf(condition.getTransformer());
-            conditionalChooser.setSelection(1 + currVisibleTransNames.indexOf(visTransName));
+            conditionalChooser.setSelection(currVisibleTransNames.indexOf(visTransName));
             // Set up views based on it.
             onConditionalChooserItemSelected(visTransName, false);
 
@@ -934,7 +934,7 @@ public class RealmQueryView extends FrameLayout {
         // Try to restore chosen transformer.
         if (currTransName != null) {
             String visTransName = Ruqus.getTransformerData().visibleNameOf(currTransName);
-            conditionalChooser.setSelection(1 + currVisibleTransNames.indexOf(visTransName));
+            conditionalChooser.setSelection(currVisibleTransNames.indexOf(visTransName));
             // Set up views based on it.
             onConditionalChooserItemSelected(visTransName, true);
         }
