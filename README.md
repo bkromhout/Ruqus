@@ -1,13 +1,14 @@
-# Ruqus - Realm User Query System 🔎
+# Ruqus – Realm User Query System 🔎
 
-Ruqus is an Android library which provides a number of components that allow you to let your users construct their own queries against your [Realm][Realm Java] data set. These are stored in `RealmUserQuery` objects, which can then be turned into `RealmResults` using a single method call.
+Ruqus is an Android library which provides a number of components to allow your users to construct their own [Realm][Realm Java] queries. Users simply choose one of your model object classes, then they add any conditions, operators, and sort fields they wish. All of this information is stored in `RealmUserQuery` objects, which can then be turned into a `RealmResults` object using a single method call, just as if you had created the query at design-time yourself.
 
-Ruqus makes use of an annotation processor to generate information about your model object classes at compile-time, thus allowing your app to avoid reflection as much as possible at run-time.
+Sound awesome yet? What if I told you that Ruqus makes all of this possible with a minimal amount of reflection at run-time? This is possible because Ruqus uses an annotation processor to generate information about your model object classes at compile-time.
 
 #### Table of Contents
 * [Installation](#installation)  
-* [Basic Setup](#basics)  
+* [The Basics](#basics)  
     * [Initializing Ruqus](#init)
+    * [Adding a `RealmQueryView`](#rqv)
 * [Model Annotations](#annotations)  
     * [`@Queryable`](#queryable)
     * [`@Hide`](#hide)
@@ -17,13 +18,13 @@ Ruqus makes use of an annotation processor to generate information about your mo
 
 <a name="screenshots"/>
 #### Screenshots:
-| Initial View | Initial RealmQueryView | Choosing Query Type |
-|:---:|:---:|:---:|
-| ![Initial View](Screenshots/Results_Empty.png) | ![Initial RealmQueryView](Screenshots/Edit_Empty.png) | ![Choosing Query Type](Screenshots/Edit_Choose_Type.png) |
+| Initial View | Initial RealmQueryView | Choosing Query Type | With Type Chosen |
+|:---:|:---:|:---:|:---:|
+| ![Initial View](Screenshots/Results_Empty.png) | ![Initial RealmQueryView](Screenshots/Edit_Empty.png) | ![Choosing Query Type](Screenshots/Edit_Choose_Type.png) | ![With Type Chosen](Screenshots/Edit_With_Type.png) |
 
 | Adding/Editing a Condition 1 | Adding/Editing a Condition 2 | Adding an Operator |
 |:---:|:---:|:---:|
-| ![Editing a Condition 1](Screenshots/Edit_Cond_Age.png) | ![Editing a Condition 2](Screenshots/Edit_Cond_Age_2.png) | ![Adding an Operator](Screenshots/Edit_Add_Op.png) |
+| ![Adding/Editing a Condition 1](Screenshots/Edit_Cond_Age.png) | ![Adding/Editing a Condition 2](Screenshots/Edit_Cond_Age_2.png) | ![Adding an Operator](Screenshots/Edit_Add_Op.png) |
 
 | Editing Sort Fields | Filled RealmQueryView | Results |
 |:---:|:---:|:---:|
@@ -84,6 +85,7 @@ public class SampleApplication extends Application {
 }
 ```
 
+<a name="rqv"/>
 ### Adding a `RealmQueryView`
 For users to build a query, they obviously need some sort of UI control to interact with; Ruqus provides such a thing in the form of the `RealmQueryView`. Before we get into how to add one to a layout and hook it up in code, there are a couple of things you should know:
 
@@ -168,7 +170,7 @@ That is, if a model's class isn't annotated with `@Queryable`, users won't be ab
 
 The `@Queryable` annotation takes one **required** parameter called `name`, which you should consider to be a human-readable name for your model object that users will see.
 
-Here's an example which uses the [`Person`][Person Class] class from the sample app:
+Here's an example from the [`Person`][Person Class] class from the sample app:
 ```java
 @Queryable(name = "Person")
 public class Person extends RealmObject {
@@ -190,9 +192,9 @@ So in our sample app, users cannot build a query which returns `Dog` objects; bu
 
 <a name="hide"/>
 ### `@Hide`
-It's fairly common for your model objects to have fields which you don't want users to be able to use when constructing queries. Ruqus will automatically skip fields which are annotated with [Realm's `@Ignore` annotation][Realm Ignore], but for cases where you *do* want Realm to have a field, but you *don't* want users to be able to use it, annotate that field with `@Hide`.
+It's fairly common for your model objects to have fields which you don't want users to be able to use when constructing queries. Ruqus will automatically skip any fields which are annotated with [Realm's `@Ignore` annotation][Realm Ignore], but for cases where you *do* want Realm to have a field, but you *don't* want users to be able to use it, annotate that field with `@Hide`.
 
-Here's an example which uses the [`Person`][Person Class] class from the sample app:
+Here's an example from the [`Person`][Person Class] class from the sample app:
 ```java
 @Queryable(name = "Person")
 public class Person extends RealmObject {
@@ -208,17 +210,63 @@ From the Ruqus annotation processor's point of view, the meaning of both `@Ignor
 
 While `@Hide` may seem quite trivial in theory, thoughtful use of it is essential for guarding against [OOM errors causing your app to crash](#ts_oom).
 
+Just one last thing; Ruqus will always skip all `static` fields and all `byte`/`Byte`/`byte[]`/`Byte[]` fields (because how would a user possibly add a condition against such fields?), so you needn't bother annotating those with `@Hide`.
+
 <a name="visible_as"/>
 ### `@VisibleAs`
+Ruqus's annotation processor will automatically convert **"TitleCase"** (for model objects *not* annotated with `@Queryable`) and **"camelCase"** (for fields) to visible names like **"Title Case"** and **"Camel Case"**.  
+However, you're still likely to have cases where you want to give a model object or a field a specific name; that's what the `@VisibleAs` annotation is for.
+
+Here's an example from the [`Cat`][Cat Class] class from the sample app:
+```java
+@Queryable(name = "Cat")
+public class Cat extends RealmObject {
+    public String name;
+
+    @VisibleAs(string = "Least Favorite Dog")
+    public Dog leastFavorite;
+    ...
+}
+```
+When Ruqus generates data for the `Cat` class, the `name` field's visible name will be **"Name"**, and the `leastFavorite` field's visible name will be **"Least Favorite Dog"** (If we hadn't added the `@VisibleAs` annotation to it, it would have been **"Least Favorite"**).
 
 <a name="transformers"/>
 ## Transformers
+At this point you're probably a bit curious just how Ruqus actually makes it possible for your users to build `RealmQuery`s dynamically. Since a core design goal of Ruqus is to use as little reflection as possible, I needed a way to wrap the various methods on `RealmQuery` such they could be dynamically chained together, and this is what transformers allow us to do.
+
+I personally feel that the quickest way to grok what a transformer is and how it functions is to look at a few of them, so go ahead, look some of [the transformers which come with Ruqus][Transformers Dir].
+
+Here are some general guidelines which apply to all transformers:
+
+* They all must extend the abstract `RUQTransformer` class
+* They all must be annotated with the `@Transformer` annotation
+* When Ruqus creates an instance of them, it uses their no-argument constructors to do so
+
+Also, you'll need some more information about [the `@Transformer` annotation][Transformer Class]'s parameters:
+
+* `String name`: This is the string which will be displayed to the user describing what the transformer does. All transformers must specify this
+    * You can see what I've used for the built-in transformers in [`Names.java`][Names Class]
+* `Class[] validArgTypes`: This is an array of `Class` objects which represent the types which a transformer's arguments can be. All transformers must specify this
+    * You really shouldn't pass anything other than `Boolean.class`, `Date.class`, `Double.class`, `Float.class`, `Integer.class`, `Long.class`, `Short.class`, and `String.class` in this array, since those are the types which Ruqus supports and `RealmQuery`'s various methods will work with
+    * It is important to note that while a transformer may accept multiple types *in general*, Ruqus will expect *all* of the arguments to be of the *same type* each time it calls a transformer's `transform(...)` method
+    * i.e., if a transformer with two arguments accepts both `Integer` and `Long`, you can pass it two `Integer`s, or two `Long`s, but *not* one of each
+* `int numArgs`: This determines how many arguments a transformer accepts. By default this is set to `1`, since most methods on `RealmQuery` take a `fieldName` plus one more argument
+    * If you're thinking in terms of [the methods on `RealmQuery`][RealmQuery], note that this number *does not* include the extremely-common `fieldName` argument on those methods, only the other arguments
+* `boolean isNoArgs`: Whether or not this is a no-arguments transformer. By default this is set to `false`, since in most cases you'll have no reason to set it otherwise
+    * This may seem redundant since it appears at first glance that you could achieve the same effect by setting `numArgs` to `0`, but it isn't. Consider the methods [`RealmQuery.or()`][RealmQuery Or] and [`RealmQuery.isNull(String)`][RealmQuery IsNull]; the former legitimately has no arguments, while the latter takes the usual `fieldName` argument (which we ***don't count*** for `numArgs`!)
+    * If a transformer has this set to true, Ruqus considers it to be an "Operator" rather than a "Condition".As you can see in [the screenshots at the top](#screenshots), this affects where in a `RealmQueryView` it will show up
+
+Beyond this information, I recommend you take a look at [`EqualTo.java`][EqualTo Class], [`Between.java`][Between Class], and [`Or.java`][Or Class], since those provide good examples of differently structured transformers. You can also look at the [NoOp transformer][NoOp Class] included in the sample app (spoiler alert, it does nothing at all to the `RealmQuery` when its `transform(...)` method is called 😉).
+
+Transformers are very powerful things! If you haven't realized why I'm spending so much time discussing them yet, allow me to clue you in: ***Ruqus lets you build your own transformers***, because just like your model object classes, Ruqus generates information for transformer classes at compile-time.
+
+If you create a good, general-purpose transformer which I don't already have and you think others would benefit from its inclusion in the core Ruqus library, don't hesitate to open a pull request!
 
 <a name="troubleshooting"/>
 ## Troubleshooting
 
 <a name="ts_oom"/>
-##### My app is crashing due to OOM errors!
+#### My app is crashing due to OOM errors!
 This is, sadly, a fairly easy thing to cause depending on what relationships you have set up between your various model classes.  
 The root of the problem is that you have a cycle of relationships, whether it be something like `A-->A`, `A-->B-->A`, etc; and that at least one of the classes in the cycle is annotated with `@Queryable` (or is referenced by a class which is).
 
@@ -263,6 +311,18 @@ My hope is that this will become a non-issue once the Android Realm library impl
 [EditQueryActivity Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/EditQueryActivity.java
 [Person Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/models/Person.java
 [Dog Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/models/Dog.java
+[Cat Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/models/Cat.java
+[NoOp Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/NoOp.java
+[Transformers Dir]: tree/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers
+[Between Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Between.java
+[EqualTo Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/EqualTo.java
+[Or Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Or.java
+[Names Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Names.java
+[RUQTransformer Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/RUQTransformer.java
+[Ruqus Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/Ruqus.java
+[Transformer Class]: blob/master/ruqus-annotations/src/main/java/com/bkromhout/ruqus/Transformer.java
 [Realm Link Queries]: https://realm.io/docs/java/latest/#link-queries
 [Realm Ignore]: https://realm.io/docs/java/latest/#ignoring-properties
-[Ruqus Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/Ruqus.java
+[RealmQuery]: https://realm.io/docs/java/latest/api/io/realm/RealmQuery.html
+[RealmQuery Or]: https://realm.io/docs/java/latest/api/io/realm/RealmQuery.html#or--
+[RealmQuery IsNull]: https://realm.io/docs/java/latest/api/io/realm/RealmQuery.html#isNull-java.lang.String-
