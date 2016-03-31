@@ -309,23 +309,23 @@ However, you know your models' relationships better than I do, so you add the `@
 My hope is that this will become a non-issue once the Android Realm library implements support for backlinks, since the current lack of support for them is what usually prompts us to build relationship cycles in the first place. In lieu of that, if someone knows of a clever way to defeat this issue I'd love to hear it; open an issue or a pull request!
 
 [Realm Java]: https://github.com/realm/realm-java
-[CHANGELOG]: /blob/master/CHANGELOG.md
+[CHANGELOG]: CHANGELOG.md
 [Minerva]: https://github.com/bkromhout/Minerva
-[SampleApplication Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/SampleApplication.java
-[EditQueryActivity Layout]: blob/master/sample/src/main/res/layout/activity_edit_query.xml
-[EditQueryActivity Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/EditQueryActivity.java
-[Person Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/models/Person.java
-[Dog Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/models/Dog.java
-[Cat Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/models/Cat.java
-[NoOp Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/NoOp.java
-[Transformers Dir]: tree/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers
-[Between Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Between.java
-[EqualTo Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/EqualTo.java
-[Or Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Or.java
-[Names Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Names.java
-[RUQTransformer Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/RUQTransformer.java
-[Ruqus Class]: blob/master/ruqus-core/src/main/java/com/bkromhout/ruqus/Ruqus.java
-[Transformer Class]: blob/master/ruqus-annotations/src/main/java/com/bkromhout/ruqus/Transformer.java
+[SampleApplication Class]: sample/src/main/java/com/bkromhout/ruqus/sample/SampleApplication.java
+[EditQueryActivity Layout]: sample/src/main/res/layout/activity_edit_query.xml
+[EditQueryActivity Class]: sample/src/main/java/com/bkromhout/ruqus/sample/EditQueryActivity.java
+[Person Class]: sample/src/main/java/com/bkromhout/ruqus/sample/models/Person.java
+[Dog Class]: sample/src/main/java/com/bkromhout/ruqus/sample/models/Dog.java
+[Cat Class]: sample/src/main/java/com/bkromhout/ruqus/sample/models/Cat.java
+[NoOp Class]: sample/src/main/java/com/bkromhout/ruqus/sample/NoOp.java
+[Transformers Dir]: ruqus-core/src/main/java/com/bkromhout/ruqus/transformers
+[Between Class]: ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Between.java
+[EqualTo Class]: ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/EqualTo.java
+[Or Class]: ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Or.java
+[Names Class]: ruqus-core/src/main/java/com/bkromhout/ruqus/transformers/Names.java
+[RUQTransformer Class]: ruqus-core/src/main/java/com/bkromhout/ruqus/RUQTransformer.java
+[Ruqus Class]: ruqus-core/src/main/java/com/bkromhout/ruqus/Ruqus.java
+[Transformer Class]: ruqus-annotations/src/main/java/com/bkromhout/ruqus/Transformer.java
 [Realm Link Queries]: https://realm.io/docs/java/latest/#link-queries
 [Realm Ignore]: https://realm.io/docs/java/latest/#ignoring-properties
 [RealmQuery]: https://realm.io/docs/java/latest/api/io/realm/RealmQuery.html
