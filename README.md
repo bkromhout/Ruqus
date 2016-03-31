@@ -4,6 +4,9 @@ Ruqus is an Android library which provides a number of components to allow your 
 
 Sound awesome yet? What if I told you that Ruqus makes all of this possible with a minimal amount of reflection at run-time? This is possible because Ruqus uses an annotation processor to generate information about your model object classes at compile-time.
 
+If you just want to know what's new, [the changelog is here][CHANGELOG].  
+If you want to see how I use Ruqus in one of my apps, check out [Minerva][Minerva].
+
 #### Table of Contents
 * [Installation](#installation)  
 * [The Basics](#basics)  
@@ -306,6 +309,8 @@ However, you know your models' relationships better than I do, so you add the `@
 My hope is that this will become a non-issue once the Android Realm library implements support for backlinks, since the current lack of support for them is what usually prompts us to build relationship cycles in the first place. In lieu of that, if someone knows of a clever way to defeat this issue I'd love to hear it; open an issue or a pull request!
 
 [Realm Java]: https://github.com/realm/realm-java
+[CHANGELOG]: /blob/master/CHANGELOG.md
+[Minerva]: https://github.com/bkromhout/Minerva
 [SampleApplication Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/SampleApplication.java
 [EditQueryActivity Layout]: blob/master/sample/src/main/res/layout/activity_edit_query.xml
 [EditQueryActivity Class]: blob/master/sample/src/main/java/com/bkromhout/ruqus/sample/EditQueryActivity.java
