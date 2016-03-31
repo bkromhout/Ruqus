@@ -17,9 +17,17 @@ Ruqus makes use of an annotation processor to generate information about your mo
 
 <a name="screenshots"/>
 #### Screenshots:
-Initial View ![Initial View](Screenshots/Results_Empty.png) Initial RealmQueryView ![Initial RealmQueryView](Screenshots/Edit_Empty.png) Choosing Query Type ![Choosing Query Type](Screenshots/Edit_Choose_Type.png)
-Editing a Condition 1 ![Editing a Condition 1](Screenshots/Edit_Cond_Age.png) Editing a Condition 2 ![Editing a Condition 2](Screenshots/Edit_Cond_Age_2.png) Adding an Operator ![Adding an Operator](Screenshots/Edit_Add_Op.png)
-Editing Sort Fields ![Editing Sort Fields](Screenshots/Edit_Sort.png) Filled RealmQueryView ![Filled RealmQueryView](Screenshots/Edit_Filled.png) Results ![Results](Screenshots/Results.png)
+| Initial View | Initial RealmQueryView | Choosing Query Type |
+|:---:|:---:|:---:|
+| ![Initial View](Screenshots/Results_Empty.png) | ![Initial RealmQueryView](Screenshots/Edit_Empty.png) | ![Choosing Query Type](Screenshots/Edit_Choose_Type.png) |
+
+| Adding/Editing a Condition 1 | Adding/Editing a Condition 2 | Adding an Operator |
+|:---:|:---:|:---:|
+| ![Editing a Condition 1](Screenshots/Edit_Cond_Age.png) | ![Editing a Condition 2](Screenshots/Edit_Cond_Age_2.png) | ![Adding an Operator](Screenshots/Edit_Add_Op.png) |
+
+| Editing Sort Fields | Filled RealmQueryView | Results |
+|:---:|:---:|:---:|
+| ![Editing Sort Fields](Screenshots/Edit_Sort.png) | ![Filled RealmQueryView](Screenshots/Edit_Filled.png) | ![Results](Screenshots/Results.png) |
 
 <a name="installation"/>
 ## Installation
