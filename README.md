@@ -61,6 +61,8 @@ dependencies {
 ```
 Please note that at this time, Ruqus has been tested and is verified to work with **Realm 0.88.2**. Don't be afraid to try a newer version of Realm, just be sure to open an issue if you run into problems.
 
+**Ruqus is compatible with Android API Levels >= 14.**
+
 <a name="basics"/>
 ## The Basics
 Ruqus relies on a number of annotations to help it generate information at compile-time.  
