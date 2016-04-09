@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="define_ruqus"></string>
+    <!-- Author section -->
+    <string name="library_ruqus_author">Brenden Kromhout</string>
+    <string name="library_ruqus_authorWebsite">https://github.com/bkromhout</string>
+    <!-- Library section -->
+    <string name="library_ruqus_libraryName">Ruqus</string>
+    <string name="library_ruqus_libraryDescription">A collection of components which give users the ability to build their own Realm queries.</string>
+    <string name="library_ruqus_libraryWebsite">https://github.com/bkromhout/Ruqus</string>
+    <string name="library_ruqus_libraryVersion">1.0.4</string>
+    <!-- OpenSource section -->
+    <string name="library_ruqus_isOpenSource">true</string>
+    <string name="library_ruqus_repositoryLink">https://github.com/bkromhout/Ruqus</string>
+    <!-- ClassPath for autoDetect section -->
+    <string name="library_ruqus_classPath">com.bkromhout.Ruqus</string>
+    <!-- License section -->
+    <string name="library_ruqus_licenseId">mit</string>
+    <!-- Custom variables section -->
+</resources>
