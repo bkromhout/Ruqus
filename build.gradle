@@ -48,6 +48,18 @@ def String versionCode() {
     return versionProps['code']
 }
 
+task uploadAnnotations {
+    dependsOn ':ruqus-annotations:bintrayUpload'
+}
+
+task uploadCompiler {
+    dependsOn ':ruqus-compiler:bintrayUpload'
+}
+
+task uploadCore {
+    dependsOn ':ruqus-core:bintrayUpload'
+}
+
 allprojects {
     repositories {
         jcenter()
