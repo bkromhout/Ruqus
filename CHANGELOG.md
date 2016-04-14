@@ -1,5 +1,8 @@
 # Ruqus Changelog
 
+## 1.0.6
+* Followup fix for 1.0.5.
+
 ## 1.0.5
 * Fixed an issue with RealmUserQuery's parsing of internal RealmUserQuery strings.
 

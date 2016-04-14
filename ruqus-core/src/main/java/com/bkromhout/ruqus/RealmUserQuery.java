@@ -72,7 +72,7 @@ public class RealmUserQuery implements Parcelable {
 
         // Figure out Conditions.
         conditions = new ArrayList<>();
-        if (!parts[1].isEmpty()) {
+        if (parts.length > 1 && !parts[1].isEmpty()) {
             String[] condStrings = COND_SEP_PATTERN.split(parts[1]);
             for (String condString : condStrings) conditions.add(new Condition(condString));
         }
@@ -80,7 +80,7 @@ public class RealmUserQuery implements Parcelable {
         // Figure out sort fields and directions.
         sortFields = new ArrayList<>();
         sortDirs = new ArrayList<>();
-        if (!parts[2].isEmpty()) {
+        if (parts.length > 2 && !parts[2].isEmpty()) {
             String[] sortStrings = SORT_SEP_PATTERN.split(parts[2]);
             for (String sortString : sortStrings) {
                 String[] sortStringParts = SORT_SUB_SEP_PATTERN.split(sortString);
@@ -194,7 +194,7 @@ public class RealmUserQuery implements Parcelable {
 
     /**
      * Get a human-readable version of this query, suitable for displaying for the user.
-     * <p/>
+     * <p>
      * This will return null if the query isn't currently valid.
      * @return Human-readable query string.
      */
@@ -270,7 +270,7 @@ public class RealmUserQuery implements Parcelable {
      * Get a string which holds all of the information needed to create a {@link RealmUserQuery} identical to this one.
      * This string is not something which should be shown to users, it is intended to be stored somewhere so that it can
      * be used to recreate this query again later.
-     * <p/>
+     * <p>
      * This will return null if the query isn't currently in a valid state.
      * @return Internal string representation of this query.
      */
