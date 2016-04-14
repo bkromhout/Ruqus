@@ -1,5 +1,11 @@
 # Ruqus Changelog
 
+## 1.0.5
+* Fixed an issue with RealmUserQuery's parsing of internal RealmUserQuery strings.
+
+## 1.0.4
+* Added support for [AboutLibraries](https://github.com/mikepenz/AboutLibraries)
+
 ## 1.0.3
 * Fixed an off by one error.
 
