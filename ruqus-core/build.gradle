@@ -5,6 +5,7 @@ apply plugin: 'bintray-release'
 android {
     compileSdkVersion COMPILE_SDK
     buildToolsVersion BUILD_TOOLS
+    resourcePrefix "ruqus_"
 
     defaultConfig {
         minSdkVersion 14
