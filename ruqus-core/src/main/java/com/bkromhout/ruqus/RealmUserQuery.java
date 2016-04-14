@@ -62,7 +62,9 @@ public class RealmUserQuery implements Parcelable {
 
         // Split RUQ string into parts, make sure we have all of them.
         String[] parts = PART_SEP_PATTERN.split(ruqString);
-        if (parts.length != 3) throw new IllegalArgumentException("ruqString is missing parts.");
+        if (!(parts.length == 1 && ruqString.endsWith(PART_SEP + PART_SEP)) &&
+                !(parts.length == 2 && ruqString.endsWith(PART_SEP)) && parts.length != 3)
+            throw new IllegalArgumentException("ruqString is missing parts.");
 
         // Figure out query class.
         if (parts[0].isEmpty()) throw new IllegalArgumentException("Query class part must not be empty.");
