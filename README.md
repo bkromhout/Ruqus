@@ -1,6 +1,6 @@
 # Ruqus – Realm User Query System 🔎
 
-Ruqus (pronounced "Ruckus") is an Android library which provides a number of components to allow your users to construct their own [Realm][Realm Java] queries. Users simply choose one of your model object classes, then they add any conditions, operators, and sort fields they wish. All of this information is stored in `RealmUserQuery` objects, which can then be turned into a `RealmResults` object using a single method call, just as if you had created the query at design-time yourself.
+Ruqus (pronounced "Ruckus") is an Android library which provides a number of components which allow your users to construct their own [Realm][Realm Java] queries. Users simply choose one of your model object classes, then they add any conditions, operators, and sort fields they wish. All of this information is stored in `RealmUserQuery` objects, which can then be turned into a `RealmResults` object using a single method call, just as if you had created the query at design-time yourself.
 
 Sound awesome yet? What if I told you that Ruqus makes all of this possible with a minimal amount of reflection at run-time? This is possible because Ruqus uses an annotation processor to generate information about your model object classes at compile-time.
 
