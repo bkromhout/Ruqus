@@ -19,10 +19,10 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':ruqus-annotations')
     compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'com.squareup:javapoet:1.5.1'
+    compile 'com.squareup:javapoet:1.6.1'
     compile 'com.google.auto.service:auto-service:1.0-rc2'
     compile 'com.google.auto:auto-common:0.6'
-    compile 'io.realm:realm-annotations:0.88.3' // Make Realm's annotations available to our processor.
+    compile 'io.realm:realm-annotations:0.89.0' // Make Realm's annotations available to our processor.
 }
 
 publish {
