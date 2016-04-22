@@ -1,9 +1,6 @@
 package com.bkromhout.ruqus.sample;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import com.bkromhout.ruqus.Ruqus;
 import com.bkromhout.ruqus.sample.models.Bone;
 import com.bkromhout.ruqus.sample.models.Cat;
@@ -19,28 +16,20 @@ import java.util.List;
  * Custom Application Class.
  */
 public class SampleApplication extends Application {
-    private static SampleApplication instance;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
-        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this).build());
+        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this)
+                .deleteRealmIfMigrationNeeded()
+                .initialData(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        createDefaultRealmData(realm);
+                    }
+                })
+                .build());
         Ruqus.init(this);
-
-        // Populate Realm if we haven't yet.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (!prefs.getBoolean("hasPopulatedRealm", false)) {
-            Realm realm = Realm.getDefaultInstance();
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm tRealm) {
-                    createDefaultRealmData(tRealm);
-                }
-            });
-            realm.close();
-            prefs.edit().putBoolean("hasPopulatedRealm", true).apply();
-        }
     }
 
     /**
@@ -97,9 +86,5 @@ public class SampleApplication extends Application {
         people.add(person5);
 
         realm.copyToRealm(people);
-    }
-
-    public static Context getAppCtx() {
-        return instance.getApplicationContext();
     }
 }

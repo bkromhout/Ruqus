@@ -59,14 +59,14 @@ dependencies {
     }
 }
 ```
-Please note that at this time, Ruqus has been tested and is verified to work with **Realm 0.88.3**. Don't be afraid to try a newer version of Realm, just be sure to open an issue if you run into problems.
+Please note that at this time, Ruqus has been tested and is verified to work with **Realm 0.89.0**. Don't be afraid to try a newer version of Realm, just be sure to open an issue if you run into problems.
 
 **Ruqus is compatible with Android API Levels >= 14.**
 
 <a name="basics"/>
 ## The Basics
 Ruqus relies on a number of annotations to help it generate information at compile-time.  
-At a high level, the processor uses Realm's `@RealmClass` annotation to figure out which classes in your project are `RealmObject`s. Since `RealmObject` is annotated with `@RealmClass`, all of your model objects will automatically be picked up by the annotation processor.
+At a high level, the processor uses Realm's `@RealmClass` annotation to figure out which classes in your project are `RealmModel`s. Since `RealmObject` is annotated with `@RealmClass`, all of your model objects which extend it will automatically be picked up by the annotation processor. Any classes which implement `RealmModel` directly will also be picked up as long as they're annotated with `@RealmClass` (which they must be anyway for Realm to see them).
 
 Ruqus also provides a few annotations which you should use to help the processor generate extra information about your model object classes. These are discussed [a little further down](#annotations).
 
@@ -224,8 +224,9 @@ However, you're still likely to have cases where you want to give a model object
 
 Here's an example from the [`Cat`][Cat Class] class from the sample app:
 ```java
+@RealmClass
 @Queryable(name = "Cat")
-public class Cat extends RealmObject {
+public class Cat implements RealmModel {
     public String name;
 
     @VisibleAs(string = "Least Favorite Dog")

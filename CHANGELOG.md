@@ -1,5 +1,8 @@
 # Ruqus Changelog
 
+## 1.1.0
+* Support for Realm 0.89.0; Ruqus will now handle any `RealmModel`-implementing class (which still includes `RealmObject` subclasses, of course)
+
 ## 1.0.6
 * Followup fix for 1.0.5.
 
