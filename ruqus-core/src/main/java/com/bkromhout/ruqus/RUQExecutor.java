@@ -47,9 +47,6 @@ class RUQExecutor<E extends RealmObject> {
             return query.findAllSorted(sortFields.get(0), sortDirs.get(0));
         else if (sortFields.size() == 2)
             return query.findAllSorted(sortFields.get(0), sortDirs.get(0), sortFields.get(1), sortDirs.get(1));
-        else if (sortFields.size() == 3)
-            return query.findAllSorted(sortFields.get(0), sortDirs.get(0), sortFields.get(1), sortDirs.get(1),
-                    sortFields.get(2), sortDirs.get(2));
         else
             return query.findAllSorted(sortFields.toArray(new String[sortFields.size()]),
                     sortDirs.toArray(new Sort[sortDirs.size()]));
