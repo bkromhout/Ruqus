@@ -1,7 +1,7 @@
 package com.bkromhout.ruqus;
 
 import io.realm.RealmList;
-import io.realm.RealmObject;
+import io.realm.RealmModel;
 import io.realm.Sort;
 
 import java.util.Date;
@@ -21,7 +21,7 @@ public enum FieldType {
     LONG(S.LONG_NAME, Long.class, S.NUMBER_PRETTY_SORT),
     SHORT(S.SHORT_NAME, Short.class, S.NUMBER_PRETTY_SORT),
     STRING(S.STRING_NAME, String.class, S.STRING_PRETTY_SORT),
-    REALM_OBJECT(S.REALM_OBJECT_NAME, RealmObject.class, null),
+    REALM_MODEL(S.REALM_MODEL_NAME, RealmModel.class, null),
     REALM_LIST(S.REALM_LIST_NAME, RealmList.class, null);
 
     private final String name;
@@ -82,8 +82,8 @@ public enum FieldType {
                 return SHORT;
             case S.STRING_NAME:
                 return STRING;
-            case S.REALM_OBJECT_NAME:
-                return REALM_OBJECT;
+            case S.REALM_MODEL_NAME:
+                return REALM_MODEL;
             case S.REALM_LIST_NAME:
                 return REALM_LIST;
             default:
@@ -100,7 +100,7 @@ public enum FieldType {
         else if (Long.class == clazz || long.class == clazz) return LONG;
         else if (Short.class == clazz || short.class == clazz) return SHORT;
         else if (String.class == clazz) return STRING;
-        else if (RealmObject.class.isAssignableFrom(clazz)) return REALM_OBJECT;
+        else if (RealmModel.class.isAssignableFrom(clazz)) return REALM_MODEL;
         else if (RealmList.class.isAssignableFrom(clazz)) return REALM_LIST;
         else throw new IllegalArgumentException("Invalid class.");
     }
@@ -112,7 +112,7 @@ public enum FieldType {
                 return String.valueOf(((Date) data).getTime()) + S.SEP + type.getTypeName();
             case STRING:
                 return data + S.SEP + type.getTypeName();
-            case REALM_OBJECT:
+            case REALM_MODEL:
             case REALM_LIST:
                 throw new IllegalArgumentException("Invalid data type.");
             default:
@@ -176,7 +176,7 @@ public enum FieldType {
         static final String LONG_NAME = "LONG";
         static final String SHORT_NAME = "SHORT";
         static final String STRING_NAME = "STRING";
-        static final String REALM_OBJECT_NAME = "REALM_OBJECT";
+        static final String REALM_MODEL_NAME = "REALM_MODEL";
         static final String REALM_LIST_NAME = "REALM_LIST";
 
         static final String[] BOOLEAN_PRETTY_SORT = new String[] {"False before True", "True before False"};

@@ -18,7 +18,7 @@ import java.util.*;
 
 /**
  * Processes all classes annotated with {@link RealmClass} in order to generate a file with information about all
- * RealmObject subclasses for Ruqus to use at runtime (instead of doing a ton of reflection).
+ * RealmModel subclasses for Ruqus to use at runtime (instead of doing a ton of reflection).
  */
 class ClassDataBuilder {
 
@@ -184,7 +184,7 @@ class ClassDataBuilder {
                     return true;
 
                 // Any of our classes annotated with @RealmClass are okay.
-                if (Utils.isSubtypeOfType(fieldType, TypeNames.REALM_OBJ.toString())) return true;
+                if (Utils.isSubtypeOfType(fieldType, TypeNames.REALM_MODEL.toString())) return true;
 
                 // RealmLists are okay as well.
                 TypeName fieldTypeName = TypeName.get(fieldType);
@@ -256,7 +256,7 @@ class ClassDataBuilder {
 
         // Build class.
         TypeSpec clazz = TypeSpec.classBuilder(C.GEN_CLASS_DATA_CLASS_NAME)
-                                 .superclass(TypeNames.CLASS_DATA_CLASS)
+                                 .superclass(TypeNames.CLASS_DATA)
                                  .addModifiers(Modifier.FINAL)
                                  .addStaticBlock(staticBlock)
                                  .build();

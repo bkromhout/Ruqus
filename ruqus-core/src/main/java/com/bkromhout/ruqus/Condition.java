@@ -69,7 +69,7 @@ public class Condition implements Parcelable {
     private String field;
     /**
      * The type of the field. If the field is a primitive, this will be the boxed version of it. If the field is a
-     * subclass of RealmObject or a RealmList, this will be the type of the field on that object.
+     * subclass of RealmModel or a RealmList, this will be the type of the field on that object.
      */
     private FieldType fieldType;
     /**

@@ -62,7 +62,7 @@ public class RuqusProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        // Process classes which extend RealmObject.
+        // Process classes which extend RealmModel.
         classDataBuilder.buildClassAndFieldData(roundEnv);
         // Process classes which extend RUQTransformer.
         transformerDataBuilder.buildTransformerData(roundEnv);

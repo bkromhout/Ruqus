@@ -13,7 +13,7 @@ import com.bkromhout.ruqus.RealmUserQuery;
 import com.bkromhout.ruqus.sample.models.Cat;
 import com.bkromhout.ruqus.sample.models.Person;
 import io.realm.Realm;
-import io.realm.RealmObject;
+import io.realm.RealmModel;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private <E extends RealmObject> void displayResults(RealmResults<E> results, Class<? extends RealmObject> clazz) {
+    private <E extends RealmModel> void displayResults(RealmResults<E> results, Class<? extends RealmModel> clazz) {
         for (int i = results.size() - 1; i >= 0; i--) {
             String displayStr = "";
             if (Person.class.getCanonicalName().equals(clazz.getCanonicalName())) {

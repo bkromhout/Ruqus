@@ -22,7 +22,7 @@ class FieldDataBuilder {
     private static final String FIELD_TYPE = "fieldType";
     private static final String REALM_LIST_TYPE = "realmListType";
     private static final String HAS_FIELD = "hasField";
-    private static final String IS_REALM_OBJECT_TYPE = "isRealmObjectType";
+    private static final String IS_REALM_MODEL_TYPE = "isRealmModelType";
     private static final String IS_REALM_LIST_TYPE = "isRealmListType";
 
     private ClassName className;
@@ -50,7 +50,7 @@ class FieldDataBuilder {
     JavaFile brewJava() {
         // Build class.
         TypeSpec clazz = TypeSpec.classBuilder(className.simpleName())
-                                 .superclass(TypeNames.FIELD_DATA_CLASS)
+                                 .superclass(TypeNames.FIELD_DATA)
                                  .addModifiers(Modifier.FINAL)
                                  .addField(buildRealNamesField())
                                  .addField(buildVisibleNamesField())
@@ -63,7 +63,7 @@ class FieldDataBuilder {
                                  .addMethod(buildFieldType())
                                  .addMethod(buildRealmListType())
                                  .addMethod(buildHasField())
-                                 .addMethod(buildIsRealmObjectType())
+                                 .addMethod(buildIsRealmModelType())
                                  .addMethod(buildIsRealmListType())
                                  .build();
 
@@ -177,7 +177,7 @@ class FieldDataBuilder {
         return MethodSpec.methodBuilder(FIELD_TYPE)
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.FINAL)
-                         .returns(TypeNames.ANY_CLASS)
+                         .returns(TypeNames.ANY)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $L.get($L)", TYPES, paramName)
                          .build();
@@ -188,7 +188,7 @@ class FieldDataBuilder {
         return MethodSpec.methodBuilder(REALM_LIST_TYPE)
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.FINAL)
-                         .returns(TypeNames.ANY_REALM_OBJ_CLASS)
+                         .returns(TypeNames.ANY_REALM_MODEL)
                          .addParameter(TypeNames.STRING, paramName)
                          .addStatement("return $L.get($L)", REALM_LIST_TYPES, paramName)
                          .build();
@@ -205,15 +205,15 @@ class FieldDataBuilder {
                          .build();
     }
 
-    private MethodSpec buildIsRealmObjectType() {
+    private MethodSpec buildIsRealmModelType() {
         // TODO May want to find a way to have this not do reflection?
         String paramName = "realFieldName";
-        return MethodSpec.methodBuilder(IS_REALM_OBJECT_TYPE)
+        return MethodSpec.methodBuilder(IS_REALM_MODEL_TYPE)
                          .addAnnotation(Override.class)
                          .addModifiers(Modifier.FINAL)
                          .returns(TypeName.BOOLEAN)
                          .addParameter(TypeNames.STRING, paramName)
-                         .addStatement("return $T.class.isAssignableFrom($L($L))", TypeNames.REALM_OBJ, FIELD_TYPE,
+                         .addStatement("return $T.class.isAssignableFrom($L($L))", TypeNames.REALM_MODEL, FIELD_TYPE,
                                  paramName)
                          .build();
     }

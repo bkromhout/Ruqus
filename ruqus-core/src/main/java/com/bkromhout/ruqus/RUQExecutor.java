@@ -7,11 +7,11 @@ import java.util.ArrayList;
 /**
  * Responsible for executing a RealmUserQuery.
  */
-class RUQExecutor<E extends RealmObject> {
+class RUQExecutor<E extends RealmModel> {
     private final Class<E> clazz;
     private final RealmUserQuery ruq;
 
-    static <E extends RealmObject> RUQExecutor<E> get(Class<E> clazz, RealmUserQuery ruq) {
+    static <E extends RealmModel> RUQExecutor<E> get(Class<E> clazz, RealmUserQuery ruq) {
         return new RUQExecutor<>(clazz, ruq);
     }
 

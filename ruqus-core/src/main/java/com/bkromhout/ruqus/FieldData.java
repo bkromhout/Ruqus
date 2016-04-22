@@ -1,11 +1,11 @@
 package com.bkromhout.ruqus;
 
-import io.realm.RealmObject;
+import io.realm.RealmModel;
 
 import java.util.ArrayList;
 
 /**
- * Holds information about the fields of a class which extends {@link io.realm.RealmObject}.
+ * Holds information about the fields of a class which extends {@link io.realm.RealmModel}.
  * @see ClassData
  */
 public abstract class FieldData {
@@ -41,7 +41,7 @@ public abstract class FieldData {
      * @param realFieldName Real field name.
      * @return Field type, if this field is a {@link io.realm.RealmList}. Otherwise null.
      */
-    abstract Class<? extends RealmObject> realmListType(String realFieldName);
+    abstract Class<? extends RealmModel> realmListType(String realFieldName);
 
     /**
      * Whether or not the field whose name is {@code realFieldName} exists.
@@ -52,9 +52,9 @@ public abstract class FieldData {
 
     /**
      * @param realFieldName Real field name.
-     * @return True if field type extends {@link io.realm.RealmObject}, otherwise false.
+     * @return True if field type extends {@link io.realm.RealmModel}, otherwise false.
      */
-    abstract boolean isRealmObjectType(String realFieldName);
+    abstract boolean isRealmModelType(String realFieldName);
 
     /**
      * @param realFieldName Real field name.

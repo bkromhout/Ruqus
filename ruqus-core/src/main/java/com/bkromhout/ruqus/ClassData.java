@@ -1,17 +1,17 @@
 package com.bkromhout.ruqus;
 
-import io.realm.RealmObject;
+import io.realm.RealmModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- * Holds information about all classes which extend {@link io.realm.RealmObject}.
+ * Holds information about all classes which extend {@link io.realm.RealmModel}.
  */
 abstract class ClassData {
     /**
-     * Set of real names of classes which extend {@link RealmObject}.
+     * Set of real names of classes which extend {@link RealmModel}.
      */
     protected static HashSet<String> realNames = new HashSet<>();
     /**
@@ -21,7 +21,7 @@ abstract class ClassData {
     /**
      * Maps real class names to class objects.
      */
-    protected static HashMap<String, Class<? extends RealmObject>> classMap = new HashMap<>();
+    protected static HashMap<String, Class<? extends RealmModel>> classMap = new HashMap<>();
     /**
      * Maps real class names to human-readable class names.
      */
@@ -55,8 +55,8 @@ abstract class ClassData {
     }
 
     /**
-     * Check that Ruqus recognizes and has data for a RealmObject subclass called {@code realName}.
-     * @param realName Real name of a RealmObject subclass.
+     * Check that Ruqus recognizes and has data for a RealmModel subclass called {@code realName}.
+     * @param realName Real name of a RealmModel subclass.
      * @return True if we know about the class with the given name, otherwise false.
      */
     boolean isValidName(String realName) {
@@ -64,11 +64,11 @@ abstract class ClassData {
     }
 
     /**
-     * Check that Ruqus recognizes and has data for a RealmObject subclass {@code clazz}.
-     * @param clazz A RealmObject subclass.
+     * Check that Ruqus recognizes and has data for a RealmModel subclass {@code clazz}.
+     * @param clazz A RealmModel subclass.
      * @return True if we know about the class, otherwise false.
      */
-    boolean isValidClass(Class<? extends RealmObject> clazz) {
+    boolean isValidClass(Class<? extends RealmModel> clazz) {
         return classMap.values().contains(clazz);
     }
 
@@ -76,7 +76,7 @@ abstract class ClassData {
      * Get the actual class object for this class.
      * @return Class object.
      */
-    Class<? extends RealmObject> getClassObj(String realName) {
+    Class<? extends RealmModel> getClassObj(String realName) {
         return classMap.get(realName);
     }
 
@@ -85,7 +85,7 @@ abstract class ClassData {
      * @param clazz Class.
      * @return Human-readable name.
      */
-    String visibleNameOf(Class<? extends RealmObject> clazz) {
+    String visibleNameOf(Class<? extends RealmModel> clazz) {
         return visibleNameOf(clazz.getSimpleName());
     }
 
@@ -102,7 +102,7 @@ abstract class ClassData {
      * @param clazz Class
      * @return Whether or not the class was annotated with {@link Queryable}.
      */
-    boolean isQueryable(Class<? extends RealmObject> clazz) {
+    boolean isQueryable(Class<? extends RealmModel> clazz) {
         return isQueryable(clazz.getSimpleName());
     }
 
@@ -119,7 +119,7 @@ abstract class ClassData {
      * @param clazz Class to get field data for.
      * @return Class's field data.
      */
-    FieldData getFieldData(Class<? extends RealmObject> clazz) {
+    FieldData getFieldData(Class<? extends RealmModel> clazz) {
         return getFieldData(clazz.getSimpleName());
     }
 

@@ -5,7 +5,7 @@ class C {
     public static final String GEN_PKG = "com.bkromhout.ruqus";
     public static final String GEN_PKG_PREFIX = GEN_PKG + ".";
 
-    public static final String REALM_OBJ = "io.realm.RealmObject";
+    public static final String REALM_MODEL = "io.realm.RealmModel";
     public static final String REALM_LIST = "io.realm.RealmList";
 
     private static final String RUQUS_NAME = "Ruqus";
