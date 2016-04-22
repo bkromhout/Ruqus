@@ -7,11 +7,11 @@ import java.util.ArrayList;
 /**
  * Responsible for executing a RealmUserQuery.
  */
-class RUQExecutor<E extends RealmObject> {
+class RUQExecutor<E extends RealmModel> {
     private final Class<E> clazz;
     private final RealmUserQuery ruq;
 
-    static <E extends RealmObject> RUQExecutor<E> get(Class<E> clazz, RealmUserQuery ruq) {
+    static <E extends RealmModel> RUQExecutor<E> get(Class<E> clazz, RealmUserQuery ruq) {
         return new RUQExecutor<>(clazz, ruq);
     }
 
@@ -47,9 +47,6 @@ class RUQExecutor<E extends RealmObject> {
             return query.findAllSorted(sortFields.get(0), sortDirs.get(0));
         else if (sortFields.size() == 2)
             return query.findAllSorted(sortFields.get(0), sortDirs.get(0), sortFields.get(1), sortDirs.get(1));
-        else if (sortFields.size() == 3)
-            return query.findAllSorted(sortFields.get(0), sortDirs.get(0), sortFields.get(1), sortDirs.get(1),
-                    sortFields.get(2), sortDirs.get(2));
         else
             return query.findAllSorted(sortFields.toArray(new String[sortFields.size()]),
                     sortDirs.toArray(new Sort[sortDirs.size()]));

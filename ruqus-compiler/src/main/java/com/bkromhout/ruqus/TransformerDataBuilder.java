@@ -108,10 +108,10 @@ class TransformerDataBuilder {
     private boolean isValidTransformerClass(TypeElement element, ClassName className, String visibleName,
                                             List<ClassName> validTypes, Integer numArgs, Boolean isNoArgs) {
         // Must extend (directly or indirectly) RUQTransformer.
-        if (!Utils.isSubtypeOfType(element.asType(), TypeNames.RUQ_TRANS_CLASS.toString())) {
+        if (!Utils.isSubtypeOfType(element.asType(), TypeNames.RUQ_TRANS.toString())) {
             error(element, "Failed while processing \"%s\" because transformer classes must extend (either directly " +
                             "or indirectly) %s, but instead it extends %s.", ClassName.get(element).toString(),
-                    TypeNames.RUQ_TRANS_CLASS.toString(), element.getSuperclass().toString());
+                    TypeNames.RUQ_TRANS.toString(), element.getSuperclass().toString());
             return false;
         }
 
@@ -156,7 +156,7 @@ class TransformerDataBuilder {
         ClassName genClassType = ClassName.get(C.GEN_PKG, genClassName);
 
         // Build static instance var.
-        FieldSpec instanceField = FieldSpec.builder(TypeNames.TRANS_DATA_CLASS, "INSTANCE",
+        FieldSpec instanceField = FieldSpec.builder(TypeNames.TRANS_DATA, "INSTANCE",
                 Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                                            .initializer("new $T()", genClassType)
                                            .build();
@@ -226,7 +226,7 @@ class TransformerDataBuilder {
 
         // Build class.
         TypeSpec clazz = TypeSpec.classBuilder(genClassName)
-                                 .superclass(TypeNames.TRANS_DATA_CLASS)
+                                 .superclass(TypeNames.TRANS_DATA)
                                  .addModifiers(Modifier.FINAL)
                                  .addField(instanceField)
                                  .addStaticBlock(staticBlock)

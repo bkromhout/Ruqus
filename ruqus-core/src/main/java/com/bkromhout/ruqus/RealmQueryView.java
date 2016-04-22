@@ -94,7 +94,7 @@ public class RealmQueryView extends FrameLayout {
      */
     private ArrayList<String> currVisibleFlatFieldNames;
     /**
-     * List of current visible field names, excluding those whose types are RealmObject subclasses or RealmList. Changes
+     * List of current visible field names, excluding those whose types are RealmModel subclasses or RealmList. Changes
      * when {@link #currClassName} changes.
      */
     private ArrayList<String> currVisibleNonRealmFieldNames;

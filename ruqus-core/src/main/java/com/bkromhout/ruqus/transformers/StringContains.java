@@ -4,7 +4,7 @@ import com.bkromhout.ruqus.Condition;
 import com.bkromhout.ruqus.FieldType;
 import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
-import io.realm.RealmObject;
+import io.realm.RealmModel;
 import io.realm.RealmQuery;
 
 /**
@@ -13,7 +13,7 @@ import io.realm.RealmQuery;
 @Transformer(name = Names.STRING_CONTAINS, validArgTypes = {String.class})
 public class StringContains extends RUQTransformer {
     @Override
-    public <T extends RealmObject> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
+    public <T extends RealmModel> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
         // Checks.
         if (!condition.isValid()) throw new IllegalArgumentException("Condition isn't valid.");
         if (condition.getType() != Condition.Type.NORMAL)

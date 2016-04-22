@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.squareup.phrase.ListPhrase;
 import io.realm.Realm;
-import io.realm.RealmObject;
+import io.realm.RealmModel;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -27,7 +27,7 @@ public class RealmUserQuery implements Parcelable {
     /**
      * Type of object which will be returned by the query.
      */
-    private Class<? extends RealmObject> queryClass;
+    private Class<? extends RealmModel> queryClass;
     /**
      * List of query conditions.
      */
@@ -96,7 +96,7 @@ public class RealmUserQuery implements Parcelable {
      * Get the class for the type of objects which this query will return.
      * @return Class of query result objects.
      */
-    public Class<? extends RealmObject> getQueryClass() {
+    public Class<? extends RealmModel> getQueryClass() {
         return queryClass;
     }
 
@@ -112,7 +112,7 @@ public class RealmUserQuery implements Parcelable {
      * Set the type of object this query should return.
      * @param typeClass Class of type to return.
      */
-    private void setQueryClass(Class<? extends RealmObject> typeClass) {
+    private void setQueryClass(Class<? extends RealmModel> typeClass) {
         queryClass = typeClass;
     }
 
@@ -183,7 +183,7 @@ public class RealmUserQuery implements Parcelable {
      * @param realm Instance of Realm to use to execute query.
      * @return RealmResults, or null if query is invalid.
      */
-    public <E extends RealmObject> RealmResults<E> execute(Realm realm) {
+    public <E extends RealmModel> RealmResults<E> execute(Realm realm) {
         if (realm == null || realm.isClosed())
             throw new IllegalArgumentException("realm must be non-null and not closed.");
         if (!isQueryValid()) return null;
@@ -323,7 +323,7 @@ public class RealmUserQuery implements Parcelable {
 
     RealmUserQuery(Parcel in) {
         // noinspection unchecked
-        this.queryClass = (Class<? extends RealmObject>) in.readSerializable();
+        this.queryClass = (Class<? extends RealmModel>) in.readSerializable();
         this.conditions = in.createTypedArrayList(Condition.CREATOR);
         this.sortFields = in.createStringArrayList();
         this.sortDirs = new ArrayList<>();

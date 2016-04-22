@@ -1,6 +1,6 @@
 package com.bkromhout.ruqus;
 
-import io.realm.RealmObject;
+import io.realm.RealmModel;
 import io.realm.RealmQuery;
 
 /**
@@ -19,5 +19,5 @@ public abstract class RUQTransformer {
      * @param condition  The {@link Condition} which this transformation is being applied to enforce.
      * @return Transformed {@link RealmQuery}.
      */
-    public abstract <T extends RealmObject> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition);
+    public abstract <T extends RealmModel> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition);
 }
