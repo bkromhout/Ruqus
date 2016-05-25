@@ -1,5 +1,9 @@
 # Ruqus Changelog
 
+## 1.2.0
+* Tested with Realm 1.0.0 and confirmed working
+* Added a transformer, `Not`, to wrap `RealmQuery.not()`. This is particularly important for link queries since `.notEqualTo()` and `.not().equalTo()` work differently for `RealmList` fields
+
 ## 1.1.0
 * Support for Realm 0.89.0; Ruqus will now handle any `RealmModel`-implementing class (which still includes `RealmObject` subclasses, of course)
 
