@@ -151,9 +151,18 @@ class EditQueryActivity implements RealmQueryView.ModeListener {
     }
 }
 ```
-The reason for this is that `RealmQueryView` can be in a main mode, or a builder mode; it logically makes sense have a button/toolbar action/etc visible to let the user save their query while in main mode, but not while in a builder mode. See [the screenshots at the top](#screenshots) and notice how the sample app shows/hides the check button in the toolbar based on the state of the `RealmQueryView`.
+The reason for this is that `RealmQueryView` can be in main mode, or a builder mode; it logically makes sense have a button/toolbar action/etc visible to let the user save their query while in main mode, but not while in a builder mode. See [the screenshots at the top](#screenshots) and notice how the sample app shows/hides the check button in the toolbar based on the state of the `RealmQueryView`.
 
-While I won't discuss these in detail here since the sample code is fairly straight-forward, there are a couple key functionalities I recommend implementing:
+Another way you can integrate `RealmQueryView` to provide good UX is by overriding your activity's `onBackPressed()` method to have it call and check the return value of `RealmQueryView.leaveBuilderMode()`.  
+This method will return `true` if calling it caused your `RealmQueryView` to return from one of the builder modes to the main mode, or `false` if it was already in the main mode. I recommend only following through with the default system behavior when `false` is returned, which will provide better UX:
+```java
+@Override
+public void onBackPressed() {
+    if (!rqv.leaveBuilderMode()) super.onBackPressed();
+}
+```
+
+While I won't discuss these in detail here since the sample code is fairly straight-forward, there are a couple more key functionalities I recommend implementing:
 * Structure your app so that your query builder activity is started using `startActivityForResult()`; then, when the query is saved, have it return a `RealmUserQuery` by putting it in the extras of an `Intent`.
 * Similarly, if you want users to be able to edit an existing `RealmUserQuery`s, you can put it into the extras of the `Intent` used to *start* the query builder activity, and then pass it to the `RealmQueryView` using its `setRealmUserQuery()` method sometime during `onCreate()`.
 

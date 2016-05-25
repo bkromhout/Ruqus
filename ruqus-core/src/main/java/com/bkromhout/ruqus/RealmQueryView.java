@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 
 /**
  * RealmQueryView.
- * <p>
+ * <p/>
  * Allow users to create their own queries against your Realm data.
  * @author bkromhout
  */
-public class RealmQueryView extends FrameLayout {
+public final class RealmQueryView extends FrameLayout {
     private static final String ARG_STR_SEP = ";";
     private static final Pattern ARG_STR_SEP_PATTERN = Pattern.compile("\\Q" + ARG_STR_SEP + "\\E");
 
@@ -45,7 +45,18 @@ public class RealmQueryView extends FrameLayout {
      * Modes this view can be in.
      */
     public enum Mode {
-        MAIN, C_BUILD, S_BUILD
+        /**
+         * Normal mode of the view, which shows the query type, list of conditions, and sort type.
+         */
+        MAIN,
+        /**
+         * Condition builder mode.
+         */
+        C_BUILD,
+        /**
+         * Sort builder mode.
+         */
+        S_BUILD
     }
 
     /* Views for main mode. */
@@ -172,7 +183,7 @@ public class RealmQueryView extends FrameLayout {
      * Sets the theme of the view and any child views.
      * @param theme Theme to switch to.
      */
-    public void setTheme(RuqusTheme theme) {
+    public final void setTheme(RuqusTheme theme) {
         this.theme = theme;
 
         // Set theme on queryable and sort choosers.
@@ -199,19 +210,19 @@ public class RealmQueryView extends FrameLayout {
      * Check whether the {@link RealmUserQuery} that this {@link RealmQueryView} currently has is fully-formed.
      * @return True if query is fully-formed, otherwise false.
      */
-    public boolean isQueryValid() {
+    public final boolean isQueryValid() {
         return ruq.isQueryValid();
     }
 
     /**
      * Get the {@link RealmUserQuery} which this {@link RealmQueryView} currently has. Note that {@link RealmUserQuery}
      * implements {@link Parcelable}, which allows it to be passed around quickly and easily.
-     * <p>
+     * <p/>
      * This method does not guarantee that the returned query will be fully-formed and valid. Call {@link
      * RealmUserQuery#isQueryValid()} to check for validity before calling {@link RealmUserQuery#execute(Realm)}.
      * @return Realm user query object.
      */
-    public RealmUserQuery getRealmUserQuery() {
+    public final RealmUserQuery getRealmUserQuery() {
         return this.ruq;
     }
 
@@ -220,7 +231,7 @@ public class RealmQueryView extends FrameLayout {
      * @param ruq Realm user query to use to set up this {@link RealmQueryView}. Must be fully-formed or this method
      *            will do nothing.
      */
-    public void setRealmUserQuery(RealmUserQuery ruq) {
+    public final void setRealmUserQuery(RealmUserQuery ruq) {
         if (!ruq.isQueryValid()) return;
         this.ruq = ruq;
         setupUsingRUQ();
@@ -232,7 +243,7 @@ public class RealmQueryView extends FrameLayout {
      * current mode.
      * @param modeListener Object to set as the mode listener.
      */
-    public void setModeListener(ModeListener modeListener) {
+    public final void setModeListener(ModeListener modeListener) {
         this.modeListener = modeListener;
         if (this.modeListener != null) this.modeListener.rqvModeChanged(mode);
     }
@@ -240,8 +251,22 @@ public class RealmQueryView extends FrameLayout {
     /**
      * Clear a previously set mode listener.
      */
-    public void clearModeListener() {
+    public final void clearModeListener() {
         this.modeListener = null;
+    }
+
+    /**
+     * If the view is currently in {@link Mode#C_BUILD} mode or {@link Mode#S_BUILD} mode, this will return it back to
+     * {@link Mode#MAIN} mode. Otherwise, this will do nothing.
+     * @return True if the view returned from one of the builder modes to main mode as a result of this call, otherwise
+     * false.
+     */
+    public final boolean leaveBuilderMode() {
+        if (mode != Mode.MAIN) {
+            switchMode(Mode.MAIN);
+            return true;
+        }
+        return false;
     }
 
     /* Non-public methods. */
@@ -871,7 +896,9 @@ public class RealmQueryView extends FrameLayout {
         switchMode(Mode.MAIN);
     }
 
-    /* Methods for Condition builder mode. */
+    /*
+     * Methods for Condition builder mode.
+     */
 
     /**
      * Called to set up the builder views for condition builder mode.
@@ -1319,7 +1346,9 @@ public class RealmQueryView extends FrameLayout {
         return builder.toString();
     }
 
-    /* Methods for sort builder mode. */
+    /*
+     * Methods for sort builder mode.
+     */
 
     /**
      * Called to set up the builder views for sort builder mode.
