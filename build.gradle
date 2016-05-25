@@ -5,10 +5,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-beta3'
+        classpath 'com.android.tools.build:gradle:2.1.0'
         classpath 'com.novoda:bintray-release:0.3.4' // clean build bintrayUpload -PdryRun={true|false}
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath "io.realm:realm-gradle-plugin:0.89.0"
+        classpath 'io.realm:realm-gradle-plugin:1.0.0'
     }
 }
 
@@ -28,7 +28,7 @@ ext {
     GROUP_NAME = 'com.bkromhout.ruqus'
     DESCRIPTION = 'Allow your users to build their own Realm Queries!'
     COMPILE_SDK = 23
-    BUILD_TOOLS = '23.0.2'
+    BUILD_TOOLS = '23.0.3'
     IS_UPLOADING = project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}
 }
 

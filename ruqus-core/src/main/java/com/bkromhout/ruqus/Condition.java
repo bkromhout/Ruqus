@@ -19,12 +19,13 @@ public class Condition implements Parcelable {
     private static final String BEGIN_GROUP_TNAME = "com.bkromhout.ruqus.transformers.BeginGroup";
     private static final String END_GROUP_TNAME = "com.bkromhout.ruqus.transformers.EndGroup";
     private static final String OR_TNAME = "com.bkromhout.ruqus.transformers.Or";
+    private static final String NOT_TNAME = "com.bkromhout.ruqus.transformers.Not";
 
     /**
      * Types of conditions.
      */
     public enum Type {
-        NORMAL("NORMAL"), NO_ARGS("NO_ARGS"), BEGIN_GROUP("BEGIN_GROUP"), END_GROUP("END_GROUP"), OR("OR");
+        NORMAL("NORMAL"), NO_ARGS("NO_ARGS"), BEGIN_GROUP("BEGIN_GROUP"), END_GROUP("END_GROUP"), OR("OR"), NOT("NOT");
 
         private final String name;
 
@@ -48,6 +49,8 @@ public class Condition implements Parcelable {
                     return END_GROUP;
                 case "OR":
                     return OR;
+                case "NOT":
+                    return NOT;
                 default:
                     throw new IllegalArgumentException("Invalid Condition type name.");
             }
@@ -153,6 +156,9 @@ public class Condition implements Parcelable {
             case OR:
                 transformer = OR_TNAME;
                 break;
+            case NOT:
+                transformer = NOT_TNAME;
+                break;
         }
     }
 
@@ -179,6 +185,7 @@ public class Condition implements Parcelable {
             case BEGIN_GROUP:
             case END_GROUP:
             case OR:
+            case NOT:
                 return isRealmClassValid() && isTransformerValid();
             default:
                 return false;
@@ -291,6 +298,10 @@ public class Condition implements Parcelable {
                 type = Type.OR;
                 handleSpecialTypes();
                 break;
+            case NOT_TNAME:
+                resetState();
+                type = Type.NOT;
+                handleSpecialTypes();
             default:
                 this.transformer = transformer;
                 type = Ruqus.getTransformerData().isNoArgs(transformer) ? Type.NO_ARGS : Type.NORMAL;
@@ -343,6 +354,7 @@ public class Condition implements Parcelable {
             case BEGIN_GROUP:
             case END_GROUP:
             case OR:
+            case NOT:
                 return transformerData.visibleNameOf(transformer);
             default:
                 return super.toString();
@@ -370,6 +382,7 @@ public class Condition implements Parcelable {
             case BEGIN_GROUP:
             case END_GROUP:
             case OR:
+            case NOT:
                 builder.append(transformer); // Write out real transformer name.
                 break;
         }

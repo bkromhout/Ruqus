@@ -8,7 +8,7 @@
     <string name="library_ruqus_libraryName">Ruqus</string>
     <string name="library_ruqus_libraryDescription">Ruqus (pronounced "Ruckus") is an Android library which provides a number of components which allow your users to construct their own Realm queries.</string>
     <string name="library_ruqus_libraryWebsite">https://github.com/bkromhout/Ruqus</string>
-    <string name="library_ruqus_libraryVersion">1.1.0</string>
+    <string name="library_ruqus_libraryVersion">1.2.0</string>
     <!-- OpenSource section -->
     <string name="library_ruqus_isOpenSource">true</string>
     <string name="library_ruqus_repositoryLink">https://github.com/bkromhout/Ruqus</string>

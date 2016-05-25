@@ -73,6 +73,11 @@ public class EditQueryActivity extends AppCompatActivity implements RealmQueryVi
     }
 
     @Override
+    public void onBackPressed() {
+        if (!rqv.leaveBuilderMode()) super.onBackPressed();
+    }
+
+    @Override
     public void rqvModeChanged(RealmQueryView.Mode newMode) {
         rqvMode = newMode;
         invalidateOptionsMenu();
