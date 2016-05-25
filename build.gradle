@@ -28,7 +28,7 @@ ext {
     GROUP_NAME = 'com.bkromhout.ruqus'
     DESCRIPTION = 'Allow your users to build their own Realm Queries!'
     COMPILE_SDK = 23
-    BUILD_TOOLS = '23.0.2'
+    BUILD_TOOLS = '23.0.3'
     IS_UPLOADING = project.getGradle().startParameter.taskNames.any{it.contains('bintrayUpload')}
 }
 
