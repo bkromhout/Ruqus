@@ -9,9 +9,10 @@
             android:minHeight="@dimen/ruqus_card_height"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone"
             app:cardCornerRadius="@dimen/ruqus_card_corner_radius"
-            app:cardElevation="@dimen/ruqus_card_elevation"
-            android:visibility="gone">
+            app:cardElevation="@dimen/ruqus_card_elevation">
 
         <TextView
                 android:id="@+id/card_text"
@@ -29,7 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/ruqus_card_height"
             android:layout_margin="2dp"
-            android:background="@drawable/dotted"
+            android:foreground="@drawable/dotted"
+            android:background="?attr/selectableItemBackground"
             android:visibility="visible">
 
         <TextView
