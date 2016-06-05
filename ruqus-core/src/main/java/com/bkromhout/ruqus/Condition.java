@@ -302,6 +302,7 @@ public class Condition implements Parcelable {
                 resetState();
                 type = Type.NOT;
                 handleSpecialTypes();
+                break;
             default:
                 this.transformer = transformer;
                 type = Ruqus.getTransformerData().isNoArgs(transformer) ? Type.NO_ARGS : Type.NORMAL;

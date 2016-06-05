@@ -1,5 +1,8 @@
 # Ruqus Changelog
 
+## 1.2.1
+* Fixed bug where the `Not` transformer was causing crashes due to a missed "`break;`" in the `Condition` class
+
 ## 1.2.0
 * Tested with Realm 1.0.0 and confirmed working
 * Added a transformer, `Not`, to wrap `RealmQuery.not()`. This is particularly important for link queries since `.notEqualTo()` and `.not().equalTo()` work differently for `RealmList` fields
