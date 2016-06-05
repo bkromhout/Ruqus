@@ -222,12 +222,12 @@ public class Ruqus {
      * Get the enum type of a [flat-]field's type. If this is a flat-field (e.g., the immediate type on the class is a
      * RealmModel subclass or a RealmList of such), this will drill down to the end of the flat-field to get the type
      * from the end of it.
-     * <p/>
+     * <p>
      * For example, if {@code field} is something like "age", and the type for it in {@code realmClass} is Integer,
      * that's what would be returned.<br>But if instead {@code field} was something like "dog.age", where the immediate
      * type is a class called "{@code Dog}" which extends RealmModel and has an Integer field called "age", this method
      * would drill down and find that information, and still return Integer.
-     * <p/>
+     * <p>
      * Caches values for quicker future access.
      * @param realmClass Name of RealmModel subclass which contains the {@code field}.
      * @param field      Name of the field whose type is being retrieved.
@@ -382,18 +382,23 @@ public class Ruqus {
         }
 
         // If not cached, must go figure it out.
+        ClassData classData = getClassData();
+        FieldData fieldData = classData.getFieldData(realmClass);
         StringBuilder builder = new StringBuilder();
-        String className = realmClass;
         String[] parts = FLAT_SEP_PATTERN.split(field);
+
         for (int i = 0; i < parts.length; i++) {
-            if (i != parts.length - 1) {
-                // Not at the end of the link yet.
-                className = parts[i];
-                builder.append(INSTANCE.classData.visibleNameOf(parts[i]))
-                       .append(VIS_FLAT_SEP);
-            } else {
-                // This is the end of the link.
-                builder.append(getFieldData(className).visibleNameOf(parts[i]));
+            // Use the field data to get and append the visible name of the field.
+            builder.append(fieldData.visibleNameOf(parts[i]));
+            if (i < parts.length - 1) {
+                // This is a RealmModel/RealmList-type field. Append a ">" and switch the field data.
+                builder.append(VIS_FLAT_SEP);
+                if (fieldData.isRealmListType(parts[i])) {
+                    fieldData = classData.getFieldData(fieldData.realmListType(parts[i]));
+                } else {
+                    //noinspection unchecked
+                    fieldData = classData.getFieldData((Class<? extends RealmModel>) fieldData.fieldType(parts[i]));
+                }
             }
         }
         // Cache this before returning it.

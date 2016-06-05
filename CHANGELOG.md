@@ -1,5 +1,8 @@
 # Ruqus Changelog
 
+## 1.2.2
+* Fixed a bug with a method in `Ruqus` which, looking at it now, I'm at a loss as to how it ever worked
+
 ## 1.2.1
 * Fixed bug where the `Not` transformer was causing crashes due to a missed "`break;`" in the `Condition` class
 
