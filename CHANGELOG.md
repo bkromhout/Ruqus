@@ -1,5 +1,8 @@
 # Ruqus Changelog
 
+## 1.3.0
+* Corrected string in dialog for removing conditions; now says "Condition" or "Operator" depending on type
+
 ## 1.2.2
 * Fixed a bug with a method in `Ruqus` which, looking at it now, I'm at a loss as to how it ever worked
 

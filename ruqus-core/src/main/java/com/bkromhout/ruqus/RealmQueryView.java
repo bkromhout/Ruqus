@@ -774,7 +774,8 @@ public final class RealmQueryView extends FrameLayout {
      */
     private void onPartLongClicked(final int index) {
         new MaterialDialog.Builder(getContext())
-                .title(R.string.ruqus_remove_operator)
+                .title(ruq.getConditions().get(index).getType() == Condition.Type.NORMAL
+                    ? R.string.ruqus_remove_condition : R.string.ruqus_remove_operator)
                 .negativeText(R.string.ruqus_no)
                 .positiveText(R.string.ruqus_yes)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
