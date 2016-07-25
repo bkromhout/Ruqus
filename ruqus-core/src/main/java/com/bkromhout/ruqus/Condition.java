@@ -81,7 +81,7 @@ public class Condition implements Parcelable {
      */
     private Object[] args;
     /**
-     * The name of the transformer to use to apply this condition.
+     * The fully-qualified name of the transformer to use to apply this condition.
      */
     private String transformer;
 
