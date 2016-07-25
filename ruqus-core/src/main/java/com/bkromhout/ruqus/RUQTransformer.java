@@ -23,27 +23,22 @@ public abstract class RUQTransformer {
     public abstract <T extends RealmModel> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition);
 
     /**
-     * Called to construct part of a human-readable query string.
+     * Called to construct part of a human-readable query string which will be joined together with other parts to form
+     * a whole.
      * <p>
-     * The primary focus of the returned string fragment is the {@code current} condition, but the {@code previous} and
-     * {@code next} conditions are also provided so that they may be factored in if they are present and not {@link
-     * com.bkromhout.ruqus.Condition.Type#NORMAL NORMAL} conditions.
+     * The returned string fragment should describe the {@code current} condition, but the {@code previous} and {@code
+     * next} conditions are also provided so that they may be taken into consideration; this typically only matters if
+     * they are not {@link com.bkromhout.ruqus.Condition.Type#NORMAL NORMAL} conditions.
      * <p>
-     * For example, the returned string should be surrounded with parentheses if {@code previous} was {@link
-     * com.bkromhout.ruqus.transformers.BeginGroup BeginGroup} and {@code next} was {@link
-     * com.bkromhout.ruqus.transformers.EndGroup EndGroup}.
-     * <p>
-     * This behavior should be kept in mind for non-normal transformers as well; in most cases they should simply return
-     * an empty string, as the normal conditions to which they apply should be responsible for changing their returned
-     * strings as described.
+     * If the {@code previous} condition is the {@link com.bkromhout.ruqus.transformers.Not Not operator}, the returned
+     * string should reflect this correctly; the {@link com.bkromhout.ruqus.transformers.Not Not operator} itself always
+     * returns the empty string when its implementation of this method is called, except for some internally-handled
+     * use cases.
      * @param current  The condition to make a human-readable string for.
-     * @param previous The previous condition, which should be considered when making the readable string if its type is
-     *                 not {@link com.bkromhout.ruqus.Condition.Type#NORMAL NORMAL}. Might be {@code null}.
-     * @param next     The next condition, which should be considered when making the readable string if its type is not
-     *                 {@link com.bkromhout.ruqus.Condition.Type#NORMAL NORMAL}. Might be {@code null}.
-     * @return For normal conditions: A human-readable string fragment which describes the {@code current} condition,
-     * and factors in the {@code previous} and {@code next} conditions if they are applicable.<br/>For non-normal
-     * conditions: Most cases should return the empty string, see the end of the method description for details.
+     * @param previous The previous condition, which could affect the returned string. Might be {@code null}.
+     * @param next     The next condition, which could affect the returned string. Might be {@code null}.
+     * @return A human-readable string fragment which describes the {@code current} condition, with proper consideration
+     * given to the {@code previous} and {@code next} conditions if applicable.
      */
     public abstract String makeReadableString(@NonNull Condition current, Condition previous, Condition next);
 }

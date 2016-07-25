@@ -11,6 +11,8 @@ import io.realm.Sort;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import static com.bkromhout.ruqus.Condition.Type.*;
+
 /**
  * Used to let end-users build Realm Queries by wrapping {@link io.realm.RealmQuery}.
  */
@@ -209,25 +211,33 @@ public class RealmUserQuery implements Parcelable {
         // Next, loop through any conditions, appending their human-readable strings and applicable separators.
         if (!conditions.isEmpty()) {
             builder.append(" where ");
+
             for (int i = 0; i < conditions.size(); i++) {
-                Condition condition = conditions.get(i);
-                Condition nextCondition = i + 1 == conditions.size() ? null : conditions.get(i + 1);
+                Condition previous = i - 1 >= 0 ? conditions.get(i - 1) : null;
+                Condition current = conditions.get(i);
+                Condition next = i + 1 < conditions.size() ? conditions.get(i + 1) : null;
+
                 // Append human-readable condition string.
-                builder.append(condition.toString());
+                String conditionPart = current.makeReadableString(previous, next);
+                builder.append(conditionPart);
+
                 // If we don't have any more conditions after this one, just append a period and continue.
-                if (nextCondition == null) {
+                if (next == null) {
                     builder.append(".");
                     continue;
                 }
-                // As long as this condition wasn't a BEGIN_GROUP and next condition isn't END_GROUP, append a space.
-                if (condition.getType() != Condition.Type.BEGIN_GROUP &&
-                        nextCondition.getType() != Condition.Type.END_GROUP) builder.append(" ");
-                // As long as this condition wasn't OR or BEGIN_GROUP, and the next condition is NORMAL, NO_ARGS, or
-                // BEGIN_GROUP, append "and ".
-                if (!(condition.getType() == Condition.Type.OR || condition.getType() == Condition.Type.BEGIN_GROUP) &&
-                        (nextCondition.getType() == Condition.Type.NORMAL ||
-                                nextCondition.getType() == Condition.Type.NO_ARGS ||
-                                nextCondition.getType() == Condition.Type.BEGIN_GROUP)) builder.append("and ");
+
+                // As long as this condition wasn't BEGIN_GROUP and next condition isn't END_GROUP, append a space.
+                if (current.getType() != BEGIN_GROUP && next.getType() != END_GROUP) builder.append(" ");
+
+                // Append "and " if all of the following are true (in this order):
+                // 1. It isn't true (collectively) that this condition was NOT and the next one is BEGIN_GROUP.
+                // 2. This condition wasn't OR or BEGIN_GROUP.
+                // 3. The next condition is NORMAL, NO_ARGS, or BEGIN_GROUP.
+                if (!(current.getType() == NOT && next.getType() == BEGIN_GROUP) &&
+                        (current.getType() != OR && current.getType() != BEGIN_GROUP) &&
+                        (next.getType() == NORMAL || next.getType() == NO_ARGS || next.getType() == BEGIN_GROUP))
+                    builder.append("and ");
             }
         } else builder.append("."); // If there aren't any conditions, append a period.
 
@@ -264,7 +274,6 @@ public class RealmUserQuery implements Parcelable {
         }
         return sorts;
     }
-
 
     /**
      * Get a string which holds all of the information needed to create a {@link RealmUserQuery} identical to this one.
