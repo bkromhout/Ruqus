@@ -256,6 +256,7 @@ Here are some general guidelines which apply to all transformers:
 * They all must extend the abstract `RUQTransformer` class
 * They all must be annotated with the `@Transformer` annotation
 * When Ruqus creates an instance of them, it uses their no-argument constructors to do so
+* When Ruqus creates a human-readable version of the whole query string, it relies upon each transformer's `makeReadableString(...)` method to do so
 
 Also, you'll need some more information about [the `@Transformer` annotation][Transformer Class]'s parameters:
 

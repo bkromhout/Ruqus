@@ -3,7 +3,8 @@
 ## 1.3.0
 * Corrected string in dialog for removing conditions; now says "Condition" or "Operator" depending on type
 * No more unformatted dates in `RealmQueryView`'s main mode
-* Improved human-readable query strings, especially the handling of string-related conditions and how the `Not` operator affects each part of the string
+* Improved human-readable query strings, especially in the areas of handling string-related conditions and how the `Not` operator affects each condition's string
+    * To support this change, all `RUQTransformer`s now must implement a new method, `makeReadableString(Condition current, Condition previous, Condition next)`. See the JavaDoc for more information.
     * Since the pairing of the `Not` and `Equal` operators now displays as *"is not"* in query strings, the name of the `NotEqualTo` operator has been changed from *"is not"* to *"is unequal"* to help distinguish it... sorry for any confusion!
 
 ## 1.2.2
