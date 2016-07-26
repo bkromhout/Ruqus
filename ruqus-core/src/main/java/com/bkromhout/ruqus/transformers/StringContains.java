@@ -32,6 +32,6 @@ public class StringContains extends RUQTransformer {
     public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
         return String.format("%s %s “%s”", ReadableStringUtils.visibleFieldNameFrom(current),
                 previous.getType() != Condition.Type.NOT ? "contains" : "does not contain",
-                ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()));
+                ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()[0]));
     }
 }
