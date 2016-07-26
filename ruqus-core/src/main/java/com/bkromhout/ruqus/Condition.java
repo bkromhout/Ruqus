@@ -335,7 +335,7 @@ public class Condition implements Parcelable {
                              .put("field", Ruqus.visibleFieldFromField(realmClass, field))
                              .put("transformer_v_name", transformerData.visibleNameOf(transformer))
                              .format()
-                        + ReadableStringUtils.argsToString(transformer, args);
+                        + ReadableStringUtils.argsToString(fieldType, transformer, args);
             // The following have no arguments, so we just return the visible name.
             case NO_ARGS:
             case BEGIN_GROUP:
