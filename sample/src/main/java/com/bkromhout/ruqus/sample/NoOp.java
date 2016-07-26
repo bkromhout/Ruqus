@@ -1,5 +1,6 @@
 package com.bkromhout.ruqus.sample;
 
+import android.support.annotation.NonNull;
 import com.bkromhout.ruqus.Condition;
 import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
@@ -14,5 +15,10 @@ public class NoOp extends RUQTransformer {
     @Override
     public <T extends RealmModel> RealmQuery<T> transform(RealmQuery<T> realmQuery, Condition condition) {
         return realmQuery;
+    }
+
+    @Override
+    public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
+        return "";
     }
 }
