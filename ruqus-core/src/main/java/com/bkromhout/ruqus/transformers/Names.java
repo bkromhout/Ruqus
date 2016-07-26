@@ -18,7 +18,7 @@ final class Names {
     public static final String LESS_THAN = "is less than";
     public static final String LESS_THAN_OR_EQUAL_TO = "is less than or equal to";
     public static final String NOT = "not";
-    public static final String NOT_EQUAL_TO = "is not";
+    public static final String NOT_EQUAL_TO = "is unequal";
     public static final String OR = "or";
     public static final String STRING_CONTAINS = "contains the string";
 }

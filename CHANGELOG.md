@@ -3,6 +3,7 @@
 ## 1.3.0
 * Corrected string in dialog for removing conditions; now says "Condition" or "Operator" depending on type
 * No more unformatted dates in `RealmQueryView`'s main mode
+    * Since the pairing of the `Not` and `Equal` operators now displays as *"is not"* in query strings, the name of the `NotEqualTo` operator has been changed from *"is not"* to *"is unequal"* to help distinguish it... sorry for any confusion!
 
 ## 1.2.2
 * Fixed a bug with a method in `Ruqus` which, looking at it now, I'm at a loss as to how it ever worked
