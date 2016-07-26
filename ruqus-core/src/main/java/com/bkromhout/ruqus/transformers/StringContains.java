@@ -1,9 +1,7 @@
 package com.bkromhout.ruqus.transformers;
 
-import com.bkromhout.ruqus.Condition;
-import com.bkromhout.ruqus.FieldType;
-import com.bkromhout.ruqus.RUQTransformer;
-import com.bkromhout.ruqus.Transformer;
+import android.support.annotation.NonNull;
+import com.bkromhout.ruqus.*;
 import io.realm.RealmModel;
 import io.realm.RealmQuery;
 
@@ -28,5 +26,12 @@ public class StringContains extends RUQTransformer {
         if (FieldType.STRING == fieldType) return realmQuery.contains(field, (String) args[0]);
         else
             throw new IllegalArgumentException(String.format("Illegal argument type \"%s\".", fieldType.getTypeName()));
+    }
+
+    @Override
+    public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
+        return String.format("%s %s “%s”", ReadableStringUtils.visibleFieldNameFrom(current),
+                previous.getType() != Condition.Type.NOT ? "contains" : "does not contain",
+                ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()));
     }
 }

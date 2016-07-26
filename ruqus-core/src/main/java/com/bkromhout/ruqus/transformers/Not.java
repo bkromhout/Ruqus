@@ -1,5 +1,6 @@
 package com.bkromhout.ruqus.transformers;
 
+import android.support.annotation.NonNull;
 import com.bkromhout.ruqus.Condition;
 import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
@@ -18,5 +19,11 @@ public class Not extends RUQTransformer {
             throw new IllegalArgumentException("Condition type is not NOT.");
         // Transform query.
         return realmQuery.not();
+    }
+
+    @Override
+    public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
+        // Return the empty string unless the next operator is (, in which case return "not".
+        return next != null && next.getType() == Condition.Type.BEGIN_GROUP ? Names.NOT : "";
     }
 }

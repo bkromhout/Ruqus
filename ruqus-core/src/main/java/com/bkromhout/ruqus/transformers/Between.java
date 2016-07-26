@@ -1,9 +1,7 @@
 package com.bkromhout.ruqus.transformers;
 
-import com.bkromhout.ruqus.Condition;
-import com.bkromhout.ruqus.FieldType;
-import com.bkromhout.ruqus.RUQTransformer;
-import com.bkromhout.ruqus.Transformer;
+import android.support.annotation.NonNull;
+import com.bkromhout.ruqus.*;
 import io.realm.RealmModel;
 import io.realm.RealmQuery;
 
@@ -40,5 +38,13 @@ public class Between extends RUQTransformer {
             return realmQuery.between(field, (Long) args[0], (Long) args[1]);
         else
             throw new IllegalArgumentException(String.format("Illegal argument type \"%s\".", fieldType.getTypeName()));
+    }
+
+    @Override
+    public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
+        return String.format("%s %s %s and %s", ReadableStringUtils.visibleFieldNameFrom(current),
+                previous.getType() != Condition.Type.NOT ? "is between" : "is not between",
+                ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()[0]),
+                ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()[1]));
     }
 }

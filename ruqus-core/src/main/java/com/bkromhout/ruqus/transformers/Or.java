@@ -1,5 +1,6 @@
 package com.bkromhout.ruqus.transformers;
 
+import android.support.annotation.NonNull;
 import com.bkromhout.ruqus.Condition;
 import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
@@ -18,5 +19,11 @@ public class Or extends RUQTransformer {
             throw new IllegalArgumentException("Condition type is not OR.");
         // Transform query.
         return realmQuery.or();
+    }
+
+    @Override
+    public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
+        // Since this is appended in a similar fashion to "and" (that is, not surrounded by spaces), just return "or".
+        return Names.OR;
     }
 }
