@@ -39,6 +39,7 @@ public abstract class RUQTransformer {
      * @param next     The next condition, which could affect the returned string. Might be {@code null}.
      * @return A human-readable string fragment which describes the {@code current} condition, with proper consideration
      * given to the {@code previous} and {@code next} conditions if applicable.
+     * @see ReadableStringUtils
      */
     public abstract String makeReadableString(@NonNull Condition current, Condition previous, Condition next);
 }

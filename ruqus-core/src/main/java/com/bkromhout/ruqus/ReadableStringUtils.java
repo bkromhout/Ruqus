@@ -6,12 +6,22 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Utility methods to help with creating human-readable strings. Public so that developers may use them when
- * implementing their own {@link RUQTransformer}s. Any strings returned by methods in this class should be considered
- * human-readable.
+ * Utility methods to help with creating human-readable strings.
+ * <p>
+ * Public so that developers may use them when implementing their own {@link RUQTransformer}s. Any strings returned by
+ * methods in this class can be considered human-readable.
  */
 @SuppressWarnings("WeakerAccess")
 public class ReadableStringUtils {
+    /**
+     * Gets the visible name of the field associated with the given {@link Condition}.
+     * @param condition Condition to get field name from.
+     * @return Visible field name.
+     */
+    public static String visibleFieldNameFrom(Condition condition) {
+        return Ruqus.visibleFieldFromField(condition.getRealmClass(), condition.getField());
+    }
+
     /**
      * Takes a fully-qualified transformer name and an array of arguments and returns a human-readable list of the
      * arguments. Will have a single leading space, unless the returned string is the empty string.
