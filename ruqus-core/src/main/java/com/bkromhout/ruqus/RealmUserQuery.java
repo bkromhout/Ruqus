@@ -227,15 +227,15 @@ public class RealmUserQuery implements Parcelable {
                     continue;
                 }
 
-                // As long as this condition wasn't BEGIN_GROUP and next condition isn't END_GROUP, append a space.
-                if (current.getType() != BEGIN_GROUP && next.getType() != END_GROUP) builder.append(" ");
+                // As long as this condition wasn't BEGIN_GROUP or NOT, and the next condition isn't END_GROUP,
+                // append a space.
+                if (current.getType() != BEGIN_GROUP && current.getType() != NOT && next.getType() != END_GROUP)
+                    builder.append(" ");
 
                 // Append "and " if all of the following are true (in this order):
-                // 1. It isn't true (collectively) that this condition was NOT and the next one is BEGIN_GROUP.
-                // 2. This condition wasn't OR or BEGIN_GROUP.
-                // 3. The next condition is NORMAL, NO_ARGS, or BEGIN_GROUP.
-                if (!(current.getType() == NOT && next.getType() == BEGIN_GROUP) &&
-                        (current.getType() != OR && current.getType() != BEGIN_GROUP) &&
+                // 1. This condition wasn't NOT, OR, or BEGIN_GROUP.
+                // 2. The next condition is NORMAL, NO_ARGS, or BEGIN_GROUP.
+                if (current.getType() != NOT && current.getType() != OR && current.getType() != BEGIN_GROUP &&
                         (next.getType() == NORMAL || next.getType() == NO_ARGS || next.getType() == BEGIN_GROUP))
                     builder.append("and ");
             }
