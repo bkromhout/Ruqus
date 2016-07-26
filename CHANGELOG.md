@@ -1,6 +1,6 @@
 # Ruqus Changelog
 
-## 1.3.0
+## 1.2.3
 * Corrected string in dialog for removing conditions; now says "Condition" or "Operator" depending on type
 * No more unformatted dates in `RealmQueryView`'s main mode
 * Improved human-readable query strings, especially in the areas of handling string-related conditions and how the `Not` operator affects each condition's string
