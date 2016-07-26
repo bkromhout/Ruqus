@@ -25,7 +25,8 @@ public class Ruqus {
     private static final Pattern VIS_SEP_PATTERN = Pattern.compile("\\Q" + VIS_FLAT_SEP + "\\E");
 
     @ColorInt
-    static int LIGHT_TEXT_COLOR, DARK_TEXT_COLOR, LIGHT_CARD_COLOR, DARK_CARD_COLOR;
+    static int LIGHT_TEXT_COLOR, LIGHT_TEXT_COLOR_ALT, DARK_TEXT_COLOR, DARK_TEXT_COLOR_ALT,
+            LIGHT_CARD_COLOR, LIGHT_CARD_COLOR_ALT, DARK_CARD_COLOR, DARK_CARD_COLOR_ALT;
     static String CHOOSE_FIELD, CHOOSE_CONDITIONAL;
     /**
      * Whether or not Ruqus.init() has already been called.
@@ -95,9 +96,13 @@ public class Ruqus {
             INSTANCE = new Ruqus();
 
             LIGHT_TEXT_COLOR = ContextCompat.getColor(context, R.color.ruqus_textColorPrimaryLight);
+            LIGHT_TEXT_COLOR_ALT = ContextCompat.getColor(context, R.color.ruqus_textColorPrimaryLightAlt);
             DARK_TEXT_COLOR = ContextCompat.getColor(context, R.color.ruqus_textColorPrimaryDark);
-            LIGHT_CARD_COLOR = ContextCompat.getColor(context, R.color.cardview_light_background);
-            DARK_CARD_COLOR = ContextCompat.getColor(context, R.color.cardview_dark_background);
+            DARK_TEXT_COLOR_ALT = ContextCompat.getColor(context, R.color.ruqus_textColorPrimaryDarkAlt);
+            LIGHT_CARD_COLOR = ContextCompat.getColor(context, R.color.ruqus_cardBackgroundLight);
+            LIGHT_CARD_COLOR_ALT = ContextCompat.getColor(context, R.color.ruqus_cardBackgroundLightAlt);
+            DARK_CARD_COLOR = ContextCompat.getColor(context, R.color.ruqus_cardBackgroundDark);
+            DARK_CARD_COLOR_ALT = ContextCompat.getColor(context, R.color.ruqus_cardBackgroundDarkAlt);
 
             CHOOSE_FIELD = context.getString(R.string.ruqus_choose_field);
             CHOOSE_CONDITIONAL = context.getString(R.string.ruqus_choose_conditional);

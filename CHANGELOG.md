@@ -6,6 +6,8 @@
 * Improved human-readable query strings, especially in the areas of handling string-related conditions and how the `Not` operator affects each condition's string
     * To support this change, all `RUQTransformer`s now must implement a new method, `makeReadableString(Condition current, Condition previous, Condition next)`. See the JavaDoc for more information.
     * Since the pairing of the `Not` and `Equal` operators now displays as *"is not"* in query strings, the name of the `NotEqualTo` operator has been changed from *"is not"* to *"is unequal"* to help distinguish it... sorry for any confusion!
+* Now the query type and sort type cards (the top and bottom cards) are visually distinguished with an alternate color
+* Card background colors can now be overridden. See the end of the README for details
 
 ## 1.2.2
 * Fixed a bug with a method in `Ruqus` which, looking at it now, I'm at a loss as to how it ever worked

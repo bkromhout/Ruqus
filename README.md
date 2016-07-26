@@ -17,6 +17,7 @@ If you want to see how I use Ruqus in one of my apps, check out [Minerva][Minerv
     * [`@Hide`](#hide)
     * [`@VisibleAs`](#visible_as)
 * [Transformers](#transformers)
+* [Customizing](#customizing)
 * [Troubleshooting](#troubleshooting)
 
 <a name="screenshots"/>
@@ -277,6 +278,30 @@ Beyond this information, I recommend you take a look at [`EqualTo.java`][EqualTo
 Transformers are very powerful things! If you haven't realized why I'm spending so much time discussing them yet, allow me to clue you in: ***Ruqus lets you build your own transformers***, because just like your model object classes, Ruqus generates information for transformer classes at compile-time.
 
 If you create a good, general-purpose transformer which I don't already have and you think others would benefit from its inclusion in the core Ruqus library, don't hesitate to open a pull request!
+
+<a name="customizing"/>
+## Customizing
+You can override certain resources that used by Ruqus in order to customize it. The following resources can be overridden; I've provided their default values, as well as paired them so that you can see which ones go together (this is only really important for cards however):
+```xml
+<!-- Light theme -->
+<color name="ruqus_backgroundColorLight">@android:color/white</color>
+<!-- Light card -->
+<color name="ruqus_cardBackgroundLight">@color/cardview_light_background</color>
+<color name="ruqus_textColorPrimaryDark">#DE000000</color>
+<!-- Light card alt -->
+<color name="ruqus_cardBackgroundLightAlt">@color/ruqus_blue800</color>
+<color name="ruqus_textColorPrimaryDarkAlt">@android:color/white</color>
+
+<!-- Dark theme -->
+<color name="ruqus_backgroundColorDark">@color/ruqus_grey700</color>
+<!-- Dark card -->
+<color name="ruqus_cardBackgroundDark">@color/cardview_dark_background</color>
+<color name="ruqus_textColorPrimaryLight">@android:color/white</color>
+<!-- Dark card alt -->
+<color name="ruqus_cardBackgroundDarkAlt">@color/ruqus_blueGrey800</color>
+<color name="ruqus_textColorPrimaryLightAlt">@android:color/white</color>
+```
+(Any of the default values which aren't present here can be seen in the actual file, but I'll save you some time and tell you that they correspond to Material Design colors.)
 
 <a name="troubleshooting"/>
 ## Troubleshooting
