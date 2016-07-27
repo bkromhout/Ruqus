@@ -1,5 +1,6 @@
 package com.bkromhout.ruqus.transformers;
 
+import android.support.annotation.NonNull;
 import com.bkromhout.ruqus.Condition;
 import com.bkromhout.ruqus.RUQTransformer;
 import com.bkromhout.ruqus.Transformer;
@@ -18,5 +19,10 @@ public class BeginGroup extends RUQTransformer {
             throw new IllegalArgumentException("Condition type is not BEGIN_GROUP.");
         // Transform query.
         return realmQuery.beginGroup();
+    }
+
+    @Override
+    public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
+        return Names.BEGIN_GROUP;
     }
 }

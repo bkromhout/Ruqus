@@ -15,7 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 /**
- * Custom Ruqus CardView.
+ * Custom Ruqus CardView. Uses the alternate colors instead of the usual ones.
  */
 class RQVCard extends FrameLayout {
     /**
@@ -141,9 +141,10 @@ class RQVCard extends FrameLayout {
     void setTheme(RuqusTheme theme) {
         this.theme = theme;
         // Set card background color.
-        cardView.setCardBackgroundColor(theme == RuqusTheme.LIGHT ? Ruqus.LIGHT_CARD_COLOR : Ruqus.DARK_CARD_COLOR);
+        cardView.setCardBackgroundColor(
+                theme == RuqusTheme.LIGHT ? Ruqus.LIGHT_CARD_COLOR_ALT : Ruqus.DARK_CARD_COLOR_ALT);
         // Set text view text color.
-        cardTextView.setTextColor(theme == RuqusTheme.LIGHT ? Ruqus.DARK_TEXT_COLOR : Ruqus.LIGHT_TEXT_COLOR);
+        cardTextView.setTextColor(theme == RuqusTheme.LIGHT ? Ruqus.DARK_TEXT_COLOR_ALT : Ruqus.LIGHT_TEXT_COLOR_ALT);
     }
 
     /**

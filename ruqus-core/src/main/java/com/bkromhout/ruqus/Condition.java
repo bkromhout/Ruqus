@@ -2,10 +2,8 @@ package com.bkromhout.ruqus;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.squareup.phrase.ListPhrase;
 import com.squareup.phrase.Phrase;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -81,7 +79,7 @@ public class Condition implements Parcelable {
      */
     private Object[] args;
     /**
-     * The name of the transformer to use to apply this condition.
+     * The fully-qualified name of the transformer to use to apply this condition.
      */
     private String transformer;
 
@@ -319,8 +317,11 @@ public class Condition implements Parcelable {
     }
 
     /**
-     * Return a human-readable string which describes this condition.
+     * Return a human-readable string which describes this condition without regard to any other conditions. Since the
+     * returned string is intended to be standalone, it should not be used as part of a larger human-readable query
+     * string.
      * @return Human-readable condition string, or null if not valid.
+     * @see #makeReadableString(Condition, Condition)
      */
     @Override
     public String toString() {
@@ -330,27 +331,12 @@ public class Condition implements Parcelable {
         switch (type) {
             // Normal transformers have arguments which we need to factor into our string.
             case NORMAL:
-                StringBuilder builder = new StringBuilder();
-                builder.append(Phrase.from("{field} {transformer_v_name}")
-                                     .put("field", Ruqus.visibleFieldFromField(realmClass, field))
-                                     .put("transformer_v_name", transformerData.visibleNameOf(transformer))
-                                     .format());
-
-                int numArgs = transformerData.numArgsOf(transformer);
-                if (numArgs == 0)
-                    return builder.toString();
-                else if (numArgs == 1)
-                    return builder.append(" ")
-                                  .append(String.valueOf(args[0]))
-                                  .toString();
-                else if (numArgs == C.VAR_ARGS || numArgs > 1)
-                    return builder.append(" ")
-                                  .append(ListPhrase.from(" and ", ", ", ", and ")
-                                                    .join(Arrays.asList(args))
-                                                    .toString())
-                                  .toString();
-                else throw new IllegalArgumentException("numArgs < -1.");
-                // The following have no arguments, so we just return the visible name.
+                return Phrase.from("{field} {transformer_v_name}")
+                             .put("field", Ruqus.visibleFieldFromField(realmClass, field))
+                             .put("transformer_v_name", transformerData.visibleNameOf(transformer))
+                             .format()
+                        + ReadableStringUtils.argsToString(fieldType, transformer, args);
+            // The following have no arguments, so we just return the visible name.
             case NO_ARGS:
             case BEGIN_GROUP:
             case END_GROUP:
@@ -360,6 +346,18 @@ public class Condition implements Parcelable {
             default:
                 return super.toString();
         }
+    }
+
+    /**
+     * Returns a human-readable string which describes this condition, and factors in the {@code previous} and {@code
+     * next} conditions if necessary. This string is a fragment, and is intended to be used as part of a larger
+     * human-readable query string.
+     * @param previous The previous condition; might be null.
+     * @param next     The next condition; might be null.
+     * @return Human-readable condition string fragment.
+     */
+    String makeReadableString(Condition previous, Condition next) {
+        return isValid() ? Ruqus.getTransformer(transformer).makeReadableString(this, previous, next) : null;
     }
 
     /**

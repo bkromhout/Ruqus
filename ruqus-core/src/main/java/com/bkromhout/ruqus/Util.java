@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,6 +34,10 @@ class Util {
         } catch (ParseException e) {
             return c;
         }
+    }
+
+    static String stringFromDate(Date date) {
+        return dateFormat.format(date);
     }
 
     static String stringFromDateInts(int year, int monthOfYear, int dayOfMonth) {

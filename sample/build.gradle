@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "${GROUP_NAME}.sample"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode VERSION_CODE
         versionName VERSION_NAME
     }
@@ -28,8 +28,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.1.1'
 
     apt project(':ruqus-compiler')
     compile project(':ruqus-core')
