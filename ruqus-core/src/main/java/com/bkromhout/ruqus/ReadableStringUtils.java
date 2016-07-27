@@ -58,4 +58,14 @@ public class ReadableStringUtils {
         else if (fieldType == FieldType.DATE) return Util.stringFromDate((Date) arg);
         else throw new IllegalArgumentException("Field type must not be REALM_MODEL or REALM_LIST.");
     }
+
+    /**
+     * Checks to see if a {@code condition}'s type is <i>not</i> {@link com.bkromhout.ruqus.Condition.Type#NOT NOT}.
+     * @param condition Condition to check.
+     * @return True if {@code condition} is {@code null} or its type isn't {@link com.bkromhout.ruqus.Condition.Type#NOT
+     * NOT}
+     */
+    public static boolean notNOT(Condition condition) {
+        return condition == null || condition.getType() == Condition.Type.NOT;
+    }
 }

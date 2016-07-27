@@ -7,6 +7,8 @@ import io.realm.RealmQuery;
 
 import java.util.Date;
 
+import static com.bkromhout.ruqus.ReadableStringUtils.notNOT;
+
 /**
  * Transformer which wraps the various {@link RealmQuery} {@code lessThanOrEqualTo()} methods.
  */
@@ -43,7 +45,7 @@ public class LessThanOrEqualTo extends RUQTransformer {
     @Override
     public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
         return String.format("%s %s %s", ReadableStringUtils.visibleFieldNameFrom(current),
-                previous.getType() != Condition.Type.NOT ? "is less than or equal to" : "is not less than or equal to",
+                notNOT(previous) ? "is less than or equal to" : "is not less than or equal to",
                 ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()[0]));
     }
 }

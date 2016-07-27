@@ -1,5 +1,8 @@
 # Ruqus Changelog
 
+## 1.2.4
+* Fixed some *blatantly* obvious NPEs 🙃
+
 ## 1.2.3
 * Corrected string in dialog for removing conditions; now says "Condition" or "Operator" depending on type
 * No more unformatted dates in `RealmQueryView`'s main mode
