@@ -5,6 +5,8 @@ import com.bkromhout.ruqus.*;
 import io.realm.RealmModel;
 import io.realm.RealmQuery;
 
+import static com.bkromhout.ruqus.ReadableStringUtils.notNOT;
+
 /**
  * Transformer which wraps {@link RealmQuery#endsWith(String, String)}.
  */
@@ -30,6 +32,6 @@ public class EndsWith extends RUQTransformer {
     @Override
     public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
         return String.format("%s %s “%s”", ReadableStringUtils.visibleFieldNameFrom(current),
-                previous.getType() != Condition.Type.NOT ? "ends with" : "does not end with", current.getArgs()[0]);
+                notNOT(previous) ? "ends with" : "does not end with", current.getArgs()[0]);
     }
 }

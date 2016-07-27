@@ -7,6 +7,8 @@ import io.realm.RealmQuery;
 
 import java.util.Date;
 
+import static com.bkromhout.ruqus.ReadableStringUtils.notNOT;
+
 /**
  * Transformer which wraps the various {@link RealmQuery} {@code notEqualTo()} methods.
  */
@@ -42,7 +44,7 @@ public class NotEqualTo extends RUQTransformer {
     public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
         return String.format(current.getFieldType() == FieldType.STRING ? "%s %s “%s”" : "%s %s %s",
                 ReadableStringUtils.visibleFieldNameFrom(current),
-                previous.getType() != Condition.Type.NOT ? "is unequal to" : "is not unequal to",
+                notNOT(previous) ? "is unequal to" : "is not unequal to",
                 ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()[0]));
     }
 }

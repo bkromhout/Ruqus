@@ -7,6 +7,8 @@ import io.realm.RealmQuery;
 
 import java.util.Date;
 
+import static com.bkromhout.ruqus.ReadableStringUtils.notNOT;
+
 /**
  * Transformer which wraps the various {@link RealmQuery} {@code lessThan()} methods.
  */
@@ -37,7 +39,7 @@ public class LessThan extends RUQTransformer {
     @Override
     public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
         return String.format("%s %s %s", ReadableStringUtils.visibleFieldNameFrom(current),
-                previous.getType() != Condition.Type.NOT ? "is less than" : "is not less than",
+                notNOT(previous) ? "is less than" : "is not less than",
                 ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()[0]));
     }
 }

@@ -5,6 +5,8 @@ import com.bkromhout.ruqus.*;
 import io.realm.RealmModel;
 import io.realm.RealmQuery;
 
+import static com.bkromhout.ruqus.ReadableStringUtils.notNOT;
+
 /**
  * Transformer which wraps {@link RealmQuery#contains(String, String)}.
  */
@@ -31,7 +33,7 @@ public class StringContains extends RUQTransformer {
     @Override
     public String makeReadableString(@NonNull Condition current, Condition previous, Condition next) {
         return String.format("%s %s “%s”", ReadableStringUtils.visibleFieldNameFrom(current),
-                previous.getType() != Condition.Type.NOT ? "contains" : "does not contain",
+                notNOT(previous) ? "contains" : "does not contain",
                 ReadableStringUtils.argToString(current.getFieldType(), current.getArgs()[0]));
     }
 }
