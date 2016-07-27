@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import static com.bkromhout.ruqus.Condition.Type.*;
+import static com.bkromhout.ruqus.ReadableStringUtils.isAnyOf;
+import static com.bkromhout.ruqus.ReadableStringUtils.isNoneOf;
 
 /**
  * Used to let end-users build Realm Queries by wrapping {@link io.realm.RealmQuery}.
@@ -227,16 +229,12 @@ public class RealmUserQuery implements Parcelable {
                     continue;
                 }
 
-                // As long as this condition wasn't BEGIN_GROUP or NOT, and the next condition isn't END_GROUP,
-                // append a space.
-                if (current.getType() != BEGIN_GROUP && current.getType() != NOT && next.getType() != END_GROUP)
+                // Append a space if applicable.
+                if (isNoneOf(current, BEGIN_GROUP, NOT) && isNoneOf(next, END_GROUP))
                     builder.append(" ");
 
-                // Append "and " if all of the following are true (in this order):
-                // 1. This condition wasn't NOT, OR, or BEGIN_GROUP.
-                // 2. The next condition is NORMAL, NO_ARGS, or BEGIN_GROUP.
-                if (current.getType() != NOT && current.getType() != OR && current.getType() != BEGIN_GROUP &&
-                        (next.getType() == NORMAL || next.getType() == NO_ARGS || next.getType() == BEGIN_GROUP))
+                // Append "and " if applicable.
+                if (isNoneOf(current, BEGIN_GROUP, NOT, OR) && isAnyOf(next, NORMAL, NO_ARGS, BEGIN_GROUP, NOT))
                     builder.append("and ");
             }
         } else builder.append("."); // If there aren't any conditions, append a period.
