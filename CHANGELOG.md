@@ -1,5 +1,8 @@
 # Ruqus Changelog
 
+## 1.2.5
+* Another minute, another bug fix after a big release: Fix issue where human-readable query string doesn't put "and"s before nots
+
 ## 1.2.4
 * Fixed some *blatantly* obvious NPEs 🙃
 

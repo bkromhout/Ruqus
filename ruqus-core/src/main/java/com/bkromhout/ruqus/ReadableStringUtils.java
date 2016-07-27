@@ -60,6 +60,32 @@ public class ReadableStringUtils {
     }
 
     /**
+     * Check to see if a {@code condition}'s type is any of the given {@code types}.
+     * @param condition Condition to check.
+     * @param types     Types to check for.
+     * @return True if the given condition is any of the given types, false if otherwise or if {@code condition} is
+     * {@code null}.
+     */
+    public static boolean isAnyOf(Condition condition, Condition.Type... types) {
+        if (condition == null) return false;
+        for (Condition.Type type : types) if (condition.getType() == type) return true;
+        return false;
+    }
+
+    /**
+     * Check to see if a {@code condition}'s type is none of the given {@code types}.
+     * @param condition Condition to check.
+     * @param types     Types to check for.
+     * @return True if the given condition is none of the given types, false if otherwise or if {@code condition} is
+     * {@code null}.
+     */
+    public static boolean isNoneOf(Condition condition, Condition.Type... types) {
+        if (condition == null) return false;
+        for (Condition.Type type : types) if (condition.getType() == type) return false;
+        return true;
+    }
+
+    /**
      * Checks to see if a {@code condition}'s type is <i>not</i> {@link com.bkromhout.ruqus.Condition.Type#NOT NOT}.
      * @param condition Condition to check.
      * @return True if {@code condition} is {@code null} or its type isn't {@link com.bkromhout.ruqus.Condition.Type#NOT
