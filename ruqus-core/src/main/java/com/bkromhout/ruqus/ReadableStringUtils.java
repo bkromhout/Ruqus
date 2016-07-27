@@ -92,6 +92,6 @@ public class ReadableStringUtils {
      * NOT}
      */
     public static boolean notNOT(Condition condition) {
-        return condition == null || condition.getType() == Condition.Type.NOT;
+        return condition == null || condition.getType() != Condition.Type.NOT;
     }
 }
