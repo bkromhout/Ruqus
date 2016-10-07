@@ -1,5 +1,8 @@
 # Ruqus Changelog
 
+## 2.0.0
+* Support for Realm 2.0.2
+
 ## 1.2.6
 * Fix the fix in 1.2.4 😓
 
